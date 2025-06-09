@@ -1,0 +1,11 @@
+dearpygui==2.0
+screeninfo==0.8.1
+numpy==1.26.4
+pandas==2.2.2
+pywin32==306
+openpyxl==3.1.5
+extra_packages/dearpygui_map-0.1.1-py3-none-any.whl
+reportlab==4.2.5
+pillow~=11.1.0
+requests~=2.32.3
+black~=25.1.0
