@@ -1,6 +1,6 @@
-# Metal Product
+# Household DR - Diplomski rad - Petar Lovrić
 
-GitHub repozitorij za sve kodove potrebne za izvođenje svih 5 TBI usluga za Metal Product.
+GitHub repozitorij za sve kodove za završni rad, diplomske seminare, diplomski projekt i diplomski rad 
 
 ## Setup Instructions
 Follow these steps to set up the development environment:
@@ -9,14 +9,14 @@ Follow these steps to set up the development environment:
 
 2. Clone the repository:
 ```aiignore
-git clone https://github.com/RukavinaF/metal-product.git
-cd metal-product
+git clone https://github.com/KarnelutiA/Household_DR
+cd Household_DR
 ```
 
 3. Create a Virtual Environment:
 ```aiignore
-conda create -n metalproduct python=3.10
-conda activate metalproduct
+conda create -n housedr python=3.10
+conda activate housedr
 ```
 
 4. Install dependencies:
