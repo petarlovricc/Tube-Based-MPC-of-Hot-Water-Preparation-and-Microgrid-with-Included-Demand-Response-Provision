@@ -72,7 +72,7 @@ class ResultPage(QWidget):
 
         self.graphWidget = pg.PlotWidget()
         self.graphWidget.setBackground('w')
-
+        self.graphWidget.addLegend(labelTextColor = "black")
 
         buttonLayout = QHBoxLayout()
         self.retButton = QPushButton("Povratak na postavljanje parametara")
@@ -133,112 +133,126 @@ class ResultPage(QWidget):
         self.graphWidget.setXRange(0, 95)
         self.graphWidget.setTitle(bold=True)
 
-        self.graphWidget.addLegend(labelTextColor = "black")
-        if(self.paramPage.radioButton_2.isChecked()):
-            if self.comboBox.currentIndex() == 0:
-                self.graphWidget.setXRange(0, 96)
-                self.graphWidget.setTitle("Temperatura vode u spremniku tijekom dana", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,97,1), self.result1.tempC.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
-                
         
-            if self.comboBox.currentIndex() == 1:
-                self.graphWidget.setXRange(0, 96)
-                self.graphWidget.setTitle("SOE baterije", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,97,1), self.result1.SOE.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.setLabel("left", "SOE [Wh]", **styles)
-                
-
-            if self.comboBox.currentIndex() == 2:
-                self.graphWidget.setTitle("Stanje uključenosti grijača vode", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.delte.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.setLabel("left", "", **styles)
-                
-
-            if self.comboBox.currentIndex() == 3:
-                self.graphWidget.setTitle("Energija punjenja baterije", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.Ech.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)            
-                self.graphWidget.setLabel("left", "Energija punjenja [Wh]", **styles)
+        if(self.paramPage.radioButton_2.isChecked()):
+            if (self.result1):
+                if self.comboBox.currentIndex() == 0:
+                    self.graphWidget.setXRange(0, 96)
+                    self.graphWidget.setTitle("Temperatura vode u spremniku tijekom dana", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,97,1), self.result1.tempC.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
+                    
             
-            if self.comboBox.currentIndex() == 4:
-                self.graphWidget.setTitle("Energija pražnjenja baterije", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.Edch.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.setLabel("left", "Energija pražnjenja [Wh]", **styles)
+                if self.comboBox.currentIndex() == 1:
+                    self.graphWidget.setXRange(0, 96)
+                    self.graphWidget.setTitle("SOE baterije", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,97,1), self.result1.SOE.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.setLabel("left", "SOE [Wh]", **styles)
+                    
+
+                if self.comboBox.currentIndex() == 2:
+                    self.graphWidget.setTitle("Stanje uključenosti grijača vode", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.delte.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.setLabel("left", "", **styles)
+                    
+
+                if self.comboBox.currentIndex() == 3:
+                    self.graphWidget.setTitle("Energija punjenja baterije", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.Ech.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)            
+                    self.graphWidget.setLabel("left", "Energija punjenja [Wh]", **styles)
+                
+                if self.comboBox.currentIndex() == 4:
+                    self.graphWidget.setTitle("Energija pražnjenja baterije", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.Edch.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.setLabel("left", "Energija pražnjenja [Wh]", **styles)
+
+                if self.comboBox.currentIndex() == 10:
+                    self.graphWidget.setTitle("Energija mreže", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Energija [Wh]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.grid_energy.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.label1.setText(f"Trošak električne energije (€): {(sum(self.result1.eps)+self.result1.eps_peak*self.profiles.cpp):.3f}")
+                    self.label3.setText(f"Trošak električne energije, bez vršne snage (€): {sum(self.result2.eps):.3f}")
 
             if self.comboBox.currentIndex() == 5:
-                self.graphWidget.setTitle("Željeni protok miješane tople vode tijekom dana", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Maseni protok [L/h]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.profiles.water_demand.flatten(), pen = pen_graph, stepMode="left")
-                
+                    self.graphWidget.setTitle("Željeni protok miješane tople vode tijekom dana", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Maseni protok [L/h]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.profiles.water_demand.flatten(), pen = pen_graph, stepMode="left")
+                    
 
-            
+                
             if self.comboBox.currentIndex() == 6:
-                self.graphWidget.setTitle("Proizvodnja fotonaponskih panela", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Snaga proizvodnje [W]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.profiles.pv_power.flatten(), pen = pen_graph, stepMode="left")
-                print("Proizvodnja fotonaponskih panela "+str(self.profiles.pv_energy_sum))
+                    self.graphWidget.setTitle("Proizvodnja fotonaponskih panela", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Snaga proizvodnje [W]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.profiles.pv_power.flatten(), pen = pen_graph, stepMode="left")
+                    print("Proizvodnja fotonaponskih panela "+str(self.profiles.pv_energy_sum))
 
 
             if self.comboBox.currentIndex() == 7:
-                self.graphWidget.setTitle("Neupravljiva potrošnja", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Snaga [W]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.profiles.nc_load_power.flatten(), pen = pen_graph, stepMode="left")
-                print("Neupravljiva potrošnja "+str(self.profiles.sum_nc_load_energy))
+                    self.graphWidget.setTitle("Neupravljiva potrošnja", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Snaga [W]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.profiles.nc_load_power.flatten(), pen = pen_graph, stepMode="left")
+                    print("Neupravljiva potrošnja "+str(self.profiles.sum_nc_load_energy))
 
             if self.comboBox.currentIndex() == 8:
-                self.graphWidget.setTitle("Željena temperatura vode", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.profiles.set_water_temp_C.flatten(), pen = pen_graph, stepMode="left")
+                    self.graphWidget.setTitle("Željena temperatura vode", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.profiles.set_water_temp_C.flatten(), pen = pen_graph, stepMode="left")
 
             if self.comboBox.currentIndex() == 9:
-                self.graphWidget.setTitle("Temperatura okoline", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.profiles.env_temp_C, pen = pen_graph, stepMode="left")
+                    self.graphWidget.setTitle("Temperatura okoline", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.profiles.env_temp_C, pen = pen_graph, stepMode="left")
 
+                
             
-            if self.comboBox.currentIndex() == 10:
-                self.graphWidget.setTitle("Energija mreže", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Energija [Wh]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.grid_energy.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.label1.setText(f"Trošak električne energije (€): {(sum(self.result1.eps)+self.result1.eps_peak*self.profiles.cpp):.3f}")
-                self.label3.setText(f"Trošak električne energije, bez vršne snage (€): {sum(self.result2.eps):.3f}")
 
 
         if(self.paramPage.radioButton.isChecked()):
-            if self.comboBox.currentIndex() == 0:
-                self.graphWidget.setXRange(0, 96)
-                self.graphWidget.setTitle("Temperatura vode u spremniku tijekom dana", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,97,1), self.result1.tempC.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.plot(np.arange(0,97,1), self.result2.tempC.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
-                self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
+            if (self.result1 and self.result2):
+                if self.comboBox.currentIndex() == 0:
+                    self.graphWidget.setXRange(0, 96)
+                    self.graphWidget.setTitle("Temperatura vode u spremniku tijekom dana", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,97,1), self.result1.tempC.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.plot(np.arange(0,97,1), self.result2.tempC.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
+                    self.graphWidget.setLabel("left", "Temperatura [°C]", **styles)
 
 
-            if self.comboBox.currentIndex() == 1:
-                self.graphWidget.setXRange(0, 96)
-                self.graphWidget.setTitle("SOE baterije", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,97,1), self.result1.SOE.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.plot(np.arange(0,97,1), self.result2.SOE.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
-                self.graphWidget.setLabel("left", "SOE [Wh]", **styles)
+                if self.comboBox.currentIndex() == 1:
+                    self.graphWidget.setXRange(0, 96)
+                    self.graphWidget.setTitle("SOE baterije", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,97,1), self.result1.SOE.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.plot(np.arange(0,97,1), self.result2.SOE.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
+                    self.graphWidget.setLabel("left", "SOE [Wh]", **styles)
+                    
+
+                if self.comboBox.currentIndex() == 2:
+                    self.graphWidget.setTitle("Stanje uključenosti grijača vode", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.delte.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result2.delte.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
+                    self.graphWidget.setLabel("left", "", **styles)
+                    
+
+                if self.comboBox.currentIndex() == 3:
+                    self.graphWidget.setTitle("Energija punjenja baterije", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.Ech.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result2.Ech.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)            
+                    self.graphWidget.setLabel("left", "Energija punjenja [Wh]", **styles)
                 
+                if self.comboBox.currentIndex() == 4:
+                    self.graphWidget.setTitle("Energija pražnjenja baterije", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.Edch.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result2.Edch.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
+                    self.graphWidget.setLabel("left", "Energija pražnjenja [Wh]", **styles)
 
-            if self.comboBox.currentIndex() == 2:
-                self.graphWidget.setTitle("Stanje uključenosti grijača vode", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.delte.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.plot(np.arange(0,96,1), self.result2.delte.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
-                self.graphWidget.setLabel("left", "", **styles)
-                
-
-            if self.comboBox.currentIndex() == 3:
-                self.graphWidget.setTitle("Energija punjenja baterije", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.Ech.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.plot(np.arange(0,96,1), self.result2.Ech.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)            
-                self.graphWidget.setLabel("left", "Energija punjenja [Wh]", **styles)
-            
-            if self.comboBox.currentIndex() == 4:
-                self.graphWidget.setTitle("Energija pražnjenja baterije", size = "15pt", color = "k", bold=True)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.Edch.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.plot(np.arange(0,96,1), self.result2.Edch.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
-                self.graphWidget.setLabel("left", "Energija pražnjenja [Wh]", **styles)
+                if self.comboBox.currentIndex() == 10:
+                    self.graphWidget.setTitle("Energija mreže", size = "15pt", color = "k", bold=True)
+                    self.graphWidget.setLabel("left", "Energija [Wh]", **styles)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result1.grid_energy.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
+                    self.graphWidget.plot(np.arange(0,96,1), self.result2.grid_energy.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
+                    self.label1.setText(f"Trošak električne energije (€): {(sum(self.result1.eps)+self.result1.eps_peak*self.profiles.cpp):.3f}")
+                    self.label3.setText(f"Trošak električne energije, bez vršne snage (€): {sum(self.result2.eps):.3f}")
+                    self.label2.setText(f"Korištena energija iz mreže (Wh): {sum(self.result1.grid_energy):.3f}")
+                    self.label4.setText(f"Korištena energija iz mreže, bez vršne snage (Wh): {sum(self.result2.grid_energy):.3f}")
 
             if self.comboBox.currentIndex() == 5:
                 self.graphWidget.setTitle("Željeni protok miješane tople vode tijekom dana", size = "15pt", color = "k", bold=True)
@@ -271,15 +285,7 @@ class ResultPage(QWidget):
                 self.graphWidget.plot(np.arange(0,96,1), self.profiles.env_temp_C, pen = pen_graph, stepMode="left")
 
             
-            if self.comboBox.currentIndex() == 10:
-                self.graphWidget.setTitle("Energija mreže", size = "15pt", color = "k", bold=True)
-                self.graphWidget.setLabel("left", "Energija [Wh]", **styles)
-                self.graphWidget.plot(np.arange(0,96,1), self.result1.grid_energy.flatten(), pen = pen_graph, stepMode="left",name = self.legend1)
-                self.graphWidget.plot(np.arange(0,96,1), self.result2.grid_energy.flatten(), pen = pen_graph2, stepMode="left",name = self.legend2)
-                self.label1.setText(f"Trošak električne energije (€): {(sum(self.result1.eps)+self.result1.eps_peak*self.profiles.cpp):.3f}")
-                self.label3.setText(f"Trošak električne energije, bez vršne snage (€): {sum(self.result2.eps):.3f}")
-                self.label2.setText(f"Korištena energija iz mreže (Wh): {sum(self.result1.grid_energy):.3f}")
-                self.label4.setText(f"Korištena energija iz mreže, bez vršne snage (Wh): {sum(self.result2.grid_energy):.3f}")
+            
                                     
     def getParamsAfterChange(self):
         month = self.paramPage.dateEdit.date().month()

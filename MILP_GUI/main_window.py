@@ -1,4 +1,5 @@
 import sys
+import os
 from PySide6.QtCore import Qt, QRunnable, QThreadPool, QThread
 from PySide6.QtWidgets import (
     QApplication,
@@ -128,7 +129,7 @@ class MainWindow(QMainWindow):
 
         return (result1, result2)
 
-
+os.environ['QT_QUICK_BACKEND'] = 'software'
 
 app = QApplication(sys.argv)
 window = MainWindow()
