@@ -9,9 +9,6 @@ import os
 
 from Profiles_Readers.PV_reader import PVreader
 from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
-from Parameters.getData_noflex import getData
-
-
 
 
 def getModel(data):
@@ -19,25 +16,25 @@ def getModel(data):
     model.kapa1 = -1/(data.R*data.m_w_tank*data.c_water)
     model.kapa2 = data.P_heater/(data.m_w_tank*data.c_water)
     
-    a11 = np.exp(model.kapa1*data.ts)
-    model.A = np.array([[a11, 0],
+    model.a11 = np.exp(model.kapa1*data.ts)
+    model.A = np.array([[model.a11, 0],
                        [0, 1]],dtype="float64")
     
-    b11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*model.kapa2
-    model.B = np.array([[b11, 0, 0],
+    model.b11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*model.kapa2
+    model.B = np.array([[model.b11, 0, 0],
                        [0, data.nCh, -1/data.nDch]])
     
-    c11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.R*data.m_w_tank*data.c_water)
+    model.c11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.R*data.m_w_tank*data.c_water)
 
-    model.C = np.array([[c11],
+    model.C = np.array([[model.c11],
                         [0]])
     
-    d11 = -(np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.m_w_tank)
-    model.D = np.array([[d11],
+    model.d11 = -(np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.m_w_tank)
+    model.D = np.array([[model.d11],
                         [0]])
     
-    e11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*(data.cold_water_temp/data.m_w_tank)
-    model.E = np.array([[e11],
+    model.e11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*(data.cold_water_temp/data.m_w_tank)
+    model.E = np.array([[model.e11],
                         [0]])
 
 
@@ -49,17 +46,26 @@ def get_Matrices(data,model):
     matrices.u_min = np.zeros((3,1))
     matrices.u_max = np.array([1, data.P_PC*data.ts,data.P_PC*data.ts]).reshape(-1,1)
 
-    matrices.x0_min = np.array([data.Tmin_interval_before[0][0],0.2*data.E_bat_max]).reshape(-1,1)
+    
+    #Ogranicenje temperature Thot(k) vezano za Qmix(k-1) i Tmix(k-1)
+    matrices.Tmin_interval_before = ((data.water_demand)/data.Qmax*
+                                (data.set_water_temp_K-data.cold_water_temp)+data.cold_water_temp).reshape(-1,1)
+
+    #Ogranicenje temperature Thot(k) vezano za Qmix(k) i Tmix(k), s time da je isto ogr. za Qmix(N-1)
+    matrices.Tmin_interval_after = np.r_[matrices.Tmin_interval_before[1:].ravel(),matrices.Tmin_interval_before[-1]].reshape(-1,1)
+
+    matrices.x0_min = np.array([matrices.Tmin_interval_before[0][0],0.2*data.E_bat_max]).reshape(-1,1)
     matrices.x0_max = np.array([data.Tmax,0.8*data.E_bat_max]).reshape(-1,1)
 
     matrices.X_max = np.tile(matrices.x0_max, (data.N,1))
 
+
     matrices.X_min_1 = np.zeros((data.N*2,1))
-    matrices.X_min_1[::2] = data.Tmin_interval_before
+    matrices.X_min_1[::2] =  matrices.Tmin_interval_before
     matrices.X_min_1[1::2]= 0.2*data.E_bat_max
 
     matrices.X_min_2 = np.zeros((data.N*2,1))
-    matrices.X_min_2[::2] = data.Tmin_interval_after
+    matrices.X_min_2[::2] = matrices.Tmin_interval_after
     matrices.X_min_2[1::2]= 0.2*data.E_bat_max
 
     matrices.lower_triang_AB = np.zeros((data.N*2,data.N*3))
@@ -91,7 +97,7 @@ def get_Matrices(data,model):
 def getLb(data,matrices):
     lb = np.zeros((data.len_chi,1))
     U_min = np.tile(matrices.u_min, (data.N ,1))
-    lb = np.vstack((matrices.x0_min, U_min, np.tile(0,(data.len_eps_da ,1)), -np.inf))
+    lb = np.vstack((matrices.x0_min, U_min, np.tile(-np.inf,(data.len_eps_da ,1)), 0))
     
     return lb
 
@@ -119,7 +125,7 @@ def getPsix(data, matrices):
 
 def getThetaPPC(data):
     ThetaPPC = np.zeros((data.N, data.len_chi))
-    mat_x0_zeros = np.zeros((data.N, data.len_x0))
+    mat_x0_zeros = np.zeros((data.N, data.n_x))
     mat_Un = np.zeros((data.N, data.len_U_noflex))
     for i in range(mat_Un.shape[0]):
         mat_Un[i,3*i:3*i+3] = np.array([0,1,1])
@@ -138,7 +144,7 @@ def getPsiPPC(data):
 
 def getThetasell(data):
     Thetasell = np.zeros((data.N,data.len_chi))
-    mat_x0_zeros = np.zeros((data.N, data.len_x0))
+    mat_x0_zeros = np.zeros((data.N, data.n_x))
     mat_Un = np.zeros((data.N,data.len_U_noflex))
     for i in range(mat_Un.shape[0]):
         mat_Un[i,3*i:3*i+3] = np.array([data.c_sell[i]*data.P_heater*data.ts,data.c_sell[i],-data.c_sell[i]])
@@ -156,7 +162,7 @@ def getPsiSell(data):
 
 def getThetabuy(data):
     Thetabuy = np.zeros((data.N, data.len_chi))
-    mat_x0_zeros = np.zeros((data.N, data.len_x0))
+    mat_x0_zeros = np.zeros((data.N, data.n_x))
     mat_Un = np.zeros((data.N, data.len_U_noflex ))
     for i in range(mat_Un.shape[0]):
         mat_Un[i, 3*i:3*i+3] = np.array([data.c_buy[i]*data.P_heater*data.ts, data.c_buy[i], -data.c_buy[i]])
@@ -174,7 +180,7 @@ def getPsiBuy(data):
 
 def getThetaPP(data):
     ThetaPP = np.zeros((data.N, data.len_chi))
-    mat_x0_zeros = np.zeros((data.N, data.len_x0))
+    mat_x0_zeros = np.zeros((data.N, data.n_x))
     mat_Un = np.zeros((data.N, data.len_U_noflex ))
     for i in range(mat_Un.shape[0]):
         mat_Un[i, 3*i:3*i+3] = np.array([data.P_heater, 1/data.ts, -1/data.ts])
@@ -238,9 +244,12 @@ def getbeq(data,matrices,model):
 
 
 def getF(data):
-    f = np.r_[np.zeros((data.len_x0)),np.zeros((data.len_U_noflex)),
+    f = np.r_[np.zeros((data.n_x)),np.zeros((data.len_U_noflex)),
              np.ones((data.len_eps_da)), data.cpp]
     return f.reshape(-1,1)
+
+
+
 
 
 

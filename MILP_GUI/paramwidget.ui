@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1025</width>
-    <height>600</height>
+    <width>1723</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,253 +19,209 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
+  <property name="autoFillBackground">
+   <bool>false</bool>
   </property>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>460</y>
-     <width>221</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true"/>
-   </property>
-   <property name="text">
-    <string>Pokretanje optimizacije</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>460</y>
-     <width>221</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true"/>
-   </property>
-   <property name="text">
-    <string>Grafovi i podatci optimizacije</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="widget_4" native="true">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>200</y>
-     <width>471</width>
-     <height>100</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QWidget #widget_4 {
+  <property name="styleSheet">
+   <string notr="true">#ParamWidget{
+background-color: white;
+}
+</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_8">
+   <item row="2" column="1" rowspan="2">
+    <widget class="QWidget" name="widget_4" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QWidget #widget_4 {
 	background-color: rgba(245, 245, 245, 0.9);
 	border-radius: 8px;
 	border-style:dotted;
 }
 </string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_6">
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_13">
-      <property name="text">
-       <string>Period spremnosti za pružanje usluge fleksibilnosti</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <layout class="QGridLayout" name="gridLayout_3">
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_14">
+       <widget class="QLabel" name="label_13">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
-         <string>Početak</string>
+         <string>Period spremnosti za pružanje usluge fleksibilnosti</string>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_15">
-        <property name="text">
-         <string>Završetak</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QTimeEdit" name="timeEdit_2">
-        <property name="time">
-         <time>
-          <hour>9</hour>
-          <minute>0</minute>
-          <second>0</second>
-         </time>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QTimeEdit" name="timeEdit">
-        <property name="time">
-         <time>
-          <hour>15</hour>
-          <minute>0</minute>
-          <second>0</second>
-         </time>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="widget_5" native="true">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>310</y>
-     <width>471</width>
-     <height>140</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QWidget #widget_5 {
-	background-color: rgba(245, 245, 245, 0.9);
-	border-radius: 8px;
-	border-style:dotted;
-}
-</string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_5">
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_16">
-      <property name="font">
-       <font>
-        <underline>false</underline>
-       </font>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="text">
-       <string>Duljina perioda F, R i Q</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <layout class="QGridLayout" name="gridLayout_4">
-      <property name="horizontalSpacing">
-       <number>30</number>
-      </property>
-      <property name="verticalSpacing">
-       <number>15</number>
-      </property>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="lineEdit_10">
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_18">
-        <property name="text">
-         <string>Trajanje oporavka (R)</string>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <property name="verticalSpacing">
+         <number>25</number>
         </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Početak</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string>Završetak</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QTimeEdit" name="timeEdit_2">
+          <property name="time">
+           <time>
+            <hour>11</hour>
+            <minute>0</minute>
+            <second>0</second>
+           </time>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QTimeEdit" name="timeEdit">
+          <property name="time">
+           <time>
+            <hour>12</hour>
+            <minute>0</minute>
+            <second>0</second>
+           </time>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="1" rowspan="2">
+    <widget class="QWidget" name="widget_6" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget #widget_6 {
+	background-color: rgba(245, 245, 245, 0.9);
+	border-radius: 8px;
+	border-style:dotted;
+}
+</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <property name="verticalSpacing">
+       <number>10</number>
+      </property>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboBox_4">
+        <property name="currentText">
+         <string>pozitivan</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>pozitivan</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>negativan</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Naknada za fleksibilnost [EUR/kW]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lineEdit_13">
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_23">
+        <property name="text">
+         <string>Vjerojatnost prolaska ponude fleksibilnosti</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_22">
+        <property name="text">
+         <string>Cijena odstupanja potrošnje [EUR/kWh]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="lineEdit_14">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="lineEdit_15">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_19">
+       <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Period između aktivacija (Q)</string>
+         <string>Predznak usluge fleksibilnosti</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="label_25">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Parametri fleksibilnosti</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="comboBox">
-        <property name="currentText">
-         <string>2</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>4</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>6</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>8</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>12</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>24</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QSlider" name="horizontalSlider_7">
-        <property name="maximum">
-         <number>24</number>
-        </property>
-        <property name="value">
-         <number>1</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_17">
-        <property name="text">
-         <string>Trajanje pružanja fleksibilnosti (F)</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLineEdit" name="lineEdit_11">
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="5">
+    <widget class="QWidget" name="widget_3" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget #widget_3 {
+	background-color: rgba(245, 245, 245, 0.9);
+	border-radius: 8px;
+}
+</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="verticalSpacing">
+       <number>10</number>
+      </property>
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="lineEdit_3">
         <property name="alignment">
          <set>Qt::AlignCenter</set>
         </property>
@@ -274,395 +230,651 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QSlider" name="horizontalSlider_8">
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Broj solarnih panela</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Snaga pretvarača (W)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSlider" name="horizontalSlider_4">
+        <property name="minimum">
+         <number>1000</number>
+        </property>
         <property name="maximum">
-         <number>24</number>
+         <number>10000</number>
         </property>
         <property name="value">
-         <number>2</number>
+         <number>2500</number>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="lineEdit_12">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="lineEdit_9">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Kapacitet baterije (Wh)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>Radna energija VT [EUR/kWh]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="QLineEdit" name="lineEdit_8">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QSlider" name="horizontalSlider_5">
+        <property name="maximum">
+         <number>80</number>
+        </property>
+        <property name="value">
+         <number>15</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSlider" name="horizontalSlider_3">
+        <property name="maximum">
+         <number>5000</number>
+        </property>
+        <property name="value">
+         <number>2500</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="lineEdit_4">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Vršna snaga[EUR/kW]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSlider" name="horizontalSlider_2">
+        <property name="minimum">
+         <number>50</number>
+        </property>
+        <property name="maximum">
+         <number>300</number>
+        </property>
+        <property name="value">
+         <number>190</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Dan u godini </string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLineEdit" name="lineEdit_2">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Radna energija NT [EUR/kWh]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1">
+       <widget class="QDateEdit" name="dateEdit">
+        <property name="dateTime">
+         <datetime>
+          <hour>0</hour>
+          <minute>0</minute>
+          <second>0</second>
+          <year>2025</year>
+          <month>6</month>
+          <day>25</day>
+         </datetime>
+        </property>
+        <property name="displayFormat">
+         <string>d.M.</string>
+        </property>
+        <property name="date">
+         <date>
+          <year>2025</year>
+          <month>6</month>
+          <day>25</day>
+         </date>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_20">
+        <property name="text">
+         <string>Snaga solarnog panela (Wp)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <widget class="QLabel" name="label_24">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Parametri sustava</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>Kapacitet spremnika vode (L)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSlider" name="horizontalSlider">
+        <property name="maximum">
+         <number>20000</number>
+        </property>
+        <property name="value">
+         <number>9400</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="lineEdit_6">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Snaga grijača vode (W)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="lineEdit_7">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
      </layout>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="widget_3" native="true">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>453</width>
-     <height>501</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QWidget #widget_3 {
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="pushButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Pokretanje optimizacije</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" rowspan="3">
+    <widget class="QWidget" name="widget_2" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget #widget_2 {
 	background-color: rgba(245, 245, 245, 0.9);
 	border-radius: 8px;
 }
 </string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="7" column="1">
-     <widget class="QLineEdit" name="lineEdit_7">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QLineEdit" name="lineEdit_6">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QLabel" name="label_6">
-      <property name="text">
-       <string>Radna energija VT [EUR/kWh]</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QSlider" name="horizontalSlider_4">
-      <property name="minimum">
-       <number>1000</number>
-      </property>
-      <property name="maximum">
-       <number>10000</number>
-      </property>
-      <property name="value">
-       <number>2500</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="1">
-     <widget class="QDateEdit" name="dateEdit">
-      <property name="dateTime">
-       <datetime>
-        <hour>21</hour>
-        <minute>0</minute>
-        <second>0</second>
-        <year>2025</year>
-        <month>7</month>
-        <day>4</day>
-       </datetime>
-      </property>
-      <property name="date">
-       <date>
-        <year>2025</year>
-        <month>7</month>
-        <day>4</day>
-       </date>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_11">
-      <property name="text">
-       <string>Kapacitet spremnika vode (L)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLineEdit" name="lineEdit_9">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Snaga pretvarača (W)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_20">
-      <property name="text">
-       <string>Snaga solarnog panela (Wp)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Snaga grijača vode (W)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QSlider" name="horizontalSlider_5">
-      <property name="maximum">
-       <number>80</number>
-      </property>
-      <property name="value">
-       <number>20</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="2">
-     <widget class="QLineEdit" name="lineEdit_2">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Kapacitet baterije (Wh)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QLabel" name="label_12">
-      <property name="text">
-       <string>Vršna snaga[EUR/kWh]</string>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="0">
-     <widget class="QLabel" name="label_8">
-      <property name="text">
-       <string>Dan u godini </string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="1">
-     <widget class="QLineEdit" name="lineEdit_8">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <widget class="QLineEdit" name="lineEdit_3">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QSlider" name="horizontalSlider_2">
-      <property name="minimum">
-       <number>50</number>
-      </property>
-      <property name="maximum">
-       <number>300</number>
-      </property>
-      <property name="value">
-       <number>190</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QLineEdit" name="lineEdit_12">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QLabel" name="label_7">
-      <property name="text">
-       <string>Radna energija NT [EUR/kWh]</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_4">
-      <property name="text">
-       <string>Broj solarnih panela</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QSlider" name="horizontalSlider_3">
-      <property name="maximum">
-       <number>5000</number>
-      </property>
-      <property name="value">
-       <number>2500</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
-     <widget class="QLineEdit" name="lineEdit_4">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QSlider" name="horizontalSlider">
-      <property name="maximum">
-       <number>20000</number>
-      </property>
-      <property name="value">
-       <number>9400</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="widget_2" native="true">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>20</y>
-     <width>471</width>
-     <height>171</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QWidget #widget_2 {
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="1">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Postavke grijača</string>
+        </property>
+        <widget class="QRadioButton" name="radioButton_3">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>31</y>
+           <width>91</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Kontinuiran</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_4">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>30</y>
+           <width>111</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Diskretan</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QComboBox" name="comboBox_2">
+        <item>
+         <property name="text">
+          <string>S odzivom potrošnje</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Bez odziva potrošnje</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Usporedba dvaju modela</string>
+        </property>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>31</y>
+           <width>38</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Da</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_2">
+         <property name="geometry">
+          <rect>
+           <x>55</x>
+           <y>31</y>
+           <width>39</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ne</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="font">
+         <font>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Prvi model</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="comboBox_3">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Bez odziva potrošnje</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Jednostavno upravljanje</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Bez odziva potrošnje i vršne snage</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_10">
+        <property name="font">
+         <font>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Drugi model</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string>Grafovi optimizacije</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QWidget" name="widget_5" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget #widget_5 {
 	background-color: rgba(245, 245, 245, 0.9);
 	border-radius: 8px;
+	border-style:dotted;
 }
 </string>
-   </property>
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="3" column="1">
-     <widget class="QComboBox" name="comboBox_3">
-      <item>
-       <property name="text">
-        <string>S odzivom potrošnje</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Bez odziva potrošnje</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Histereza</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Bez odziva potrošnje i vršne snage</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>Usporedba dvaju modela</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <property name="verticalSpacing">
+       <number>10</number>
       </property>
-      <widget class="QRadioButton" name="radioButton">
-       <property name="geometry">
-        <rect>
-         <x>11</x>
-         <y>31</y>
-         <width>38</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Da</string>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioButton_2">
-       <property name="geometry">
-        <rect>
-         <x>55</x>
-         <y>31</y>
-         <width>39</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Ne</string>
-       </property>
-      </widget>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QComboBox" name="comboBox_2">
-      <item>
-       <property name="text">
-        <string>S odzivom potrošnje</string>
-       </property>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayout_4">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetNoConstraint</enum>
+        </property>
+        <property name="horizontalSpacing">
+         <number>30</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>10</number>
+        </property>
+        <item row="0" column="2">
+         <widget class="QLineEdit" name="lineEdit_10">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string>Trajanje oporavka (R)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_19">
+          <property name="text">
+           <string>Period između aktivacija (Q)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSlider" name="horizontalSlider_7">
+          <property name="maximum">
+           <number>24</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_17">
+          <property name="text">
+           <string>Trajanje pružanja fleksibilnosti (F)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="lineEdit_11">
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSlider" name="horizontalSlider_8">
+          <property name="maximum">
+           <number>24</number>
+          </property>
+          <property name="value">
+           <number>2</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QComboBox" name="comboBox">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="currentText">
+           <string>2</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>6</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>8</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>12</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>24</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item>
-       <property name="text">
-        <string>Bez odziva potrošnje</string>
-       </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <bold>true</bold>
+          <underline>false</underline>
+         </font>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text">
+         <string>Duljine perioda pružanja fleksibilnosti</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
       </item>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_9">
-      <property name="text">
-       <string>Prvi model</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QLabel" name="label_10">
-      <property name="text">
-       <string>Drugi model</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

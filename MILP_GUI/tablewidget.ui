@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TableWidget</class>
+ <widget class="QWidget" name="TableWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>944</width>
+    <height>509</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QWidget" name="widget_5" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget #widget_5 {
+	background-color: rgba(245, 245, 245, 0.9);
+	border-radius: 8px;
+	border-style:dotted;
+}
+</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>15</pointsize>
+          <bold>true</bold>
+          <underline>false</underline>
+          <strikeout>false</strikeout>
+          <stylestrategy>PreferDefault</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>REZULTATI OPTIMIZACIJE</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboBox"/>
+      </item>
+      <item>
+       <widget class="QTableWidget" name="tableWidget"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="graphButton">
+        <property name="text">
+         <string>Povratak</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

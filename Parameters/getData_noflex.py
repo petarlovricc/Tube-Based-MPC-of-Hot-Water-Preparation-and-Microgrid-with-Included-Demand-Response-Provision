@@ -10,21 +10,24 @@ import os
 from Profiles_Readers.PV_reader import PVreader
 from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
 
-def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, buyPriceHigh, buyPriceLow, month, day, cpp):
+def getData(heater_power, bat_cap, converter_power, tank_volume,
+            PV_power, numberofPV, buyPriceHigh, buyPriceLow,
+            month, day, cpp, *args):
+    
     data = Structure()
-
     PV_reader = PVreader(day=day, month=month, PV_power=PV_power, numberofPV=numberofPV) #klasa koja postavlja dan 
     disturbance_reader = CSV_disturbances_reader()
-    
+    data.day = day
+    data.month = month
     #Podatci o dimenzijama matrica
     data.N =  96 #broj 15min intervala u jednom danu
-    data.len_x0 = 2 #[T(k) SOE(k)]
+    data.n_x = 2 #[T(k) SOE(k)]
     data.len_U_noflex = 3*data.N #duljina upravljackog ulaza nominalnog profila
     data.len_eps_da = data.N #duljina vektora epsilona day ahead energije
     data.len_epp_noflex = 1 #epsilon za peak power bez fleksibilnosti
     
     #duljina optimizacijskog vektora
-    data.len_chi = (data.len_x0 + data.len_U_noflex + data.len_eps_da + data.len_epp_noflex)
+    data.len_chi = (data.n_x + data.len_U_noflex + data.len_eps_da + data.len_epp_noflex)
 
 
     data.P_heater = heater_power #snaga grijača u W
@@ -56,9 +59,17 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.nc_load_power, data.nc_load_energy, data.sum_nc_load_energy = disturbance_reader.csvreaderElectricity()
     data.mul_TQ = data.set_water_temp_K*data.water_demand
     #Cijene davanja i preuzimanja te cijena vršne snage
-    data.cpp = cpp/1000  #cijena vrsne snage €/kWh --> €/Wh
-    data.c_buy = np.r_[np.repeat(buyPriceLow,28), np.repeat(buyPriceHigh,56)
-                       ,np.repeat(buyPriceLow,12)] /1000 #€/kWh --> €/Wh
+    len_mon = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    data.cpp = cpp/(1000*len_mon[month-1])  #cijena vrsne snage €/kWh --> €/Wh te na razini jednog dana
+    
+    if(month in [4,5,6,7,8,9,10]):
+        data.c_buy = np.r_[np.repeat(buyPriceLow,28), np.repeat(buyPriceHigh,56)
+                        ,np.repeat(buyPriceLow,12)] /1000 #€/kWh --> €/Wh
+    else:
+        data.c_buy = np.r_[np.repeat(buyPriceLow,32), np.repeat(buyPriceHigh,56)
+                        ,np.repeat(buyPriceLow,8)] /1000 #€/kWh --> €/Wh
+        
     data.c_sell = data.c_buy*0.8
 
     #################################################################################
@@ -66,12 +77,7 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     #Gornje i donje granice protoka i temperature
     data.Qmax = data.water_demand.max() #maksimalni protok vode u danu
 
-    #Ogranicenje temperature Thot(k) vezano za Qmix(k-1) i Tmix(k-1)
-    data.Tmin_interval_before = ((data.water_demand)/data.Qmax*
-                                (data.set_water_temp_K-data.cold_water_temp)+data.cold_water_temp).reshape(-1,1)
-
-    #Ogranicenje temperature Thot(k) vezano za Qmix(k) i Tmix(k), s time da je isto ogr. za Qmix(N-1)
-    data.Tmin_interval_after = np.r_[data.Tmin_interval_before[1:].ravel(),data.Tmin_interval_before[-1]].reshape(-1,1)
+    
     data.Tmax = data.boiling_temp
 
     return data

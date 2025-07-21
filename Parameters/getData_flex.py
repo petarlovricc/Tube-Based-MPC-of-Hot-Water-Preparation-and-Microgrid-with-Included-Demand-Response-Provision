@@ -1,0 +1,243 @@
+import numpy as np
+from scipy.sparse import csr_matrix
+import cplex
+import matplotlib.pyplot as plt
+from MILP_formulation.extrasprojekt import *
+import math
+from Profiles_Readers.PV_reader import PVreader
+from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
+
+#funkcija koja sluzi stvaranju strukture
+def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, buyPriceHigh, buyPriceLow, month, day, cpp, Q, F, R, beginning_flex_ready, end_flex_ready, alfa, cr, sgn_Pr, cid):
+    data = Structure()
+    ######################################################
+    #PARAMETRI SUSTAVA
+    print("\n[Kontrolni ispis parametara getData()]")
+    print(f"Heater Power: {heater_power}")
+    print(f"Battery Capacity: {bat_cap}")
+    print(f"Converter Power: {converter_power}")
+    print(f"Tank Volume: {tank_volume}")
+    print(f"PV Power: {PV_power}")
+    print(f"Number of PV: {numberofPV}")
+    print(f"Buy Price High: {buyPriceHigh}")
+    print(f"Buy Price Low: {buyPriceLow}")
+    print(f"Month: {month}")
+    print(f"Day: {day}")
+    print(f"Q: {Q}")
+    print(f"F: {F}")
+    print(f"R: {R}")
+    print(f"Beginning Flex Ready: {beginning_flex_ready}")
+    print(f"End Flex Ready: {end_flex_ready}")
+    print(f"Peak Power (cpp): {cpp}")
+    print(f"Alpha: {alfa}")
+    print(f"cr: {cr}")
+    print(f"sgn_Pr: {sgn_Pr}")
+    print(f"cid: {cid}")
+    print("--------------------------------------------------\n")
+
+    PV_reader = PVreader(day=day, month=month, PV_power=PV_power, numberofPV=numberofPV) #klasa koja postavlja dan 
+    disturbance_reader = CSV_disturbances_reader()
+    data.day = day
+    data.month = month
+    
+    #Podatci o dimen_zijama matrica
+    data.sgn_Pr = sgn_Pr
+    data.cr = cr/1000
+    data.alfa = alfa
+    data.N =  96 #broj 15min intervala u jednom danu
+    data.N_F = int(F*4)
+    data.N_R = int(R*4)
+    data.N_Q = int(Q*4)
+    data.n_a = int((end_flex_ready - beginning_flex_ready)*4)
+    data.n_z = data.N // (data.N_Q)
+    data.n_x = 2 #[T(k) SOE(k)]
+    data.n_u = 3
+    data.len_U_nom = data.n_u*data.N #duljina upravljackog ulaza nominalnog profila
+    data.len_Ua = 3*data.n_a*data.n_z*(data.N_F + data.N_R)
+    data.len_eps_abs = data.N_R*data.n_a*data.n_z
+    data.len_eps_da = data.N #duljina vektora epsilona day ahead energije
+    data.len_epp_nom = 1 #epsilon za peak power bez fleksibilnosti
+    data.len_epp_alt = data.n_a
+
+    #duljina optimizacijskog vektora
+    data.len_chi = (data.n_x + data.len_U_nom +data.len_Ua
+                    + data.len_eps_abs+ data.len_eps_da +data.len_epp_alt+ data.len_epp_nom+1+1)
+
+
+    data.P_heater = heater_power #snaga grijača u W
+    data.ts = 0.25 #duljina perioda diskretizacije u satima
+    data.E_bat_max = bat_cap #kapacitet baterije u Wh
+    data.P_PC = converter_power #snaga pretvarača snage
+    data.tank_volume = tank_volume/1000 #volumen vode u spremniku(m3)
+    data.tank_radius = (data.tank_volume / (4 * math.pi))**(1/3)  #promjer spremnika vode
+    data.tank_area = 10 * math.pi * data.tank_radius**2  #vanjska povrsina spremnika vode
+    data.Lambda = 0.0245 #koeficijent toplinske vodljivosti
+    data.thickness = 0.05 #debljina spremnika vode u m
+    data.R = data.thickness/(data.Lambda*data.tank_area) 
+    data.ro_water = 1000 #kg/m3
+    data.c_water = 4200/3600 #Wh(kg^-1)(K-1)
+    data.nCh = 0.9 #efikasnost punjenja baterije
+    data.nDch = 0.9 #efikasnost pražnjenja baterije
+
+
+
+    data.m_w_tank = data.tank_volume*data.ro_water
+    data.cold_water_temp = 7+273.15 #temperatura hladne vode (°C -> K) 
+    data.boiling_temp = 100+273.15 # maksimalna željena temperatura vode u grijaču
+
+    #Podatci o proizvodnji i potrošnji
+    data.pv_power, data.pv_energy, data.pv_energy_sum = PV_reader.csvreader()
+    data.env_temp_K, data.env_temp_C = disturbance_reader.environment_Temperature()
+    data.set_water_temp_K, data.set_water_temp_C = disturbance_reader.setWaterTemparray()
+    data.water_demand = disturbance_reader.csvreaderWater() #kg/h
+    data.nc_load_power, data.nc_load_energy, data.sum_nc_load_energy = disturbance_reader.csvreaderElectricity()
+    data.mul_TQ = data.set_water_temp_K*data.water_demand
+    #Cijene davanja i preuzimanja te cijena vršne snage
+    len_mon = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    data.cpp = cpp/(1000*len_mon[month-1])  #cijena vrsne snage €/kWh --> €/Wh te na razini jednog dana
+
+    if(month in [4,5,6,7,8,9,10]):
+        data.c_buy = np.r_[np.repeat(buyPriceLow,28), np.repeat(buyPriceHigh,56)
+                        ,np.repeat(buyPriceLow,12)] /1000 #€/kWh --> €/Wh
+    else:
+        data.c_buy = np.r_[np.repeat(buyPriceLow,32), np.repeat(buyPriceHigh,56)
+                        ,np.repeat(buyPriceLow,8)] /1000 #€/kWh --> €/Wh
+         
+    data.c_sell = data.c_buy*0.8
+
+    data.cid = cid/1000
+    
+    #######################################################
+    #SKUPOVI TRENUTAKA ALTERNATIVNIH SCENARIJA
+
+    data.act_len = (data.N_F+data.N_R)
+    
+    data.a_i = np.arange(data.n_a)
+    data.a_i_z = np.arange(data.act_len)
+   
+
+    data.Ka_min = np.arange(int(beginning_flex_ready*4),int(end_flex_ready*4))
+    data.K_i = get_Ki(data)
+    data.Kzx = get_Kzx(data)
+    data.Kzu = get_Kzu(data)
+    data.K_fi = get_Kfi(data)
+    data.K_ri = get_Kri(data)
+
+
+    #######################################################
+    #OGRANIČENJA
+
+    #Gornje i donje granice protoka i temperature
+    data.Qmax = data.water_demand.max() #maksimalni protok vode u danu
+
+
+    data.Tmax = data.boiling_temp
+
+    return data
+
+        
+def get_Ki(data):
+        data.K_i = np.zeros((data.n_a,data.n_z*data.act_len))
+
+        for i in data.a_i:
+            for k in range(data.n_z*data.act_len):
+                    data.K_i[i,k] = (data.Ka_min[i] + (k//data.act_len)*data.N_Q + k%data.act_len)
+        
+        return data.K_i%data.N
+
+def get_Kpi(data):
+    K_pi = np.zeros((data.n_a,data.n_z))
+
+    for i in data.a_i:
+        for k in range(data.n_z):
+                K_pi[i,k] = data.Ka_min[i] + k*data.N_Q
+      
+    return K_pi%data.N
+     
+
+def get_Kzu(data):
+    K_zu = np.zeros((data.n_a,data.n_z))
+
+    for i in data.a_i:
+        for k in range(data.n_z):
+                K_zu[i,k] = data.Ka_min[i] + k*data.N_Q + data.act_len-1
+      
+    return K_zu%data.N
+       
+        
+def get_Kzx(data):
+    K_zx = get_Kzu(data) + 1
+      
+    return K_zx%data.N
+
+
+def get_Kfi(data):
+    K_fi = np.zeros((data.n_a,data.N_F*data.n_z))
+
+    K_i = get_Ki(data)
+
+    for i in data.a_i:
+        for k in range(data.n_z):
+            K_fi[i,k*data.N_F: (k+1)*data.N_F] = K_i[i, k*data.act_len: k*data.act_len + data.N_F]
+     
+    return K_fi%data.N
+        
+def get_Kri(data):
+    K_ri = np.zeros((data.n_a,data.N_R*data.n_z))
+
+    K_i = get_Ki(data)
+
+    for i in data.a_i:
+        for k in range(data.n_z):
+            K_ri[i,k*data.N_R: k*data.N_R + data.N_R] = K_i[i, k*data.act_len + data.N_F: k*data.act_len + data.N_F + data.N_R]
+     
+    return K_ri%data.N
+
+
+        
+if __name__ == "__main__":
+    heater_power=2500
+    bat_cap=9400
+    converter_power=2500
+    tank_volume=190
+    PV_power=410
+    numberofPV=10
+    buyPriceHigh=0.18
+    buyPriceLow=0.09
+    month=7
+    day=4
+    cpp=3.642
+    Q =8
+    F = 2
+    R = 5
+    beginning_flex_ready = 11
+    end_flex_ready = 12
+    alfa = 1
+    cr = 2
+    sgn_Pr = 1
+    cid = 2.5
+    data = getData(
+            heater_power,
+            bat_cap,
+            converter_power,
+            tank_volume,
+            PV_power,
+            numberofPV,
+            buyPriceHigh,
+            buyPriceLow,
+            month,
+            day,
+            Q,
+            F,
+            R,
+            beginning_flex_ready,
+            end_flex_ready,
+            cpp,
+            alfa,
+            cr,
+            sgn_Pr,
+            cid
+        )
+    print(get_Kfi(data))
+    print(get_Kri(data))
