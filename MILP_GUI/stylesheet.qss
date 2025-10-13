@@ -1,0 +1,214 @@
+QWidget {
+    color: #ffffff;
+}
+.QWidget {
+	margin: 5px;
+}
+QWidget#ParamWidget{
+background: qlineargradient(
+        spread:pad,
+        x1:0, y1:0,
+        x2:1, y2:0,
+        stop:0   #0C0C31,     
+        stop:0.5 #06032E,     
+        stop:1   #0C0C31     
+    );	
+}
+QMainWindow {
+background-color: #0C0C31;
+}
+.QWidget {
+	background-color: #091539;
+}
+
+QLineEdit {
+    background-color: #041c3d;
+    color: #ffffff;
+    border: 1px solid #2a628f;
+    padding: 8px 4px;
+    border-radius: 4px;
+}
+QGroupBox {
+    background-color: #041c3d;
+    color: #ffffff;
+    border: 1px solid #2a628f;
+    padding: 8px 4px;
+    border-radius: 4px;
+}
+QPushButton {
+    background: qlineargradient(
+        spread:pad,
+        x1:0, y1:0,
+        x2:1, y2:0,
+        stop:0 #51FCBB,
+        stop:1 #4EE5D9
+    );
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 15px;
+	margin: 5px;
+}
+
+QPushButton:hover {
+    background-color: #CBFEEF
+}
+
+QSlider::handle{
+ background-color: #45CACB;
+}
+
+QSlider::handle:hover{
+ background-color: #51FDBA;
+}
+
+
+/* Popup lista */
+QComboBox QAbstractItemView {
+    background-color: #002949;
+    color: #ffffff;
+    border: 1px solid #2a628f;
+    border-radius: 4px;
+    padding: 4px;
+    outline: none;   /* makni bijeli obrub */
+}
+
+/* Hover efekt na item */
+QComboBox QAbstractItemView::item:hover {
+    background-color: #15415A;
+    color: #51FDBA;
+    outline: none;
+    border: none;
+}
+
+/* Selektirani item */
+QComboBox QAbstractItemView::item:selected {
+    background-color: #15415A;
+    color: #51FDBA;
+    outline: none;
+    border: none;
+}
+
+QRadioButton::hover {
+color: #51FDBA;
+}
+
+QLabel#title1 {
+	padding: 8px 16px
+}
+QLabel#title4 {
+	margin: 8px 16px
+}
+QLabel#title3 {
+	margin: 8px 16px
+}
+
+
+QSpinBox, QDateEdit, QTimeEdit, QComboBox{
+    background-color: #002949;
+    color: #ffffff;
+    padding: 5px 15px;
+}
+QSpinBox:hover,
+QDateEdit:hover,
+QTimeEdit:hover,
+QComboBox:hover {
+    color: #51FDBA;
+}
+/* Toolbar background */
+QToolBar {
+    background: #0C0C31;          /* dark background */
+    border: 1px solid #2a628f;    /* subtle border */
+    spacing: 6px;                 /* space between buttons */
+    padding: 4px;
+}
+/* Opći dijalog (popup prozor) */
+QDialog {
+    background-color: #0C0C31;  /* tamna pozadina */
+    color: #ffffff;             /* bijeli tekst */
+}
+
+/* Label-e unutar dijaloga */
+QDialog QLabel {
+    color: #ffffff;
+}
+
+/* Tekstualna polja */
+QDialog QLineEdit {
+    background-color: #041c3d;
+    color: #ffffff;
+    border: 1px solid #2a628f;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+/* ComboBox u dijalogu */
+QDialog QComboBox {
+    background-color: #041c3d;
+    color: #ffffff;
+    padding: 4px;
+}
+
+/* Dugmad unutar dijaloga */
+QDialog QPushButton {
+    background: qlineargradient(
+        spread:pad,
+        x1:0, y1:0,
+        x2:1, y2:0,
+        stop:0 #51FCBB,
+        stop:1 #4EE5D9
+    );
+    color: #000000;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 15px;
+    margin: 4px;
+}
+
+QDialog QPushButton:hover {
+    background-color: #CBFEEF;
+}
+
+/* CheckBox */
+QDialog QCheckBox {
+    color: #ffffff;
+}
+QDialog QCheckBox::indicator:checked {
+    background-color: #45CACB;
+    border: 1px solid #2a628f;
+}
+
+QDialog QTabWidget::pane {
+  border: 1px solid #002949;
+  top:-1px; 
+  background: #002949;
+} 
+
+QDialog QTabBar::tab {
+  background: #041c3d; 
+  border: 1px solid #041c3d; 
+  /* Round only the top-left and top-right corners */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    /* Make bottom corners square */
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  padding: 15px;
+} 
+
+QDialog QTabBar::tab:selected { 
+  background: #002949; 
+  margin-bottom: -1px; 
+}
+
+QDoubleSpinBox {
+    background-color: #041c3d;
+    color: #ffffff;
+    
+}
+QDialog QGroupBox{
+    background-color: #002949;
+}

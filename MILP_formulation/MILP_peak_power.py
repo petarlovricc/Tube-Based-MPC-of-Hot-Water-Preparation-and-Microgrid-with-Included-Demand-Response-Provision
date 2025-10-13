@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.sparse import csr_matrix
-import cplex
 import matplotlib.pyplot as plt
 from MILP_formulation.extrasprojekt import *
 import math
@@ -21,8 +20,8 @@ def getModel(data):
                        [0, 1]],dtype="float64")
     
     model.b11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*model.kapa2
-    model.B = np.array([[model.b11, 0, 0],
-                       [0, data.nCh, -1/data.nDch]])
+    model.B = np.array([[model.b11, 0, 0, 0],
+                       [0, data.nCh, -1/data.nDch, 0]])
     
     model.c11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.R*data.m_w_tank*data.c_water)
 
@@ -43,8 +42,8 @@ def getModel(data):
 def get_Matrices(data,model):
     matrices = Structure()
 
-    matrices.u_min = np.zeros((3,1))
-    matrices.u_max = np.array([1, data.P_PC*data.ts,data.P_PC*data.ts]).reshape(-1,1)
+    matrices.u_min = np.zeros((data.n_u,1))
+    matrices.u_max = np.array([1, data.P_PC*data.ts,data.P_PC*data.ts, np.inf]).reshape(-1,1)
 
     
     #Ogranicenje temperature Thot(k) vezano za Qmix(k-1) i Tmix(k-1)
@@ -68,10 +67,10 @@ def get_Matrices(data,model):
     matrices.X_min_2[::2] = matrices.Tmin_interval_after
     matrices.X_min_2[1::2]= 0.2*data.E_bat_max
 
-    matrices.lower_triang_AB = np.zeros((data.N*2,data.N*3))
+    matrices.lower_triang_AB = np.zeros((data.N*2,data.N*data.n_u))
     for i in range(data.N):
         for j in range(i+1):
-             matrices.lower_triang_AB[2*i:2*(i+1),3*j:3*(j+1)] = np.linalg.matrix_power(model.A, i-j)@model.B
+             matrices.lower_triang_AB[2*i:2*(i+1),data.n_u*j:data.n_u*(j+1)] = np.linalg.matrix_power(model.A, i-j)@model.B
 
     matrices.lower_triang_AC = np.zeros((data.N*2,data.N))
     for i in range(data.N):
@@ -111,7 +110,7 @@ def getUb(data,matrices):
 
 def getThetax(data,matrices):
     Theta = np.zeros((data.N*2, data.len_chi))
-    Trailing_zeros = np.zeros((data.N*2, data.len_eps_da + data.len_epp_noflex))
+    Trailing_zeros = np.zeros((data.N*2, data.len_eps_da + data.len_epp_nom))
     Theta = np.hstack((matrices.matrix_A_x0, matrices.lower_triang_AB, Trailing_zeros))
 
     return Theta
@@ -126,11 +125,11 @@ def getPsix(data, matrices):
 def getThetaPPC(data):
     ThetaPPC = np.zeros((data.N, data.len_chi))
     mat_x0_zeros = np.zeros((data.N, data.n_x))
-    mat_Un = np.zeros((data.N, data.len_U_noflex))
+    mat_Un = np.zeros((data.N, data.len_U_nom))
     for i in range(mat_Un.shape[0]):
-        mat_Un[i,3*i:3*i+3] = np.array([0,1,1])
+        mat_Un[i,data.n_u*i:data.n_u*i+data.n_u] = np.array([0,1,1,0])
 
-    mat_da_eps_zeros = np.zeros((data.N,data.len_eps_da + data.len_epp_noflex))
+    mat_da_eps_zeros = np.zeros((data.N,data.len_eps_da + data.len_epp_nom))
 
     ThetaPPC = np.hstack((mat_x0_zeros,mat_Un,mat_da_eps_zeros))
 
@@ -145,11 +144,11 @@ def getPsiPPC(data):
 def getThetasell(data):
     Thetasell = np.zeros((data.N,data.len_chi))
     mat_x0_zeros = np.zeros((data.N, data.n_x))
-    mat_Un = np.zeros((data.N,data.len_U_noflex))
+    mat_Un = np.zeros((data.N,data.len_U_nom))
     for i in range(mat_Un.shape[0]):
-        mat_Un[i,3*i:3*i+3] = np.array([data.c_sell[i]*data.P_heater*data.ts,data.c_sell[i],-data.c_sell[i]])
+        mat_Un[i,data.n_u*i:data.n_u*i+data.n_u] = np.array([data.sell_prices[i]*data.P_heater*data.ts,data.sell_prices[i],-data.sell_prices[i],-data.sell_prices[i]])
     mat_da = np.eye(data.len_eps_da)
-    mat_eps_zeros = np.zeros((data.N, data.len_epp_noflex))
+    mat_eps_zeros = np.zeros((data.N, data.len_epp_nom))
 
     Thetasell = np.hstack((mat_x0_zeros,mat_Un, -mat_da, mat_eps_zeros))
 
@@ -157,17 +156,17 @@ def getThetasell(data):
 
 def getPsiSell(data):
     PsiSell = np.zeros((data.N,1))
-    PsiSell = data.c_sell*(data.pv_energy-data.nc_load_energy)
+    PsiSell = data.sell_prices*(-data.nc_load_energy)
     return PsiSell.reshape(-1,1)
 
 def getThetabuy(data):
     Thetabuy = np.zeros((data.N, data.len_chi))
     mat_x0_zeros = np.zeros((data.N, data.n_x))
-    mat_Un = np.zeros((data.N, data.len_U_noflex ))
+    mat_Un = np.zeros((data.N, data.len_U_nom ))
     for i in range(mat_Un.shape[0]):
-        mat_Un[i, 3*i:3*i+3] = np.array([data.c_buy[i]*data.P_heater*data.ts, data.c_buy[i], -data.c_buy[i]])
+        mat_Un[i, data.n_u*i:data.n_u*i+data.n_u] = np.array([data.da_prices[i]*data.P_heater*data.ts, data.da_prices[i], -data.da_prices[i], -data.da_prices[i]])
     mat_da = np.eye(data.len_eps_da)
-    mat_eps_zeros = np.zeros((data.N, data.len_epp_noflex))
+    mat_eps_zeros = np.zeros((data.N, data.len_epp_nom))
 
     Thetabuy = np.hstack((mat_x0_zeros, mat_Un, -mat_da, mat_eps_zeros))
 
@@ -175,17 +174,17 @@ def getThetabuy(data):
 
 def getPsiBuy(data):
     PsiBuy = np.zeros((data.N, 1))
-    PsiBuy = data.c_buy * (data.pv_energy - data.nc_load_energy)
+    PsiBuy = data.da_prices * (- data.nc_load_energy)
     return PsiBuy.reshape(-1, 1)
 
 def getThetaPP(data):
     ThetaPP = np.zeros((data.N, data.len_chi))
     mat_x0_zeros = np.zeros((data.N, data.n_x))
-    mat_Un = np.zeros((data.N, data.len_U_noflex ))
+    mat_Un = np.zeros((data.N, data.len_U_nom ))
     for i in range(mat_Un.shape[0]):
-        mat_Un[i, 3*i:3*i+3] = np.array([data.P_heater, 1/data.ts, -1/data.ts])
+        mat_Un[i, data.n_u*i:data.n_u*i+data.n_u] = np.array([data.P_heater, 1/data.ts, -1/data.ts, -1/data.ts])
     mat_da = np.zeros((data.len_eps_da, data.len_eps_da ))
-    mat_eps = -np.ones((data.N, data.len_epp_noflex ))
+    mat_eps = -np.ones((data.N, data.len_epp_nom))
 
     ThetaPP = np.hstack((mat_x0_zeros,mat_Un,mat_da,mat_eps))
 
@@ -193,8 +192,30 @@ def getThetaPP(data):
 
 def getPsiPP(data):
     PsiBuy = np.zeros((data.N, 1))
-    PsiBuy = (1/data.ts) * (data.pv_energy - data.nc_load_energy)
+    PsiBuy = (1/data.ts) * (- data.nc_load_energy)
     return PsiBuy.reshape(-1, 1)
+
+def getThetaPV(data):
+    ThetaPV = np.zeros((data.N, data.len_chi))
+    mat_x0_zeros = np.zeros((data.N, data.n_x))
+    mat_Un = np.zeros((data.N, data.len_U_nom ))
+
+    for i in range(mat_Un.shape[0]):
+        mat_Un[i, data.n_u*i:data.n_u*i+data.n_u] = np.array([0,0,0,1])
+    mat_da = np.zeros((data.len_eps_da, data.len_eps_da ))
+    mat_eps = np.zeros((data.N, data.len_epp_nom))
+
+    ThetaPV = np.hstack((mat_x0_zeros,mat_Un,mat_da,mat_eps))
+
+    return ThetaPV
+
+
+def getPsiPV(data):
+    psiPV = np.zeros((data.N, 1))
+    psiPV = data.pv_energy
+    return psiPV.reshape(-1, 1)
+
+
 
 
 def getAineq(data,matrices):
@@ -206,7 +227,8 @@ def getAineq(data,matrices):
         getThetaPPC(data),
         getThetasell(data),
         getThetabuy(data),
-        getThetaPP(data)
+        getThetaPP(data),
+        getThetaPV(data)
     ))
     return csr_matrix(Aineq)
 
@@ -219,7 +241,8 @@ def getbineq(data,matrices):
         getPsiPPC(data),
         getPsiSell(data),
         getPsiBuy(data),
-        getPsiPP(data)
+        getPsiPP(data),
+        getPsiPV(data)
     ))
     return bineq
 
@@ -228,7 +251,7 @@ def getAeq(data,matrices,model):
     Aeq_x0 = np.linalg.matrix_power(model.A,data.N)-np.eye(2)
     Aeq_Un = matrices.lower_triang_AB[-2:,:]
     Aeq_da = np.zeros((2,data.len_eps_da))
-    Aeq_eps = np.zeros((2,data.len_epp_noflex))
+    Aeq_eps = np.zeros((2,data.len_epp_nom))
 
     Aeq = np.hstack((Aeq_x0,Aeq_Un,Aeq_da,Aeq_eps))
 
@@ -244,7 +267,7 @@ def getbeq(data,matrices,model):
 
 
 def getF(data):
-    f = np.r_[np.zeros((data.n_x)),np.zeros((data.len_U_noflex)),
+    f = np.r_[np.zeros((data.n_x)),np.zeros((data.len_U_nom)),
              np.ones((data.len_eps_da)), data.cpp]
     return f.reshape(-1,1)
 

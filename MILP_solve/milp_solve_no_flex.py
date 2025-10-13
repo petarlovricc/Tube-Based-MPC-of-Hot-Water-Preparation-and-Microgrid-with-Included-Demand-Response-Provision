@@ -9,12 +9,12 @@ import os
 
 from Profiles_Readers.PV_reader import PVreader
 from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
-from Parameters.getData_noflex import getData
+from Parameters.getData_flex import getData
 import MILP_formulation.MILP_peak_power as noflex
 from Result_Processing.result_processing_noflex import result_processing
-import pyqtgraph as pg
+import highspy
 
-from PySide6 import QtWidgets
+
 
 def solve_cplex(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
     c = cplex.Cplex()
@@ -26,7 +26,7 @@ def solve_cplex(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
     c.objective.set_sense(c.objective.sense.minimize)
 
     #print(c.parameters._get_info())
-    types = data.n_x * "C" + data.N * f"{heater}CC" + data.len_eps_da * "C" + data.len_epp_noflex * "C"
+    types = data.n_x * "C" + data.N * f"{heater}CCC" + data.len_eps_da * "C" + data.len_epp_nom * "C"
 
 
     for i in range(f.shape[0]):
@@ -63,118 +63,82 @@ def solve_cplex(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
     sol.time = time_to_solve
     return sol
 
+def _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
+    # define problem
+    highs = highspy.Highs()
+    highs.changeObjectiveSense(highspy.ObjSense.kMinimize)
 
-# if __name__ == "__main__": 
-#     data = getData(
-#         heater_power=2500,
-#         bat_cap = 9400,
-#         converter_power=2500,
-#         tank_volume=190,
-#         PV_power=410,
-#         numberofPV=20,
-#         buyPriceHigh=0.07,
-#         buyPriceLow=0.035,
-#         month=7,
-#         day=4,
-#         cpp=3.05
-#     )
-#     model = noflex.getModel(data)
-#     matrices = noflex.get_Matrices(data, model)
+    types = (data.n_x * "C" + data.N * f"{heater}CCC" + 2*data.n_a*data.n_z*(data.N_F+data.N_R)*f"{heater}CCC"
+             +2*data.n_a*data.n_z*data.N_R*"C" + data.N*"C" + "C" + 2*"C"*(data.n_a) + "CC" + "CC")
+    
+    map_type = {"C":0, "I": 1, "B": 2}
+    integrality = [map_type[t] for t in types]
 
-#     lb = noflex.getLb(data,matrices)
-#     ub = noflex.getUb(data,matrices)
-#     Aineq = noflex.getAineq(data, matrices)
-#     bineq = noflex.getbineq(data,matrices)
-#     Aeq = noflex.getAeq(data,matrices,model)
-#     beq = noflex.getbeq(data,matrices,model)
-#     f = noflex.getF(data)
+    lb = lb.flatten()
+    ub = ub.flatten()
+    obj = f.flatten()
+    n_var = f.shape[0]
 
-#     solution = solve_cplex(data,f,Aeq,beq,Aineq,bineq,lb,ub)
-#     r = result_processing(data,matrices,solution.x)
+    
+    highs.addVars(n_var, lb, ub)
+    highs.changeColsCost(f.shape[0],np.arange(f.shape[0]), obj)
 
+    highs.changeColsIntegrality(f.shape[0],np.arange(f.shape[0]) , integrality)
 
-#     data = getData(
-#         heater_power=2500,
-#         bat_cap = 9400,
-#         converter_power=2500,
-#         tank_volume=190,
-#         PV_power=410,
-#         numberofPV=20,
-#         buyPriceHigh=0.07,
-#         buyPriceLow=0.035,
-#         month=7,
-#         day=4,
-#         cpp=0
-#     )
-#     model = noflex.getModel(data)
-#     matrices = noflex.get_Matrices(data, model)
+    for i in range(Aeq.shape[0]):
+        cols = Aeq[[i], :].indices.tolist()
+        vals = Aeq[[i], :].data.tolist()
+        rhs = beq[i, 0]
+        highs.addRow(rhs, rhs,len(cols), cols, vals)
 
-#     lb = noflex.getLb(data,matrices)
-#     ub = noflex.getUb(data,matrices)
-#     Aineq = noflex.getAineq(data, matrices)
-#     bineq = noflex.getbineq(data,matrices)
-#     Aeq = noflex.getAeq(data,matrices,model)
-#     beq = noflex.getbeq(data,matrices,model)
-#     f = noflex.getF(data)
+    for i in range(Aineq.shape[0]):
+        cols = Aineq[[i], :].indices.tolist()
+        vals = Aineq[[i], :].data.tolist()
+        rhs = bineq[i, 0]
+        highs.addRow(-highs.inf, rhs,len(cols), cols, vals)
+    
+    highs.run()
 
-#     solution2 = solve_cplex(data,f,Aeq,beq,Aineq,bineq,lb,ub)
-#     r2 = result_processing(data,matrices,solution2.x)
+    sol = Structure()
+    status = highs.getModelStatus()
+    sol.status_string = str(status)
+    print(sol.status_string)
 
+    solution = highs.getSolution()
 
+    if status == highspy.HighsModelStatus.kOptimal:
+        sol.status = 1
+        sol.x = np.array(solution.col_value)   # vrijednosti varijabli
+    else:
+        sol.status = 0
+        sol.x = np.array([])
 
-#     class MainWindow(QtWidgets.QMainWindow):
-#         def __init__(self):
-#             super().__init__()
-#             self.graphWidget = pg.PlotWidget()
-#             self.graphWidget.plot(np.arange(1, 97),r.delte, stepmode = "left")
-#             self.graphWidget.setBackground("w")
-#             pen = pg.mkPen(color=(255, 0, 0))
-#             self.graphWidget.plot(np.arange(1, 97),r.delte, stepmode = "left")
-#             app = QtWidgets.QApplication(sys.argv)
-#             main = MainWindow()
-#             main.show()
-#             app.exec()
-            
-#     plt.step(np.arange(1, 97),r.delte)
-#     plt.show()
-#     plt.step(np.arange(1, 97),r.Ech)
-#     plt.show()
-#     plt.step(np.arange(1, 97),r.grid_energy)
-#     plt.step(np.arange(1, 97),r2.grid_energy)
-#     plt.show()
+    return sol
 
-
-#     plt.step(np.arange(1, 97),r.temp[1:]-273.15)
-#     plt.step(np.arange(1, 97),data.Tmin_interval_before-273.15)
-#     plt.show()
-
-
-# PySide6 GUI klasa
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, r):
-        super().__init__()
-        self.setWindowTitle("PyQtGraph - Delte")
-        self.graphWidget = pg.PlotWidget()
-        self.setCentralWidget(self.graphWidget)
-        self.graphWidget.setBackground("w")
-        pen = pg.mkPen(color=(255, 0, 0), width=2)
-        self.graphWidget.plot(np.arange(0, 97), r.delte, stepMode=True, pen=pen)
 
 if __name__ == "__main__":
     # --- Prvo rješenje (s cpp) ---
-    data = getData(
-        heater_power=2500,
-        bat_cap=9400,
-        converter_power=2500,
-        tank_volume=190,
-        PV_power=410,
-        numberofPV=20,
-        buyPriceHigh=0.18,
-        buyPriceLow=0.09,
-        month=7,
-        day=4,
-        cpp=3.64,
-    )
+    heater_power=2500
+    bat_cap=9400
+    converter_power=2500
+    tank_volume=190
+    PV_power=410
+    numberofPV=10
+    buyPriceHigh=0.18
+    buyPriceLow=0.09
+    month=6
+    day=15
+    cpp=1
+    Q = 12
+    F = 1
+    R = 2
+    beginning_flex_ready = 15
+    end_flex_ready = 16
+    alfa = 0.811
+    cr = 0.7
+    sgn_Pr = 1
+    cid = 0.6
+    data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa, cr, sgn_Pr)
     heater = "C"
     model = noflex.getModel(data)
     matrices = noflex.get_Matrices(data, model)

@@ -63,10 +63,10 @@ def histereza(data, res):
     hist.Ech = [0]*96
     hist.Edch = [0]*96
     for i in range(data.N):
-        if Emreza_arr[i] < 0:
-            hist.epsiloni.append(Emreza_arr[i]*data.c_sell[i])
+        if Emreza_arr[i] >= 0:
+            hist.epsiloni.append(Emreza_arr[i]*data.da_prices[i])
         else:
-            hist.epsiloni.append(Emreza_arr[i]*data.c_buy[i])
+            hist.epsiloni.append(Emreza_arr[i]*data.sell_prices[i])
     
  
 
@@ -90,16 +90,15 @@ def histereza(data, res):
     hist.delte = np.array(delte)[:-1]
     hist.grid_energy = np.array(Emreza_arr)
     hist.tempC = tempC
-
- 
+    hist.PPV_used = data.pv_power
     
     sumaNovaca = 0
 
     for i in range(data.N):
         if (hist.grid_energy[i] < 0):
-            sumaNovaca+= hist.grid_energy[i]*data.c_sell[i] #energija Wh U kWh
+            sumaNovaca+= hist.grid_energy[i]*data.sell_prices[i] #energija Wh U kWh
         else:
-            sumaNovaca+=hist.grid_energy[i]*data.c_buy[i]
+            sumaNovaca+=hist.grid_energy[i]*data.da_prices[i]
           
     #dodavanje troska vrsne snage
     hist.grid_power = hist.grid_energy*4
@@ -110,7 +109,7 @@ def histereza(data, res):
     
        
     hist.table = getTable(data, hist)
-
+    hist.table2 = getTable_flow(data,hist)
     
 
     return hist
@@ -130,6 +129,17 @@ def getTable(data,hist):
     resultlist[7][0] = -1
     resultlist[8][0] = hist.Jn
     resultlist[9][0] = -1
+    return resultlist
+
+
+def getTable_flow(data,hist):
+    resultlist = np.zeros((6,1))
+    resultlist[0][0] = -1
+    resultlist[1][0] = -1
+    resultlist[2][0] = sum(hist.delte*data.P_heater)*0.25
+    resultlist[3][0] = -1
+    resultlist[4][0] = -1
+    resultlist[5][0] = sum(hist.grid_energy)
     return resultlist
 
 

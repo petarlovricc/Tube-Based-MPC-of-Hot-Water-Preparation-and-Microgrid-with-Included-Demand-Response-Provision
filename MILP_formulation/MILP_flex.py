@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.sparse import csr_matrix
-import cplex
 import matplotlib.pyplot as plt
 from MILP_formulation.extrasprojekt import *
 import math
@@ -21,25 +20,25 @@ def getModel(data):
     model.kapa1 = -1/(data.R*data.m_w_tank*data.c_water)
     model.kapa2 = data.P_heater/(data.m_w_tank*data.c_water)
     
-    a11 = np.exp(model.kapa1*data.ts)
-    model.A = np.array([[a11, 0],
+    model.a11 = np.exp(model.kapa1*data.ts)
+    model.A = np.array([[model.a11, 0],
                        [0, 1]],dtype="float64")
     
-    b11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*model.kapa2
-    model.B = np.array([[b11, 0, 0],
-                       [0, data.nCh, -1/data.nDch]])
+    model.b11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*model.kapa2
+    model.B = np.array([[model.b11, 0, 0, 0],
+                       [0, data.nCh, -1/data.nDch, 0]])
     
-    c11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.R*data.m_w_tank*data.c_water)
+    model.c11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.R*data.m_w_tank*data.c_water)
 
-    model.C = np.array([[c11],
+    model.C = np.array([[model.c11],
                         [0]])
     
-    d11 = -(np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.m_w_tank)
-    model.D = np.array([[d11],
+    model.d11 = -(np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1/(data.m_w_tank)
+    model.D = np.array([[model.d11],
                         [0]])
     
-    e11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*(data.cold_water_temp/data.m_w_tank)
-    model.E = np.array([[e11],
+    model.e11 = (np.exp(model.kapa1*data.ts)-1)*model.kapa1**-1*(data.cold_water_temp/data.m_w_tank)
+    model.E = np.array([[model.e11],
                         [0]])
 
 
@@ -49,8 +48,9 @@ def getModel(data):
 def get_Matrices_nom(data,model):
     matrices = Structure()
 
-    matrices.u_min = np.zeros((3,1))
-    matrices.u_max = np.array([1, data.P_PC*data.ts,data.P_PC*data.ts]).reshape(-1,1)
+    matrices.u_min = np.zeros((data.n_u,1))
+    matrices.u_max = np.array([1, data.P_PC*data.ts,data.P_PC*data.ts, np.inf]).reshape(-1,1)
+
 
      ######################################
     #Ograničenja stanja nominalnog profila
@@ -80,10 +80,10 @@ def get_Matrices_nom(data,model):
     matrices.X_min_u_n[::2] = matrices.Tmin_interval_after_nom
     matrices.X_min_u_n[1::2]= 0.2*data.E_bat_max
 
-    matrices.lower_triang_AB = np.zeros((data.N*2,data.N*3))
+    matrices.lower_triang_AB = np.zeros((data.N*2,data.N*data.n_u))
     for i in range(data.N):
         for j in range(i+1):
-             matrices.lower_triang_AB[2*i:2*(i+1),3*j:3*(j+1)] = np.linalg.matrix_power(model.A, i-j)@model.B
+             matrices.lower_triang_AB[2*i:2*(i+1),data.n_u*j:data.n_u*(j+1)] = np.linalg.matrix_power(model.A, i-j)@model.B
 
     matrices.lower_triang_AC = np.zeros((data.N*2,data.N))
     for i in range(data.N):
@@ -110,15 +110,15 @@ def get_Matrices_nom(data,model):
 def getMatrices_alt(data, model):
     matrices_alt = Structure()
 
-    matrices_alt.u_min = np.zeros((3, 1))
-    matrices_alt.u_max = np.array([1, data.P_PC * data.ts, data.P_PC * data.ts]).reshape(-1, 1)
+    matrices_alt.u_min = np.zeros((data.n_u, 1))
+    matrices_alt.u_max = np.array([1, data.P_PC * data.ts, data.P_PC * data.ts, np.inf]).reshape(-1, 1)
 
     matrices_alt.x0_max = np.array([data.Tmax, 0.8 * data.E_bat_max]).reshape(-1, 1)
 
-    matrices_alt.lower_triang_AB = np.zeros((data.N * 2, data.N * 3))
+    matrices_alt.lower_triang_AB = np.zeros((data.N * 2, data.N * data.n_u))
     for i in range(data.N):
         for j in range(i + 1):
-            matrices_alt.lower_triang_AB[2 * i:2 * (i + 1), 3 * j:3 * (j + 1)] = np.linalg.matrix_power(model.A, i - j) @ model.B
+            matrices_alt.lower_triang_AB[2 * i:2 * (i + 1), data.n_u * j:data.n_u * (j + 1)] = np.linalg.matrix_power(model.A, i - j) @ model.B
 
     matrices_alt.lower_triang_AB_zeros = np.zeros((data.n_x, data.n_u*(data.N_F + data.N_R)))
     matrices_alt.lower_triang_AB_full = np.zeros(((data.N_F + data.N_R) * data.n_x, data.n_u*(data.N_F + data.N_R)))
@@ -230,6 +230,9 @@ def get_Psi_x_alt(data,model):
 
     return Psi_a
 
+def get_Psi_x_alt_two_reservations(data,model):
+    return np.vstack((get_Psi_x_alt(data,model), get_Psi_x_alt(data,model)))
+
 def getPsix_nom(data, matrices):
     Psi = (matrices.lower_triang_AC@data.env_temp_K.reshape(-1,1) + 
             matrices.lower_triang_AD@data.mul_TQ.reshape(-1,1) +
@@ -284,6 +287,9 @@ def get_Xmin_u_a(data):
 
     return X_min_u_a
 
+def get_Xmin_u_a_two_reservations(data):
+    return np.vstack((get_Xmin_u_a(data), get_Xmin_u_a(data)))
+
 def get_Xmin_l_a_i_z(data,i,z):
     Xu = get_Xmin_u_a_i_z(data,i,z)
 
@@ -307,8 +313,12 @@ def get_Xmin_l_a(data):
 
     return X_min_l_a
 
+def get_Xmin_l_a_two_reservations(data):
+    return np.vstack((get_Xmin_l_a(data), get_Xmin_l_a(data)))
+
+
 def Xmax_alt(data,matrices_alt):
-    Xmax_alt = np.tile(matrices_alt.x0_max, (data.n_a*data.n_z*(data.N_F+data.N_R+1),1))
+    Xmax_alt = np.tile(matrices_alt.x0_max, (2*data.n_a*data.n_z*(data.N_F+data.N_R+1),1))
 
     return Xmax_alt
 
@@ -319,28 +329,26 @@ def getPsiPPC_nom(data):
     return PsiPPC_nom
 
 def getPsiPPC_alt(data):
-    PsiPPC_alt = np.tile((data.P_PC*data.ts), (data.n_a*data.n_z*(data.N_F + data.N_R),1))
+    PsiPPC_alt = np.tile((data.P_PC*data.ts), (2*data.n_a*data.n_z*(data.N_F + data.N_R),1))
 
     return PsiPPC_alt
 
-def getPsiSell(data):
-    PsiSell = np.zeros((data.N,1))
-    PsiSell = data.c_sell*(data.pv_energy-data.nc_load_energy)
-    return PsiSell.reshape(-1,1)
 
 def getPsiSell(data):
     PsiSell = np.zeros((data.N,1))
-    PsiSell = data.c_sell*(data.pv_energy-data.nc_load_energy)
+    PsiSell = data.sell_prices*(-data.nc_load_energy)
     return PsiSell.reshape(-1,1)
+
 
 def getPsiBuy(data):
     PsiBuy = np.zeros((data.N, 1))
-    PsiBuy = data.c_buy * (data.pv_energy - data.nc_load_energy)
+    PsiBuy = data.da_prices * (- data.nc_load_energy)
     return PsiBuy.reshape(-1, 1)
+
 
 def getPsiPP_nom(data):
     PP_nom = np.zeros((data.N, 1))
-    PP_nom = (1/data.ts) * (data.pv_energy - data.nc_load_energy)
+    PP_nom = (1/data.ts) * (- data.nc_load_energy)
     return PP_nom.reshape(-1, 1)
 
 
@@ -354,20 +362,15 @@ def get_psi_nom_a(data):
 
     return psi_nom_a
 
+def get_psi_nom_a_two_reservations(data):
+    return np.vstack((get_psi_nom_a(data), get_psi_nom_a(data)))
+
 
 def getPsiPP_alt_i_z(data,i,z):
     pv_profile = data.pv_energy
     nc_profile = data.nc_load_energy
     K_i = get_Ki(data).astype("i")
     activation_indices = K_i[i][z*data.act_len:(z+1)*data.act_len]
-
-    pv_profile_Act = []
-
-    for k in activation_indices:
-        pv_profile_Act.append(pv_profile[k])
-
-    pv_profile_Act = np.array(pv_profile_Act).reshape(-1,1)[data.N_F:]
-
 
     nc_profile_Act = []
 
@@ -376,7 +379,7 @@ def getPsiPP_alt_i_z(data,i,z):
 
     nc_profile_Act = np.array(nc_profile_Act).reshape(-1,1)[data.N_F:]
 
-    PsiPP_alt_i_z = 1/data.ts*(pv_profile_Act - nc_profile_Act)
+    PsiPP_alt_i_z = 1/data.ts*(- nc_profile_Act)
 
     return PsiPP_alt_i_z
 
@@ -396,12 +399,68 @@ def getPsiPP_alt(data):
 
     return PsiPP_alt
 
-def getTheta_a(data, matrices_alt, model):
+def getPsiPP_alt_two_reservations(data):
+    return np.vstack((getPsiPP_alt(data), getPsiPP_alt(data)))
+
+def getPsiPV_nom(data):
+    PV_nom = np.zeros((data.N, 1))
+    PV_nom = data.pv_energy
+    return PV_nom.reshape(-1, 1)
+
+def getPsiPV_alt_i_z(data,i,z):
+    pv_profile = data.pv_energy
+    K_i = get_Ki(data).astype("i")
+    activation_indices = K_i[i][z*data.act_len:(z+1)*data.act_len]
+    pv_profile_Act = []
+    for k in activation_indices:
+        pv_profile_Act.append(pv_profile[k])
+
+    pv_profile_Act = np.array(pv_profile_Act).reshape(-1,1)
+    return pv_profile_Act
+
+def getPsiPV_alt_i(data,i):
+    PsiPV_alt_i = np.zeros(((data.N_F+data.N_R)*data.n_z,1))
+
+    for z in range(data.n_z):
+        PsiPV_alt_i[(data.N_F+data.N_R)*z:(data.N_F+data.N_R)*(z+1),:] = getPsiPV_alt_i_z(data,i,z)
+
+    return PsiPV_alt_i
+
+def getPsiPV_alt(data):
+    PsiPV_alt = np.zeros(((data.N_F+data.N_R)*data.n_a*data.n_z,1))
+
+    for i in range(data.n_a):
+        PsiPV_alt[(data.N_F+data.N_R)*i*data.n_z:(data.N_F+data.N_R)*(i+1)*data.n_z,:] = getPsiPV_alt_i(data,i)
+
+    return PsiPV_alt
+
+def getPsiPV_alt_two_reservations(data):
+    return np.vstack((getPsiPV_alt(data), getPsiPV_alt(data)))
+
+def getTheta_a_plus(data, matrices_alt, model):
     Theta_a = np.hstack((
                     getTheta_a_x0(data,model),
                     getTheta_a_Un(data, matrices_alt, model),
                     getTheta_a_Ua(data, matrices_alt),
-                    np.zeros(((data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1)), (data.n_a*data.n_z*data.N_R + data.N + 1 + data.n_a + 2 )))))
+                    np.zeros(((data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1)), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                    np.zeros(((data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1)), (2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a + 5 )))))
+    return Theta_a
+
+def getTheta_a_minus(data, matrices_alt, model):
+    Theta_a = np.hstack((
+                    getTheta_a_x0(data,model),
+                    getTheta_a_Un(data, matrices_alt, model),
+                    np.zeros(((data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1)), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                    getTheta_a_Ua(data, matrices_alt),
+                    np.zeros(((data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1)), (2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a + 5)))))
+    return Theta_a
+
+
+def getTheta_a(data, matrices_alt, model):
+    Theta_a = np.vstack((
+                   getTheta_a_plus(data, matrices_alt, model),
+                   getTheta_a_minus(data, matrices_alt, model)
+    ))
     return Theta_a
 
 # def getTheta_a_x0(data):
@@ -474,66 +533,78 @@ def getTheta_a_Ua(data, matrices_alt): #TODO
 def getTheta_n(data, matrices):
     Theta_n = np.hstack((matrices.matrix_A_x0,
                         matrices.lower_triang_AB,
-                        np.zeros(((data.N*data.n_x), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + data.n_a*data.n_z*data.N_R + data.N + 1 + data.n_a + 2 )))))
+                        np.zeros(((data.N*data.n_x), (2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + 2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a + 5 )))))
     return Theta_n
 
 def getTheta_PC_n(data):
     Theta_PC_n = np.hstack((
                         np.zeros(((data.N), (data.n_x))),                        
                         getTheta_PC_Un(data),
-                        np.zeros(((data.N), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + data.n_a*data.n_z*data.N_R + data.N + 1 + data.n_a + 2 )))))
+                        np.zeros(((data.N), (2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + 2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a + 5 )))))
     return Theta_PC_n
 
 def getTheta_PC_Un(data):
     Theta_PC_Un = np.zeros((data.N, data.N*data.n_u))
     for i in range(data.N):
-        Theta_PC_Un[i,data.n_u*i:data.n_u*(i+1)] = np.array([0,1,1])
+        Theta_PC_Un[i,data.n_u*i:data.n_u*(i+1)] = np.array([0,1,1,0])
     return Theta_PC_Un
 
 def getTheta_PC_Ua(data):
     Theta_PC_Ua = np.zeros((data.n_a*data.n_z*(data.N_F+data.N_R), data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))
     for i in range(data.n_a*data.n_z*(data.N_F+data.N_R)):
-        Theta_PC_Ua[i,data.n_u*i:data.n_u*(i+1)] = np.array([0,1,1])
+        Theta_PC_Ua[i,data.n_u*i:data.n_u*(i+1)] = np.array([0,1,1,0])
     return Theta_PC_Ua
 
-def getTheta_PC_a(data):
+def getTheta_PC_a_plus(data):
     Theta_PC_a = np.hstack((
                         np.zeros((data.n_a*data.n_z*(data.N_F+data.N_R), (data.n_x + data.N*data.n_u))),                        
                         getTheta_PC_Ua(data),
-                        np.zeros(((data.n_a*data.n_z*(data.N_F+data.N_R)), data.n_a*data.n_z*data.N_R + data.N + 1 + data.n_a + 2 ))))
+                        np.zeros(((data.n_a*data.n_z*(data.N_F+data.N_R)), data.n_a*data.n_z*data.n_u*(data.N_F+data.N_R))),
+                        np.zeros(((data.n_a*data.n_z*(data.N_F+data.N_R)), 2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a + 5))))
     return Theta_PC_a
+
+def getTheta_PC_a_minus(data):
+    Theta_PC_a = np.hstack((
+                        np.zeros((data.n_a*data.n_z*(data.N_F+data.N_R), (data.n_x + data.N*data.n_u))),   
+                        np.zeros(((data.n_a*data.n_z*(data.N_F+data.N_R)), data.n_a*data.n_z*data.n_u*(data.N_F+data.N_R))),                     
+                        getTheta_PC_Ua(data),
+                        np.zeros(((data.n_a*data.n_z*(data.N_F+data.N_R)), 2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a + 5))))
+    return Theta_PC_a
+
+def getTheta_PC_a(data):
+    return np.vstack((getTheta_PC_a_plus(data), getTheta_PC_a_minus(data)))
 
 
 def getTheta_sell(data): 
     Theta_sell = np.hstack((
                         np.zeros(((data.N), (data.n_x))),                        
                         getTheta_sell_Un(data),
-                        np.zeros(((data.N), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + data.n_a*data.n_z*data.N_R))),
+                        np.zeros(((data.N), (2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + 2*data.n_a*data.n_z*data.N_R))),
                         -np.eye(data.N),
-                        np.zeros(((data.N), 1 + data.n_a + 2 )),
+                        np.zeros(((data.N), 1 + 2*data.n_a + 5)),
                         ))
     return Theta_sell
 
 def getTheta_sell_Un(data): 
     Theta_sell_Un = np.zeros((data.N, data.N*data.n_u))
     for i in range(data.N):
-        Theta_sell_Un[i,data.n_u*i:data.n_u*(i+1)] = data.c_sell[i]*np.array([data.P_heater*data.ts,1,-1])     
+        Theta_sell_Un[i,data.n_u*i:data.n_u*(i+1)] = data.sell_prices[i]*np.array([data.P_heater*data.ts,1,-1, -1])     
     return Theta_sell_Un
 
 def getTheta_buy(data): 
     Thetabuy = np.hstack((
                         np.zeros(((data.N), (data.n_x))),                        
                         getTheta_buy_Un(data),
-                        np.zeros(((data.N), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + data.n_a*data.n_z*data.N_R))),
+                        np.zeros(((data.N), (2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + 2*data.n_a*data.n_z*data.N_R))),
                         -np.eye(data.N),
-                        np.zeros(((data.N), 1 + data.n_a + 2 )),
+                        np.zeros(((data.N), 1 + 2*data.n_a + 5)),
                         ))
     return Thetabuy
 
 def getTheta_buy_Un(data):
     Theta_buy_Un = np.zeros((data.N, data.N*data.n_u))
     for i in range(data.N):
-        Theta_buy_Un[i,data.n_u*i:data.n_u*(i+1)] = data.c_buy[i]*np.array([data.P_heater*data.ts,1,-1])     
+        Theta_buy_Un[i,data.n_u*i:data.n_u*(i+1)] = data.da_prices[i]*np.array([data.P_heater*data.ts,1,-1, -1])     
     return Theta_buy_Un
 
 def getTheta_pp_nom_a(data):
@@ -542,61 +613,98 @@ def getTheta_pp_nom_a(data):
 
     for i in range(data.n_a):
         for k_i in K_i[i]:
-            theta_pp_nom_a[i*data.N+int(k_i), data.n_u*int(k_i):data.n_u*(int(k_i)+1)] = np.array([0,0,0])
+            theta_pp_nom_a[i*data.N+int(k_i), data.n_u*int(k_i):data.n_u*(int(k_i)+1)] = np.array([0,0,0,0])
 
     return theta_pp_nom_a
 
 def get_Theta_pp_epp(data):
-    theta_pp_nom_a_eps = np.zeros((data.n_a*data.N, data.n_a+1))
+    theta_pp_nom_a_eps = np.zeros((data.n_a*data.N, data.n_a))
     K_i = get_Ki(data)
     for i in range(data.n_a):
         for j in range(data.N):
             if j not in K_i[i]:
-                theta_pp_nom_a_eps[i*data.N+j, i+1] = -1
+                theta_pp_nom_a_eps[i*data.N+j, i] = -1
     return theta_pp_nom_a_eps
 
-def get_theta_nom_a(data):
+def get_theta_nom_a_plus(data):
     theta_nom_a = np.hstack((np.zeros((data.n_a*data.N,2)),
                       getTheta_pp_nom_a(data),
-                      np.zeros((data.n_a*data.N, data.N+data.n_u*(data.N_F+data.N_R)*data.n_a*data.n_z + data.N_R*data.n_a*data.n_z)),
+                      np.zeros((data.n_a*data.N, data.N+2*data.n_u*(data.N_F+data.N_R)*data.n_a*data.n_z + 2*data.N_R*data.n_a*data.n_z)),
+                      np.zeros((data.n_a*data.N,1)),
                       get_Theta_pp_epp(data),
-                      np.zeros((data.n_a*data.N,2))
+                      np.zeros((data.n_a*data.N,data.n_a)),
+                      np.zeros((data.n_a*data.N,5))
                       ))
     return theta_nom_a
+
+def get_theta_nom_a_minus(data):
+    theta_nom_a = np.hstack((np.zeros((data.n_a*data.N,2)),
+                      getTheta_pp_nom_a(data),
+                      np.zeros((data.n_a*data.N, data.N+2*data.n_u*(data.N_F+data.N_R)*data.n_a*data.n_z + 2*data.N_R*data.n_a*data.n_z)),
+                      np.zeros((data.n_a*data.N,1)),
+                      np.zeros((data.n_a*data.N,data.n_a)),
+                      get_Theta_pp_epp(data),
+                      np.zeros((data.n_a*data.N,5))
+                      ))
+    return theta_nom_a
+
+def get_theta_nom_a(data):
+    return np.vstack((get_theta_nom_a_plus(data), get_theta_nom_a_minus(data)))
 
 def getTheta_pp_n(data):
     Theta_pp_n = np.hstack((
                         np.zeros(((data.N), (data.n_x))),                        
                         getTheta_pp_n_Un(data),
-                        np.zeros(((data.N), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros(((data.N), (2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + 2*data.n_a*data.n_z*data.N_R + data.N))),
                         getTheta_pp_n_eps(data),
-                        np.zeros(((data.N), 2)),
+                        np.zeros(((data.N), 5))
                         ))
     return Theta_pp_n
 
 def getTheta_pp_n_Un(data):
     Theta_pp_n_Un = np.zeros((data.N, data.N*data.n_u))
     for i in range(data.N):
-        Theta_pp_n_Un[i, data.n_u*i:data.n_u*(i+1)] = np.array([data.P_heater, 1/data.ts, -1/data.ts])
+        Theta_pp_n_Un[i, data.n_u*i:data.n_u*(i+1)] = np.array([data.P_heater, 1/data.ts, -1/data.ts, -1/data.ts])
     return Theta_pp_n_Un
 
 def getTheta_pp_n_eps(data):
-    Theta_pp_n_eps = np.zeros((data.N, 1 + data.n_a))
+    Theta_pp_n_eps = np.zeros((data.N, 1 + 2*data.n_a))
     Theta_pp_n_eps[:, 0] = -1
     return Theta_pp_n_eps
 
 ######################################################################################################
 
-def getTheta_pp_a(data):
+def getTheta_pp_a_plus(data):
+    Theta_pp_a = np.hstack((
+                        np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_x))),                        
+                        getTheta_pp_a_Ua(data),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_u*data.N))),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), (2*data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), 1)),
+                        getTheta_pp_a_eps(data),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), data.n_a)),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), 5)),
+                        ))
+    return Theta_pp_a
+
+def getTheta_pp_a_minus(data):
     Theta_pp_a = np.hstack((
                         np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_x))),                        
                         np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_u*data.N))),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
                         getTheta_pp_a_Ua(data),
-                        np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), (2*data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), 1)),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), data.n_a)),
                         getTheta_pp_a_eps(data),
-                        np.zeros(((data.N_R*data.n_a*data.n_z), 2)),
+                        np.zeros(((data.N_R*data.n_a*data.n_z), 5)),
                         ))
     return Theta_pp_a
+
+def getTheta_pp_a(data):
+    return np.vstack((getTheta_pp_a_plus(data), getTheta_pp_a_minus(data)))
+
 
 def getTheta_pp_a_Ua(data):
     Theta_pp_a_Ua = np.zeros((data.N_R*data.n_a*data.n_z, data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))
@@ -604,38 +712,127 @@ def getTheta_pp_a_Ua(data):
     for i in range(data.n_a*data.n_z):
         for j in range(data.N_R):
             j = int(j)
-            Theta_pp_a_Ua[i*data.N_R+j,  i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*j:i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*(j+1)] = np.array([data.P_heater, 1/data.ts, -1/data.ts])
+            Theta_pp_a_Ua[i*data.N_R+j,  i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*j:i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*(j+1)] = np.array([data.P_heater, 1/data.ts, -1/data.ts, -1/data.ts])
 
-    # = np.array([data.P_heater, 1/data.ts, -1/data.ts])
+    
     return Theta_pp_a_Ua
 
 def getTheta_pp_a_eps(data):
-    Theta_pp_a_eps = np.zeros((data.N_R*data.n_a*data.n_z, 1 + data.n_a))
+    Theta_pp_a_eps = np.zeros((data.N_R*data.n_a*data.n_z, data.n_a))
     for i in range(data.n_a):
-        Theta_pp_a_eps[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z, i+1] = np.tile(-1, (data.N_R*data.n_z))
+        Theta_pp_a_eps[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z, i] = np.tile(-1, (data.N_R*data.n_z))
     return Theta_pp_a_eps
 
 ######################################################################################################
 
-def getTheta_abs_poz(data): 
+def getTheta_PV_n(data):
+    Theta_PV_n = np.hstack((
+                        np.zeros(((data.N), (data.n_x))),                        
+                        getTheta_PV_n_Un(data),
+                        np.zeros(((data.N), (2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R) + 2*data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros((data.N, 1 + 2*data.n_a)),
+                        np.zeros(((data.N), 5)),
+                        ))
+    return Theta_PV_n
+
+def getTheta_PV_n_Un(data):
+    Theta_PV_n_Un = np.zeros((data.N, data.N*data.n_u))
+    for i in range(data.N):
+        Theta_PV_n_Un[i, data.n_u*i:data.n_u*(i+1)] = np.array([0,0,0,1])
+    return Theta_PV_n_Un
+
+def getTheta_PV_a_plus(data):
+    Theta_pp_a = np.hstack((
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (data.n_x))),                        
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (data.n_u*data.N))),
+                        getTheta_PV_a_Ua(data),
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (2*data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros(((data.N_F+data.N_R)*data.n_a*data.n_z, 1 + 2*data.n_a)),
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), 5)),
+                        ))
+    return Theta_pp_a
+
+
+def getTheta_PV_a_minus(data):
+    Theta_pp_a = np.hstack((
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (data.n_x))),                        
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (data.n_u*data.N))),
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                        getTheta_PV_a_Ua(data),
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), (2*data.n_a*data.n_z*data.N_R + data.N))),
+                        np.zeros(((data.N_F+data.N_R)*data.n_a*data.n_z, 1 + 2*data.n_a)),
+                        np.zeros((((data.N_F+data.N_R)*data.n_a*data.n_z), 5)),
+                        ))
+    return Theta_pp_a
+
+def getTheta_PV_a(data):
+    return np.vstack((getTheta_PV_a_plus(data), getTheta_PV_a_minus(data)))
+
+
+def getTheta_PV_a_Ua(data):
+    Theta_PV_a_Ua = np.zeros(((data.N_F+data.N_R)*data.n_a*data.n_z, data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))
+
+    for i in range(data.n_a*data.n_z):
+        for j in range(data.N_F+data.N_R):
+            j = int(j)
+            Theta_PV_a_Ua[i*(data.N_F+data.N_R)+j,  i*data.n_u*(data.N_F+data.N_R)+data.n_u*j:i*data.n_u*(data.N_F+data.N_R)+data.n_u*(j+1)] = np.array([0,0,0,1])
+    return Theta_PV_a_Ua
+
+def getTheta_abs_poz_plus(data): 
     Theta_abs_poz = np.hstack((
                         np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_x))),                        
                         -getTheta_abs_Un(data),
                         getTheta_abs_Ua(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
                         -np.eye((data.n_a*data.n_z*data.N_R)),
-                        np.zeros(((data.n_a*data.n_z*data.N_R), data.N + 1 + data.n_a + 2 ))
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_a*data.n_z*data.N_R))),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), data.N + 1 + 2*data.n_a + 5))
                         ))
     return Theta_abs_poz
 
-def getTheta_abs_neg(data):
+def getTheta_abs_poz_minus(data): 
+    Theta_abs_poz = np.hstack((
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_x))),                        
+                        -getTheta_abs_Un(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                        getTheta_abs_Ua(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_a*data.n_z*data.N_R))),
+                        -np.eye((data.n_a*data.n_z*data.N_R)),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), data.N + 1 + 2*data.n_a + 5))
+                        ))
+    return Theta_abs_poz
+
+def getTheta_abs_neg_plus(data):
     Theta_abs_neg = np.hstack((
                         np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_x))),                        
                         getTheta_abs_Un(data),
                         -getTheta_abs_Ua(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
                         -np.eye((data.n_a*data.n_z*data.N_R)),
-                        np.zeros(((data.n_a*data.n_z*data.N_R), data.N + 1 + data.n_a + 2 ))
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_a*data.n_z*data.N_R))),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), data.N + 1 + 2*data.n_a + 5))
                         ))
     return Theta_abs_neg
+
+def getTheta_abs_neg_minus(data):
+    Theta_abs_neg = np.hstack((
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_x))),                        
+                        getTheta_abs_Un(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
+                        -getTheta_abs_Ua(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), (data.n_a*data.n_z*data.N_R))),
+                        -np.eye((data.n_a*data.n_z*data.N_R)),
+                        np.zeros(((data.n_a*data.n_z*data.N_R), data.N + 1 + 2*data.n_a + 5))
+                        ))
+    return Theta_abs_neg
+
+def getTheta_abs_poz(data):
+    return np.vstack((getTheta_abs_poz_plus(data), getTheta_abs_poz_minus(data)))
+
+def getTheta_abs_neg(data):
+    return np.vstack((getTheta_abs_neg_plus(data), getTheta_abs_neg_minus(data)))
+
 
 def getTheta_abs_Un(data): 
     Theta_abs_Un = np.zeros((data.n_a*data.n_z*data.N_R, data.N*data.n_u))
@@ -643,7 +840,7 @@ def getTheta_abs_Un(data):
         for j in range(data.n_z*data.N_R):
             k = int(data.K_ri[i][j])
             j = int(j)
-            Theta_abs_Un[i*data.n_z*data.N_R+j, data.n_u*k:data.n_u*(k+1)] = np.array([data.P_heater*data.ts, 1, -1])
+            Theta_abs_Un[i*data.n_z*data.N_R+j, data.n_u*k:data.n_u*(k+1)] = np.array([data.P_heater*data.ts, 1, -1, -1])
     return Theta_abs_Un
 
 def getTheta_abs_Ua(data): 
@@ -651,17 +848,33 @@ def getTheta_abs_Ua(data):
     for i in range(data.n_a*data.n_z):
         for j in range(data.N_R):
             j = int(j)
-            Theta_abs_Ua[i*data.N_R+j,  i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*j:i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*(j+1)] = np.array([data.P_heater*data.ts, 1, -1])
+            Theta_abs_Ua[i*data.N_R+j,  i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*j:i*data.n_u*(data.N_F+data.N_R)+data.N_F*data.n_u+data.n_u*(j+1)] = np.array([data.P_heater*data.ts, 1, -1, -1])
     return Theta_abs_Ua
 
-def getTheta_delta(data):
+
+def getTheta_delta_plus(data):
     Theta_delta = np.hstack((
                         np.zeros(((data.n_a*data.n_z*data.N_F), (data.n_x))),                        
-                        data.sgn_Pr*getTheta_delta_Un(data),
-                        data.sgn_Pr*getTheta_delta_Ua(data),
-                        np.zeros(((data.n_a*data.n_z*data.N_F), data.n_a*data.n_z*data.N_R + data.N + 1 + data.n_a)),
-                        data.sgn_Pr*np.tile(data.ts,((data.n_a*data.n_z*data.N_F), 1)),
-                        np.zeros(((data.n_a*data.n_z*data.N_F), 1 )),
+                        getTheta_delta_Un(data),
+                        getTheta_delta_Ua_plus(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_F), data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R))),
+                        np.zeros(((data.n_a*data.n_z*data.N_F), 2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a)),
+                        np.tile(data.ts,((data.n_a*data.n_z*data.N_F), 1)),
+                        np.zeros((data.n_a*data.n_z*data.N_F, 1 )),
+                        np.zeros(((data.n_a*data.n_z*data.N_F), 3 )),
+                        ))
+    return Theta_delta
+
+def getTheta_delta_minus(data):
+    Theta_delta = np.hstack((
+                        np.zeros(((data.n_a*data.n_z*data.N_F), (data.n_x))),                        
+                        -getTheta_delta_Un(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_F), data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R))),
+                        getTheta_delta_Ua_minus(data),
+                        np.zeros(((data.n_a*data.n_z*data.N_F), 2*data.n_a*data.n_z*data.N_R + data.N + 1 + 2*data.n_a)),
+                        np.zeros((data.n_a*data.n_z*data.N_F, 1 )),
+                        np.tile(data.ts,((data.n_a*data.n_z*data.N_F), 1)),
+                        np.zeros(((data.n_a*data.n_z*data.N_F), 3)),
                         ))
     return Theta_delta
 
@@ -671,26 +884,57 @@ def getTheta_delta_Un(data):
         for j in range(data.n_z*data.N_F):
             j = int(j)
             k = int(data.K_fi[i][j])
-            Theta_delta_Un[i*data.n_z*data.N_F+j, data.n_u*k:data.n_u*(k+1)] = np.array([-data.P_heater*data.ts, -1, 1]) 
+            Theta_delta_Un[i*data.n_z*data.N_F+j, data.n_u*k:data.n_u*(k+1)] = np.array([-data.P_heater*data.ts, -1, 1, 1]) 
     return Theta_delta_Un
 
-def getTheta_delta_Ua(data):
+def getTheta_delta_Ua_plus(data):
     Theta_delta_Ua = np.zeros((data.n_a*data.n_z*data.N_F, data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))
-    for i in range(data.n_a*data.n_z):
+    for i in range(0,data.n_a*data.n_z):
         for j in range(data.N_F):
-            Theta_delta_Ua[i*data.N_F+j, data.n_u*i*(data.N_F+data.N_R)+data.n_u*j:data.n_u*i*(data.N_F+data.N_R)+data.n_u*(j+1)] = np.array([data.P_heater*data.ts, 1, -1])
+            Theta_delta_Ua[i*data.N_F+j, data.n_u*i*(data.N_F+data.N_R)+data.n_u*j:data.n_u*i*(data.N_F+data.N_R)+data.n_u*(j+1)] = np.array([data.P_heater*data.ts, 1, -1, -1])
     return Theta_delta_Ua
 
-def getTheta_max(data): 
+def getTheta_delta_Ua_minus(data):
+    Theta_delta_Ua = np.zeros((data.n_a*data.n_z*data.N_F, data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))
+    for i in range(0,data.n_a*data.n_z):
+        for j in range(data.N_F):
+            Theta_delta_Ua[i*data.N_F+j, data.n_u*i*(data.N_F+data.N_R)+data.n_u*j:data.n_u*i*(data.N_F+data.N_R)+data.n_u*(j+1)] = np.array([-data.P_heater*data.ts, -1, 1, 1])
+    return Theta_delta_Ua
+
+def getTheta_max_plus(data): 
     Theta_max = np.hstack((
-                        np.zeros(((data.n_a), (data.n_x + data.N*data.n_u + data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),                        
-                        getTheta_max_eps_abs(data),
-                        np.zeros(((data.n_a), data.N)),
-                        getTheta_max_eps_pp(data),
-                        np.zeros(((data.n_a), 1 )),
-                        -np.ones(((data.n_a), 1))
+                        np.zeros(((data.n_a), (data.n_x + data.N*data.n_u + 2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),                        
+                        getTheta_max_eps_abs(data),     #intraday eps
+                        np.zeros((data.n_a, data.N_R*data.n_a*data.n_z)),
+                        np.zeros(((data.n_a), data.N)), #day ahead prices
+                        np.tile(-data.cpp,((data.n_a), 1)), #nom pp eps
+                        getTheta_max_eps_pp(data),          #alt pp eps
+                        np.zeros(((data.n_a), data.n_a)),
+                        np.zeros(((data.n_a), 2 )),         #Pr+ and Pr-
+                        -np.ones(((data.n_a), 1)),          #eps_max_+
+                        np.zeros(((data.n_a), 1 )),          #eps_max_-
+                        np.zeros(((data.n_a), 1 ))          #eps_max_+-
                         ))
     return Theta_max
+
+def getTheta_max_minus(data): 
+    Theta_max = np.hstack((
+                        np.zeros(((data.n_a), (data.n_x + data.N*data.n_u + 2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),  
+                        np.zeros((data.n_a, data.N_R*data.n_a*data.n_z)),                      
+                        getTheta_max_eps_abs(data),     #intraday eps
+                        np.zeros(((data.n_a), data.N)), #day ahead prices
+                        np.tile(-data.cpp,((data.n_a), 1)), #nom pp eps
+                        np.zeros(((data.n_a), data.n_a)),
+                        getTheta_max_eps_pp(data),          #alt pp eps
+                        np.zeros(((data.n_a), 2 )),         #Pr+ and Pr-
+                        np.zeros(((data.n_a), 1)),          #eps_max_+
+                        -np.ones(((data.n_a), 1 )),          #eps_max_-
+                        np.zeros(((data.n_a), 1))          #eps_max_+-
+                        ))
+    return Theta_max
+
+def getTheta_max(data):
+    return np.vstack((getTheta_max_plus(data), getTheta_max_minus(data)))
 
 def getTheta_max_eps_abs(data): 
     Theta_max_eps_abs = np.zeros((data.n_a, data.n_a*data.n_z*data.N_R))
@@ -700,11 +944,14 @@ def getTheta_max_eps_abs(data):
     return Theta_max_eps_abs
 
 def getTheta_max_eps_pp(data): 
-    Theta_max_eps_pp = np.zeros((data.n_a, 1 + data.n_a))
-    for i in range(data.n_a):
-        Theta_max_eps_pp[i, 0] = -data.cpp #pp_nom
-        Theta_max_eps_pp[i, i+1] = data.cpp #pp_alt
-    return Theta_max_eps_pp
+    return np.eye(data.n_a)*data.cpp
+
+def getTheta_max_plus_minus(data):
+    Theta_max_plus_minus = np.zeros((2, data.len_chi))
+    Theta_max_plus_minus[0,-3:] = [1,0,-1]
+    Theta_max_plus_minus[1,-3:] = [0,1,-1]
+
+    return Theta_max_plus_minus
 
 
 def getLb(data,matrices, matrices_alt):
@@ -716,23 +963,26 @@ def getLb(data,matrices, matrices_alt):
     Epp_nom_min = np.zeros((1,1))
     Epp_alt_min = np.zeros((data.n_a,1))
 
-    if(data.sgn_Pr == -1):
-        Pr_min = -np.inf
-    elif(data.sgn_Pr == 1):
-        Pr_min = 0
     
+    Pr_min_plus = 0
+    Pr_min_minus = 0
     E_max_min = 0
     lb = np.vstack((matrices.x0_min,
                      U_min_nom, 
                      U_min_alt,
+                     U_min_alt,
+                     Eps_abs_min,
                      Eps_abs_min,
                      Eps_da_min,
                      Epp_nom_min,
                      Epp_alt_min,
-                     Pr_min,
+                     Epp_alt_min,
+                     Pr_min_plus,
+                     Pr_min_minus,
+                     E_max_min,
+                     E_max_min,
                      E_max_min
                     ))
-    
     return lb
 
 def getUb(data,matrices, matrices_alt):
@@ -744,27 +994,38 @@ def getUb(data,matrices, matrices_alt):
     Epp_nom_max = np.inf
     Epp_alt_max = np.tile(np.inf,(data.n_a,1))
 
-    if(data.sgn_Pr == -1):
-        Pr_max = 0
-    elif(data.sgn_Pr == 1):
-        Pr_max = np.inf
+    Pr_max_plus = np.inf
+    Pr_max_minus = np.inf
+    if (data.Pr_scen == "positive"):
+        Pr_max_minus = 0
+    if (data.Pr_scen == "negative"):
+        Pr_max_plus = 0
+    
 
     E_max_max = np.inf
     ub = np.vstack((matrices.x0_max,
                      U_max_nom, 
                      U_max_alt,
+                     U_max_alt,
+                     Eps_abs_max,
                      Eps_abs_max,
                      Eps_da_max,
                      Epp_nom_max,
                      Epp_alt_max,
-                     Pr_max,
+                     Epp_alt_max,
+                     Pr_max_plus,
+                     Pr_max_minus,
+                     E_max_max,
+                     E_max_max,
                      E_max_max
                     ))
     return ub
 
 def getF(data):
-    f = np.r_[np.zeros((data.n_x)),np.zeros((data.n_u*data.N)),np.zeros((data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R))), np.zeros((data.N_R*data.n_a*data.n_z)),
-             np.ones((data.N)), data.cpp, np.zeros(data.n_a), -data.alfa*data.cr*data.sgn_Pr, data.alfa]
+    f = np.r_[np.zeros((data.n_x)),np.zeros((data.n_u*data.N)),np.zeros((2*data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R))), np.zeros((2*data.N_R*data.n_a*data.n_z)),
+            np.ones((data.N)), data.cpp, np.zeros(2*data.n_a),
+            -data.alfa_plus*data.cr_plus,-data.alfa_minus*data.cr_minus, data.alfa_plus-data.alfa_plus*data.alfa_minus, data.alfa_minus-data.alfa_plus*data.alfa_minus, 
+            data.alfa_plus*data.alfa_minus]
     return f.reshape(-1,1)
 
 def getAineq(data,matrices, model, matrices_alt):
@@ -784,19 +1045,23 @@ def getAineq(data,matrices, model, matrices_alt):
         getTheta_pp_n(data),
         get_theta_nom_a(data),
         getTheta_pp_a(data),
+        getTheta_PV_n(data),
+        getTheta_PV_a(data),
         getTheta_abs_poz(data),
         getTheta_abs_neg(data),
-        getTheta_delta(data),
-        getTheta_max(data)
+        getTheta_delta_plus(data),
+        getTheta_delta_minus(data),
+        getTheta_max(data),
+        getTheta_max_plus_minus(data)
     ))
     return csr_matrix(Aineq)
 
 
 def getbineq(data,matrices, matrices_alt, model):
     bineq = np.vstack((
-        Xmax_alt(data,matrices_alt) - get_Psi_x_alt(data,model),
-        get_Psi_x_alt(data,model)- get_Xmin_l_a(data),
-        get_Psi_x_alt(data,model)- get_Xmin_u_a(data),
+        Xmax_alt(data,matrices_alt) - get_Psi_x_alt_two_reservations(data,model),
+        get_Psi_x_alt_two_reservations(data,model)- get_Xmin_l_a_two_reservations(data),
+        get_Psi_x_alt_two_reservations(data,model)- get_Xmin_u_a_two_reservations(data),
         matrices.X_max_n - getPsix_nom(data,matrices),
         getPsix_nom(data,matrices) - matrices.X_min_l_n,
         getPsix_nom(data,matrices) - matrices.X_min_u_n,
@@ -805,13 +1070,16 @@ def getbineq(data,matrices, matrices_alt, model):
         getPsiSell(data),
         getPsiBuy(data),
         getPsiPP_nom(data),
-        get_psi_nom_a(data),
-        getPsiPP_alt(data),
-        np.zeros((data.n_a*data.n_z*data.N_R,1)),
-        np.zeros((data.n_a*data.n_z*data.N_R,1)),
+        get_psi_nom_a_two_reservations(data),
+        getPsiPP_alt_two_reservations(data),
+        getPsiPV_nom(data),
+        getPsiPV_alt_two_reservations(data),
+        np.zeros((2*data.n_a*data.n_z*data.N_R,1)),
+        np.zeros((2*data.n_a*data.n_z*data.N_R,1)),
         np.zeros((data.n_a*data.n_z*data.N_F,1)),
-        np.zeros((data.n_a,1)),
-
+        np.zeros((data.n_a*data.n_z*data.N_F,1)),
+        np.zeros((2*data.n_a,1)),
+        np.zeros((2,1))
     ))
     return bineq
 
@@ -834,12 +1102,19 @@ def getbeq_Un(data,matrices):
     return beq
 
 def getAeq_Ua(data, model, matrices_alt):
-    Aeq_Ua = np.hstack((np.zeros((data.n_x*data.n_a*data.n_z,data.n_x)),
+    Aeq_Ua_plus = np.hstack((np.zeros((data.n_x*data.n_a*data.n_z,data.n_x)),
                         Aeq_Ua_Un(data,model),
                         -Aeq_Ua_Ua(data, matrices_alt),
-                        np.zeros((data.n_x*data.n_a*data.n_z,data.N_R*data.n_a*data.n_z+data.N+1+data.n_a+2))))
+                        np.zeros((data.n_x*data.n_a*data.n_z,data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R))),
+                        np.zeros((data.n_x*data.n_a*data.n_z,2*data.N_R*data.n_a*data.n_z+data.N+1+2*data.n_a+5))))
     
-    return Aeq_Ua
+    Aeq_Ua_minus = np.hstack((np.zeros((data.n_x*data.n_a*data.n_z,data.n_x)),
+                        Aeq_Ua_Un(data,model),
+                        np.zeros((data.n_x*data.n_a*data.n_z,data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R))),
+                        -Aeq_Ua_Ua(data, matrices_alt),
+                        np.zeros((data.n_x*data.n_a*data.n_z,2*data.N_R*data.n_a*data.n_z+data.N+1+2*data.n_a+5))))
+    
+    return np.vstack((Aeq_Ua_plus, Aeq_Ua_minus))
 
 def Aeq_Ua_Un_i_z(data,model, i, z): #TODO
     Aeq_Ua_Un_i_z_arr = np.zeros((data.n_x, data.n_u*(data.N)))
@@ -875,7 +1150,7 @@ def Aeq_Ua_Ua(data, matrices_alt): #TODO
 
 
 def beq_Ua(data):
-    return np.zeros((data.n_x*data.n_a*data.n_z,1))
+    return np.zeros((2*data.n_x*data.n_a*data.n_z,1))
 
 
 def getAeq(data, model, matrices, matrices_alt):
@@ -883,8 +1158,7 @@ def getAeq(data, model, matrices, matrices_alt):
     return csr_matrix(Aeq)
 
 def getbeq(data,matrices):
-    return np.vstack((getbeq_Un(data,matrices),
-               beq_Ua(data)))
+    return np.vstack((getbeq_Un(data,matrices),beq_Ua(data)))
     
 
 

@@ -2,17 +2,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from MILP_GUI.utils import resource_path
+
 
 class PVreader:
     def __init__(self, day, month, PV_power, numberofPV):
-        self.path = os.path.join(os.path.dirname(__file__), "PV.csv")
+        self.path = resource_path("Profiles_Readers/PV.csv")
         self.month = month
         self.day = day
         self.PV_power = PV_power
         self.numberofPV = numberofPV
 
     def csvreader(self):
-        data = np.loadtxt(self.path, dtype="object",skiprows=1)
+        data = np.loadtxt(self.path, dtype="object", skiprows=1)
         PV_prod = data.astype("float")
         starting_index = self.datetonum()*96
         ending_index = starting_index + 96

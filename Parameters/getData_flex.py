@@ -6,44 +6,48 @@ from MILP_formulation.extrasprojekt import *
 import math
 from Profiles_Readers.PV_reader import PVreader
 from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
+from Profiles_Readers.da_prices_reader import CSV_da_reader
+
 
 #funkcija koja sluzi stvaranju strukture
-def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, buyPriceHigh, buyPriceLow, month, day, cpp, Q, F, R, beginning_flex_ready, end_flex_ready, alfa, cr, sgn_Pr, cid):
+def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr, setwatertemp):
     data = Structure()
     ######################################################
     #PARAMETRI SUSTAVA
-    print("\n[Kontrolni ispis parametara getData()]")
-    print(f"Heater Power: {heater_power}")
-    print(f"Battery Capacity: {bat_cap}")
-    print(f"Converter Power: {converter_power}")
-    print(f"Tank Volume: {tank_volume}")
-    print(f"PV Power: {PV_power}")
-    print(f"Number of PV: {numberofPV}")
-    print(f"Buy Price High: {buyPriceHigh}")
-    print(f"Buy Price Low: {buyPriceLow}")
-    print(f"Month: {month}")
-    print(f"Day: {day}")
-    print(f"Q: {Q}")
-    print(f"F: {F}")
-    print(f"R: {R}")
-    print(f"Beginning Flex Ready: {beginning_flex_ready}")
-    print(f"End Flex Ready: {end_flex_ready}")
-    print(f"Peak Power (cpp): {cpp}")
-    print(f"Alpha: {alfa}")
-    print(f"cr: {cr}")
-    print(f"sgn_Pr: {sgn_Pr}")
-    print(f"cid: {cid}")
-    print("--------------------------------------------------\n")
+    # print("\n[Kontrolni ispis parametara getData()]")
+    # print(f"Heater Power: {heater_power}")
+    # print(f"Battery Capacity: {bat_cap}")
+    # print(f"Converter Power: {converter_power}")
+    # print(f"Tank Volume: {tank_volume}")
+    # print(f"PV Power: {PV_power}")
+    # print(f"Number of PV: {numberofPV}")
+    # print(f"Month: {month}")
+    # print(f"Day: {day}")
+    # print(f"Q: {Q}")
+    # print(f"F: {F}")
+    # print(f"R: {R}")
+    # print(f"Beginning Flex Ready: {beginning_flex_ready}")
+    # print(f"End Flex Ready: {end_flex_ready}")
+    #print(f"Alpha: {alfa_plus}")
+    #print(f"Alpha: {alfa_minus}")
+    # print(f"cr: {cr}")
+    # print(f"sgn_Pr: {sgn_Pr}")
+    # print("--------------------------------------------------\n")
+
+    data.Pr_scen = sgn_Pr
 
     PV_reader = PVreader(day=day, month=month, PV_power=PV_power, numberofPV=numberofPV) #klasa koja postavlja dan 
-    disturbance_reader = CSV_disturbances_reader()
+    disturbance_reader = CSV_disturbances_reader(day=day, month=month, watertemp = setwatertemp)
+    da_prices_reader = CSV_da_reader(day=day, month = month)
     data.day = day
     data.month = month
-    
+    data.watertemp = setwatertemp
     #Podatci o dimen_zijama matrica
     data.sgn_Pr = sgn_Pr
-    data.cr = cr/1000
-    data.alfa = alfa
+    data.cr_minus = cr_minus/1000
+    data.alfa_plus = alfa_plus/100
+    data.cr_plus = cr_plus/1000
+    data.alfa_minus = alfa_minus/100
     data.N =  96 #broj 15min intervala u jednom danu
     data.N_F = int(F*4)
     data.N_R = int(R*4)
@@ -51,18 +55,18 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.n_a = int((end_flex_ready - beginning_flex_ready)*4)
     data.n_z = data.N // (data.N_Q)
     data.n_x = 2 #[T(k) SOE(k)]
-    data.n_u = 3
+    data.n_u = 4
     data.len_U_nom = data.n_u*data.N #duljina upravljackog ulaza nominalnog profila
-    data.len_Ua = 3*data.n_a*data.n_z*(data.N_F + data.N_R)
+    data.len_Ua = data.n_u*data.n_a*data.n_z*(data.N_F + data.N_R)
     data.len_eps_abs = data.N_R*data.n_a*data.n_z
     data.len_eps_da = data.N #duljina vektora epsilona day ahead energije
     data.len_epp_nom = 1 #epsilon za peak power bez fleksibilnosti
     data.len_epp_alt = data.n_a
 
     #duljina optimizacijskog vektora
-    data.len_chi = (data.n_x + data.len_U_nom +data.len_Ua
-                    + data.len_eps_abs+ data.len_eps_da +data.len_epp_alt+ data.len_epp_nom+1+1)
-
+    data.len_chi = (data.n_x + data.len_U_nom +2*data.len_Ua
+                    + 2*data.len_eps_abs+ data.len_eps_da +2*data.len_epp_alt+ data.len_epp_nom+2+2+1)
+    print(data.len_chi)
 
     data.P_heater = heater_power #snaga grijača u W
     data.ts = 0.25 #duljina perioda diskretizacije u satima
@@ -88,25 +92,40 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     #Podatci o proizvodnji i potrošnji
     data.pv_power, data.pv_energy, data.pv_energy_sum = PV_reader.csvreader()
     data.env_temp_K, data.env_temp_C = disturbance_reader.environment_Temperature()
-    data.set_water_temp_K, data.set_water_temp_C = disturbance_reader.setWaterTemparray()
+    data.set_water_temp_K, data.set_water_temp_C = disturbance_reader.setWaterTemparray(data.watertemp)
     data.water_demand = disturbance_reader.csvreaderWater() #kg/h
     data.nc_load_power, data.nc_load_energy, data.sum_nc_load_energy = disturbance_reader.csvreaderElectricity()
     data.mul_TQ = data.set_water_temp_K*data.water_demand
+
     #Cijene davanja i preuzimanja te cijena vršne snage
     len_mon = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-
+    cpp = 3.642 #[€/kW]
     data.cpp = cpp/(1000*len_mon[month-1])  #cijena vrsne snage €/kWh --> €/Wh te na razini jednog dana
 
-    if(month in [4,5,6,7,8,9,10]):
-        data.c_buy = np.r_[np.repeat(buyPriceLow,28), np.repeat(buyPriceHigh,56)
-                        ,np.repeat(buyPriceLow,12)] /1000 #€/kWh --> €/Wh
-    else:
-        data.c_buy = np.r_[np.repeat(buyPriceLow,32), np.repeat(buyPriceHigh,56)
-                        ,np.repeat(buyPriceLow,8)] /1000 #€/kWh --> €/Wh
-         
-    data.c_sell = data.c_buy*0.8
+    renewable_energy_charge_eur_per_kwh = 0.013239/1000
+    excise_duty_eur_per_kwh = 0.0005/1000
+    commission = 0.08
 
-    data.cid = cid/1000
+    data.da_prices_reader = da_prices_reader.csvreaderPrices()
+    day_ahead_prices = data.da_prices_reader + renewable_energy_charge_eur_per_kwh
+    + excise_duty_eur_per_kwh
+
+    data.da_prices = np.where(
+                day_ahead_prices >= 0,
+                day_ahead_prices * (1 + commission),
+                day_ahead_prices * (1 - commission),
+            )
+
+    sell_prices = setConvexPrices(data)
+    data.sell_prices = np.where(
+                sell_prices >= 0,
+                sell_prices * (1 - commission),
+                sell_prices * (1 + commission),
+            )
+    
+
+    
+    data.cid = 1.2*max(data.da_prices)
     
     #######################################################
     #SKUPOVI TRENUTAKA ALTERNATIVNIH SCENARIJA
@@ -136,6 +155,17 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
 
     return data
 
+
+def setConvexPrices(data):
+    sellPrices = np.zeros(96)
+    for i in range(len(data.da_prices_reader)):
+        if(data.da_prices_reader[i]>=0):
+            sellPrices[i] = data.da_prices_reader[i]*0.9
+        else:
+             sellPrices[i] = (1/0.9)*data.da_prices_reader[i]
+    return sellPrices
+    
+        
         
 def get_Ki(data):
         data.K_i = np.zeros((data.n_a,data.n_z*data.act_len))
@@ -203,20 +233,17 @@ if __name__ == "__main__":
     tank_volume=190
     PV_power=410
     numberofPV=10
-    buyPriceHigh=0.18
-    buyPriceLow=0.09
     month=7
     day=4
-    cpp=3.642
     Q =8
     F = 2
     R = 5
     beginning_flex_ready = 11
     end_flex_ready = 12
     alfa = 1
-    cr = 2
     sgn_Pr = 1
-    cid = 2.5
+    cr = 0.7
+    
     data = getData(
             heater_power,
             bat_cap,
@@ -224,8 +251,6 @@ if __name__ == "__main__":
             tank_volume,
             PV_power,
             numberofPV,
-            buyPriceHigh,
-            buyPriceLow,
             month,
             day,
             Q,
@@ -233,11 +258,9 @@ if __name__ == "__main__":
             R,
             beginning_flex_ready,
             end_flex_ready,
-            cpp,
             alfa,
             cr,
-            sgn_Pr,
-            cid
+            sgn_Pr
         )
     print(get_Kfi(data))
     print(get_Kri(data))
