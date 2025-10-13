@@ -1,6 +1,6 @@
 # Household DR - Diplomski rad - Petar Lovrić
 
-GitHub repozitorij za sve kodove za završni rad, diplomske seminare, diplomski projekt i diplomski rad 
+GitHub repozitorij za sve household DR aplikaciju
 
 ## Setup Instructions
 Follow these steps to set up the development environment:
