@@ -17,50 +17,52 @@ print("Python koji se koristi:", sys.executable)
 def result_processing(data, model, matrices, matrices_alt, solution):
     res = Structure()
     res.case = "flex"
-    res.solution = solution
-    res.delte = solution[data.n_x:data.n_x+data.n_u*data.N:data.n_u]
-    res.Ech_nom = solution[data.n_x+1:data.n_x+data.n_u*data.N:data.n_u]
-    res.Edch_nom = solution[data.n_x+2:data.n_x+data.n_u*data.N:data.n_u]
-    res.EPV_nom = solution[data.n_x+3:data.n_x+data.n_u*data.N:data.n_u]
-    res.x_0 = solution[0:data.n_x]
+    
+    res.time = solution.time
+    res.solution = solution.x
+    res.delte = res.solution[data.n_x:data.n_x+data.n_u*data.N:data.n_u]
+    res.Ech_nom = res.solution[data.n_x+1:data.n_x+data.n_u*data.N:data.n_u]
+    res.Edch_nom = res.solution[data.n_x+2:data.n_x+data.n_u*data.N:data.n_u]
+    res.EPV_nom = res.solution[data.n_x+3:data.n_x+data.n_u*data.N:data.n_u]
+    res.x_0 = res.solution[0:data.n_x]
 
     U_alt_plus_beg = data.n_x+data.n_u*data.N
     U_alt_plus_end = U_alt_plus_beg + data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)
-    res.delte_alt_plus = solution[U_alt_plus_beg:U_alt_plus_end:data.n_u]
-    res.Ech_alt_plus = solution[U_alt_plus_beg+1:U_alt_plus_end:data.n_u]
-    res.Edch_alt_plus = solution[U_alt_plus_beg+2:U_alt_plus_end:data.n_u]
-    res.EPV_alt_plus = solution[U_alt_plus_beg+3:U_alt_plus_end:data.n_u]
+    res.delte_alt_plus = res.solution[U_alt_plus_beg:U_alt_plus_end:data.n_u]
+    res.Ech_alt_plus = res.solution[U_alt_plus_beg+1:U_alt_plus_end:data.n_u]
+    res.Edch_alt_plus = res.solution[U_alt_plus_beg+2:U_alt_plus_end:data.n_u]
+    res.EPV_alt_plus = res.solution[U_alt_plus_beg+3:U_alt_plus_end:data.n_u]
 
     U_alt_minus_beg = U_alt_plus_end
     U_alt_minus_end = U_alt_minus_beg + data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)
-    res.delte_alt_minus = solution[U_alt_minus_beg:U_alt_minus_end:data.n_u]
-    res.Ech_alt_minus = solution[U_alt_minus_beg+1:U_alt_minus_end:data.n_u]
-    res.Edch_alt_minus = solution[U_alt_minus_beg+2:U_alt_minus_end:data.n_u]
-    res.EPV_alt_minus = solution[U_alt_minus_beg+3:U_alt_minus_end:data.n_u]
+    res.delte_alt_minus = res.solution[U_alt_minus_beg:U_alt_minus_end:data.n_u]
+    res.Ech_alt_minus = res.solution[U_alt_minus_beg+1:U_alt_minus_end:data.n_u]
+    res.Edch_alt_minus = res.solution[U_alt_minus_beg+2:U_alt_minus_end:data.n_u]
+    res.EPV_alt_minus = res.solution[U_alt_minus_beg+3:U_alt_minus_end:data.n_u]
     
 
     Eps_abs_plus_beg = U_alt_minus_end
     Eps_abs_plus_end = Eps_abs_plus_beg + data.N_R*data.n_a*data.n_z
-    res.eps_abs_plus_alt = solution[Eps_abs_plus_beg:Eps_abs_plus_end]
+    res.eps_abs_plus_alt = res.solution[Eps_abs_plus_beg:Eps_abs_plus_end]
 
     Eps_abs_minus_beg = Eps_abs_plus_end
     Eps_abs_minus_end = Eps_abs_minus_beg + data.N_R*data.n_a*data.n_z
-    res.eps_abs_minus_alt = solution[Eps_abs_minus_beg:Eps_abs_minus_end]
+    res.eps_abs_minus_alt = res.solution[Eps_abs_minus_beg:Eps_abs_minus_end]
 
     da_beg = Eps_abs_minus_end
     da_end = da_beg + data.N
-    res.da = solution[da_beg: da_end]
+    res.da = res.solution[da_beg: da_end]
     epp_beg = da_end
     epp_end = da_end + 1 + data.n_a
-    res.epp = solution[epp_beg:epp_end]
+    res.epp = res.solution[epp_beg:epp_end]
     res.epp_nom = res.epp[0]
     res.epp_alt_plus = res.epp[1:]
-    res.epp_alt_minus  = solution[epp_end: epp_end + data.n_a]
-    res.Pr_plus = solution[-5]
-    res.Pr_minus = solution[-4]
-    res.emax_plus = solution[-3]
-    res.emax_minus = solution[-2]
-    res.emax_plus_minus = solution[-1]
+    res.epp_alt_minus  = res.solution[epp_end: epp_end + data.n_a]
+    res.Pr_plus = res.solution[-5]
+    res.Pr_minus = res.solution[-4]
+    res.emax_plus = res.solution[-3]
+    res.emax_minus = res.solution[-2]
+    res.emax_plus_minus = res.solution[-1]
 
     res.PPV_nom = res.EPV_nom*4
     res.PPV_alt_plus = res.EPV_alt_plus*4
@@ -78,7 +80,7 @@ def result_processing(data, model, matrices, matrices_alt, solution):
     theta_alt = flex.getTheta_a(data, matrices_alt, model)
     psi_alt = flex.get_Psi_x_alt_two_reservations(data, model)
 
-    res.x_alt = theta_alt@solution.reshape(-1,1)+psi_alt
+    res.x_alt = theta_alt@res.solution.reshape(-1,1)+psi_alt
 
     res.x_alt_plus = res.x_alt[:data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1)]
     res.x_alt_minus = res.x_alt[data.n_x*data.n_a*data.n_z*(data.N_F+data.N_R+1):]
@@ -99,7 +101,7 @@ def result_processing(data, model, matrices, matrices_alt, solution):
     theta_nom = flex.getTheta_n(data, matrices)
     psi_nom = flex.getPsix_nom(data, matrices)
 
-    res.x_nom = theta_nom@solution.reshape(-1,1)+psi_nom
+    res.x_nom = theta_nom@res.solution.reshape(-1,1)+psi_nom
 
     res.temp_nom = np.append(res.x_0[0], res.x_nom[0::2])
     res.SOE_nom = np.append(res.x_0[1], res.x_nom[1::2])

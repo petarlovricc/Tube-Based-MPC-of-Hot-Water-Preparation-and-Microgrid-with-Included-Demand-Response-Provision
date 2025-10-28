@@ -32,6 +32,8 @@ class MILP_comparison:
 
     def getResult1(self):
         try:
+            print("POCINJEM OPTIMIZACIJU")
+            print(self.first_optim)
             if(self.first_optim == 0):
                 data = self.data
                 currtext = self.loadingPage.label.text()
@@ -67,7 +69,7 @@ class MILP_comparison:
                                     data = data,
                                     heater = self.heater)
                 
-                self.result1 = flex_results.result_processing(data, model, matrices, matrices_alt, result1_sol.x)
+                self.result1 = flex_results.result_processing(data, model, matrices, matrices_alt, result1_sol)
 
             elif(self.first_optim == 1):
                 self.model = noflex_matrix.getModel(self.data)
@@ -98,11 +100,9 @@ class MILP_comparison:
                                 lb = noflex_matrix.getLb(self.data,self.matrices),
                                 ub = noflex_matrix.getUb(self.data,self.matrices),
                                 heater = self.heater)
-                    
-                
                 self.result1 = noflex_results.result_processing(self.data, self.matrices,result1_sol.x)
         except:
-            raise MemoryError("RAM used up!")
+            raise MemoryError("RAM used up! -- test")
             
     def getResult2(self):
         try:
@@ -134,7 +134,7 @@ class MILP_comparison:
                 
 
                 
-                self.result2 = noflex_results.result_processing(self.data, self.matrices,result1_sol.x)
+                self.result2 = noflex_results.result_processing(self.data, self.matrices,result1_sol)
                 
                 
 
@@ -167,7 +167,7 @@ class MILP_comparison:
                                 ub = noflex_matrix.getUb(self.data,self.matrices),
                                 heater = self.heater)
                 
-                self.result2 = noflex_results.result_processing(self.data, self.matrices,result2_sol.x)
+                self.result2 = noflex_results.result_processing(self.data, self.matrices,result2_sol)
 
                 self.result2.case = "noflexcpp"
         except:

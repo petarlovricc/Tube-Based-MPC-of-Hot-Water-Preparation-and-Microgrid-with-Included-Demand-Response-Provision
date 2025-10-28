@@ -31,13 +31,13 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.lineEdit_4.setText(str(self.horizontalSlider_5.value())) #Number of solar panels
         self.lineEdit_12.setText(str(self.horizontalSlider_6.value())) #Solar panel power (Wp)
         self.lineEdit_7.setText(str(self.horizontalSlider_7.value())) #Water temperature setpoint (°C)
-        self.comboBox.setCurrentText(str(24))  # Q
+        self.comboBox.setCurrentText(str(12))  # Q
         self.radioButton.setChecked(True)
         self.radioButton_6.setChecked(True)
-        self.lineEdit_13.setText(str(0.07))  # cr+
-        self.lineEdit_14.setText(str(80))  # alfa+
-        self.lineEdit_5.setText(str(0.07))  # cr-
-        self.lineEdit_6.setText(str(40))  # alfa-
+        self.lineEdit_13.setText(str(0.1))  # cr+
+        self.lineEdit_14.setText(str(90))  # alfa+
+        self.lineEdit_5.setText(str(0.1))  # cr-
+        self.lineEdit_6.setText(str(80))  # alfa-
         self.radioButton_3.setChecked(True)
         self.comboBox_2.setCurrentIndex(0)
         self.comboBox_3.setCurrentIndex(0)

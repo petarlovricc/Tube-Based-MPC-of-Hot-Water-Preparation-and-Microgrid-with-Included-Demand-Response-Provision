@@ -343,7 +343,7 @@ class Ui_ParamWidget(object):
         self.timeEdit.setMinimumSize(QSize(0, 30))
         self.timeEdit.setMaximumSize(QSize(500, 70))
         self.timeEdit.setFont(font2)
-        self.timeEdit.setTime(QTime(12, 0, 0))
+        self.timeEdit.setTime(QTime(23, 59, 0))
 
         self.gridLayout_4.addWidget(self.timeEdit, 2, 2, 1, 1)
 
@@ -415,7 +415,7 @@ class Ui_ParamWidget(object):
         self.timeEdit_2.setMinimumSize(QSize(0, 30))
         self.timeEdit_2.setMaximumSize(QSize(500, 70))
         self.timeEdit_2.setFont(font2)
-        self.timeEdit_2.setTime(QTime(11, 0, 0))
+        self.timeEdit_2.setTime(QTime(0, 0, 0))
 
         self.gridLayout_4.addWidget(self.timeEdit_2, 2, 1, 1, 1)
 
@@ -672,7 +672,7 @@ class Ui_ParamWidget(object):
         self.horizontalSlider.setMaximumSize(QSize(16777215, 40))
         self.horizontalSlider.setMaximum(20000)
         self.horizontalSlider.setSingleStep(5)
-        self.horizontalSlider.setValue(9400)
+        self.horizontalSlider.setValue(10000)
         self.horizontalSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.gridLayout.addWidget(self.horizontalSlider, 2, 1, 1, 1)
@@ -715,6 +715,7 @@ class Ui_ParamWidget(object):
         self.horizontalSlider_6.setMaximumSize(QSize(16777215, 40))
         self.horizontalSlider_6.setMinimum(250)
         self.horizontalSlider_6.setMaximum(460)
+        self.horizontalSlider_6.setValue(400)   
         self.horizontalSlider_6.setOrientation(Qt.Orientation.Horizontal)
 
         self.gridLayout.addWidget(self.horizontalSlider_6, 6, 1, 1, 1)
@@ -738,7 +739,7 @@ class Ui_ParamWidget(object):
         self.horizontalSlider_2.setMinimum(50)
         self.horizontalSlider_2.setMaximum(300)
         self.horizontalSlider_2.setSingleStep(5)
-        self.horizontalSlider_2.setValue(190)
+        self.horizontalSlider_2.setValue(200)
         self.horizontalSlider_2.setOrientation(Qt.Orientation.Horizontal)
 
         self.gridLayout.addWidget(self.horizontalSlider_2, 1, 1, 1, 1)
@@ -771,7 +772,7 @@ class Ui_ParamWidget(object):
         self.horizontalSlider_5.setMinimumSize(QSize(150, 0))
         self.horizontalSlider_5.setMaximumSize(QSize(16777215, 40))
         self.horizontalSlider_5.setMaximum(80)
-        self.horizontalSlider_5.setValue(15)
+        self.horizontalSlider_5.setValue(10)
         self.horizontalSlider_5.setOrientation(Qt.Orientation.Horizontal)
 
         self.gridLayout.addWidget(self.horizontalSlider_5, 5, 1, 1, 1)

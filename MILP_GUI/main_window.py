@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.widget)
         self.flex = self.paramPage.comboBox_2.currentText() == "With DR"
         self.solved = False
+        self.time_to_solve = None
         #Povezivanje slotova i connectiona 
         self.paramPage.pushButton.pressed.connect(self.beginCalculation)
         self.paramPage.pushButton_2.pressed.connect(self.toResults)
@@ -141,8 +142,8 @@ class MainWindow(QMainWindow):
     def show_result(self, result1):
         currtext = self.loadingPage.label.text()
         currtext = self.loadingPage.label.text()
-        if(not "\nProblem solved!" in currtext):
-            self.loadingPage.label.setText(currtext + "\nProblem solved!")
+        #if(not "\nProblem solved!" in currtext):
+            #self.loadingPage.label.setText(currtext + f"\nProblem solved!\nTime to solve: {result1.time} s")
         self.update_flex()
         if(not self.flex):
             args = self.paramPage.getParams()
@@ -156,7 +157,7 @@ class MainWindow(QMainWindow):
             model = flex_matrix.getModel(data)
             matrices = flex_matrix.get_Matrices_nom(data,model) 
             matrices_alt = flex_matrix.getMatrices_alt(data, model)
-            self.resultPage.result1 = flex_results.result_processing(data, model, matrices, matrices_alt, result1.x)
+            self.resultPage.result1 = flex_results.result_processing(data, model, matrices, matrices_alt, result1)
         self.resultPage.getParamsRes()
         self.resultPage.update_alt_combo()
         self.solved = True

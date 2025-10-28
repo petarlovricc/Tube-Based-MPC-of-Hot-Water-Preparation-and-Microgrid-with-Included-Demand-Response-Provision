@@ -52,6 +52,7 @@ def solve_cplex(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
     c.conflict.get
 
     sol = Structure()
+    sol.time = round(end_time - start_time,3)
     sol.status_string = c.solution.get_status_string()
     if c.solution.get_status() in (101, 1, 5, 6, 102):
         sol.status = 1

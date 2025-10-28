@@ -6,7 +6,7 @@ import numpy as np
 def result_processing(data,matrices, solution):
     res = Structure()
     res.case = "noflex"
-
+    #res.time = solution.time
     res.delte = solution[data.n_x:data.n_x+data.len_U_nom:data.n_u]
     res.Ech = solution[data.n_x+1:data.n_x+data.len_U_nom:data.n_u]
     res.Edch = solution[data.n_x+2:data.n_x+data.len_U_nom:data.n_u]

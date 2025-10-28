@@ -9,7 +9,7 @@ import os
 import highspy
 from Parameters.getData_flex import getData
 import MILP_formulation.MILP_flex as flex
-
+import time
 
 def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     
@@ -37,10 +37,10 @@ def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     # define problem
     c = cplex.Cplex()
     c.objective.set_sense(c.objective.sense.minimize)
-    if(heater == "I"):
-        c.parameters.mip.tolerances.mipgap.set(0.21)
-    elif(heater == "C"):
-        c.parameters.mip.tolerances.mipgap.set(0.001)
+    # if(heater == "I"):
+    #     c.parameters.mip.tolerances.mipgap.set(0.21)
+    # elif(heater == "C"):
+    #     c.parameters.mip.tolerances.mipgap.set(0.001)
 
     types = (data.n_x * "C" + data.N * f"{heater}CCC" + 2*data.n_a*data.n_z*(data.N_F+data.N_R)*f"{heater}CCC"
              +2*data.n_a*data.n_z*data.N_R*"C" + data.N*"C" + "C" + 2*"C"*(data.n_a) + "CC" + "CCC")
@@ -89,8 +89,11 @@ def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     #c.parameters.lpmethod.set(c.parameters.lpmethod.values.dual)
 
     # solve
+    start_time = time.time()
     c.solve()
+    end_time = time.time()
 
+    print(f"Solving time: {end_time - start_time}")
     
     # c.conflict.refine()
     # conflicts = c.conflict.get()
@@ -99,6 +102,7 @@ def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     # fill solution Structure
     sol = Structure()
     sol.status_string = c.solution.get_status_string()
+    sol.time = round(end_time - start_time,3)
     print(sol.status_string)
     if c.solution.get_status() in (1, 5, 6, 101, 102):
         sol.status = 1
@@ -144,9 +148,14 @@ def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
         rhs = bineq[i, 0]
         highs.addRow(-highs.inf, rhs,len(cols), cols, vals)
     
+    
+    start_time = time.time()
     highs.run()
+    end_time = time.time()
+    print(f"Solving time: {end_time - start_time}")
 
     sol = Structure()
+    sol.time = round(end_time - start_time,3)
     status = highs.getModelStatus()
     sol.status_string = str(status)
     print(sol.status_string)
