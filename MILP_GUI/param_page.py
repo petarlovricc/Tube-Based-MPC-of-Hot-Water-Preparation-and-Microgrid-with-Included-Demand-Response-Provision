@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (
     QWidget,
-    QSizePolicy
+    QSizePolicy,
+    QLabel
 )
 from PySide6.QtGui import QResizeEvent, QFont, QShowEvent
 from PySide6.QtCore import Qt
@@ -25,7 +26,9 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.scenarij1 = str()
         self.scenarij2 = str()
         self.heater = ""
+        self.hub_name = None
         self.radioButton.setChecked(True)
+        self.radioButton_9.setChecked(True)
         self.lineEdit_13.setText(str(0.1))  # cr+
         self.lineEdit_14.setText(str(90))  # alfa+
         self.lineEdit_5.setText(str(0.1))  # cr-
@@ -34,6 +37,10 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.comboBox_2.setCurrentIndex(0)
         self.comboBox_3.setCurrentIndex(0)
         self.comboBox_4.setCurrentIndex(2)
+        self.timeEdit.setTime(QTime(23, 59))
+        self.timeEdit_2.setTime(QTime(0, 0))
+        self.label_11.setText("Water tank capacity (m<sup>3</sup>)")
+        self.label_12.setText("Annual water consumption (m<sup>3</sup>)")
 
         # UPDATEANJE VRIJEDNOSTI QSLIDERA I QLINEEDITA
         self.flexibilityParams()
@@ -51,7 +58,12 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.comboBox_2.currentIndexChanged.connect(self.changeComboBox)
         self.radioButton_3.toggled.connect(self.setHeater)
         self.radioButton_4.toggled.connect(self.setHeater)
+        self.radioButton_7.toggled.connect(self._get_hubname)
+        self.radioButton_8.toggled.connect(self._get_hubname)
+        self.radioButton_9.toggled.connect(self._get_hubname)
+        self.radioButton_10.toggled.connect(self._get_hubname)
         self.setHeater()
+        self._get_hubname()
         self.radioButton.toggled.connect(self.noOfModels)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # self.timeEdit_2.timeChanged.connect(self.checkFlexTime)
@@ -59,10 +71,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.ferLogo = QSvgWidget(":/icons/FER_logo_2.svg")
         self.laresLogo = QSvgWidget(":/icons/LARES_2_transparent_white.svg")
 
-        self.house_coeff = 1
-        self.industry_coeff = 100
-        self.commercial_coeff = 30
-        self.p2x_coeff = 50
+        
 
 
 
@@ -74,15 +83,17 @@ class ParamPage(QWidget, Ui_ParamWidget):
     #             self.timeEdit_2.setTime(QTime(self.timeEdit.time().hour(), (self.timeEdit.time().minute()-15)%60, 0))
                    
                    
-
-    def _get_annual_consumption(self):
-         data = DataGetter(self.getParams())
-         
-
          
     def loop_through_widgets(self, font):
         for widget in self.findChildren(QWidget):
-            widget.setFont(font)
+            if(widget.objectName() == "label_11" or widget.objectName() == "label_12"):
+                self.label_11.setTextFormat(Qt.RichText)
+                self.label_11.setText(f'<span style="font-size:{int(font.pointSize())}pt">Water tank capacity (m<sup>3</sup>)</span>')
+
+                self.label_12.setTextFormat(Qt.RichText)
+                self.label_12.setText(f'<span style="font-size:{int(font.pointSize())}pt">Annual water consumption (m<sup>3</sup>)</span>')
+            else:      
+                 widget.setFont(font)
 
 
         buttonfont = self.pushButton.font()
@@ -100,9 +111,68 @@ class ParamPage(QWidget, Ui_ParamWidget):
         font2.setBold(True)
         self.groupBox.setFont(font2)
         self.groupBox_2.setFont(font2)
+        self.groupBox_4.setFont(font2)
         
 
-   
+    def _get_hubname(self):
+        # Household hub
+        if self.radioButton_9.isChecked():
+            self.hub_name = "Household"
+            # System parameters
+            self.lineEdit_9.setText("0.2")     # Water tank capacity (m3)
+            self.lineEdit.setText("10")       # Battery capacity (kWh)
+            self.lineEdit_2.setText("2.5")      # Inverter power (kW)
+            self.lineEdit_3.setText("2.5")    # Water heater power (kW)
+            self.lineEdit_4.setText("10")     # Number of solar panels
+            self.lineEdit_12.setText("400")   # Solar panel power (Wp)
+            # Annual consumptions
+            self.lineEdit_7.setText("5")    # Annual electricity consumption (MWh)
+            self.lineEdit_8.setText("50")     # Annual water consumption (m3)
+
+        # Industry hub
+        elif self.radioButton_7.isChecked():
+            self.hub_name = "Industry"
+            # System parameters
+            self.lineEdit_9.setText("5")       # Water tank capacity (m3)
+            self.lineEdit.setText("200")      # Battery capacity (kWh)
+            self.lineEdit_2.setText("400")    # Inverter power (kW)
+            self.lineEdit_3.setText("300")    # Water heater power (kW)
+            self.lineEdit_4.setText("2000")   # Number of solar panels
+            self.lineEdit_12.setText("400")   # Solar panel power (Wp)
+            # Annual consumptions
+            self.lineEdit_7.setText("4000")   # Annual electricity consumption (MWh)
+            self.lineEdit_8.setText("36500")  # Annual water consumption (m3)
+
+        # Commercial hub (shopping mall)
+        elif self.radioButton_10.isChecked():
+            self.hub_name = "Commercial"
+            # System parameters
+            self.lineEdit_9.setText("10")      # Water tank capacity (m3)
+            self.lineEdit.setText("500")      # Battery capacity (kWh)
+            self.lineEdit_2.setText("1400")   # Inverter power (kW)
+            self.lineEdit_3.setText("500")    # Water heater power (kW)
+            self.lineEdit_4.setText("4375")   # Number of solar panels
+            self.lineEdit_12.setText("400")   # Solar panel power (Wp)
+            # Annual consumptions
+            self.lineEdit_7.setText("8750")   # Annual electricity consumption (MWh)
+            self.lineEdit_8.setText("45625")  # Annual water consumption (m3)
+
+        # Power-2-X hub
+        elif self.radioButton_8.isChecked():
+            self.hub_name = "Power-2-X"
+            # System parameters
+            self.lineEdit_9.setText("20")      # Water tank capacity (m3)
+            self.lineEdit.setText("2000")     # Battery capacity (kWh)
+            self.lineEdit_2.setText("6000")   # Inverter power (kW)
+            self.lineEdit_3.setText("500")    # Water heater power (kW)
+            self.lineEdit_4.setText("18000")  # Number of solar panels
+            self.lineEdit_12.setText("400")   # Solar panel power (Wp)
+            # Annual consumptions
+            self.lineEdit_7.setText("24090")  # Annual electricity consumption (MWh)
+            self.lineEdit_8.setText("8400")   # Annual water consumption (m3)
+            
+        
+
 
     def resizeEvent(self, event: QResizeEvent):
                 super().resizeEvent(event)
@@ -207,6 +277,9 @@ class ParamPage(QWidget, Ui_ParamWidget):
 
             
             params.append(self.comboBox_4.currentText())
+            params.append(self.hub_name)
+            params.append(float(self.lineEdit_7.text()))
+            params.append(float(self.lineEdit_8.text()))
            
             
         except ValueError:

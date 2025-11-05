@@ -21,7 +21,7 @@ class TablePage(QWidget, Ui_TableWidget):
             "Peak power cost (nominal) [€]",
             "Peak power cost (alt. profile) [€]",
             "Intraday cost [€]",
-            "Reserved power [W]",
+            "Reserved power [kW]",
             "Criterion J<sub>a,i</sub> [€]",
             "Criterion J<sub>n</sub> [€]",
             "Criterion J<sub>no-flex</sub> [€]",
@@ -30,15 +30,15 @@ class TablePage(QWidget, Ui_TableWidget):
         ]
 
         self.texts_en_table2 = [
-            "Heater energy (nominal) [Wh]",
-            "Heater energy (alt. profile) [Wh]",
-            "Heater energy (no flexibility) [Wh]",
-            "Grid energy (nominal) [Wh]",
-            "Grid energy (alt. profile) [Wh]",
-            "Grid energy (no flexibility) [Wh]",
-            "PV energy used [Wh]",
-            "PV generation [Wh]",
-            "Non-controllable load [Wh]"
+            "Heater energy (nominal) [kWh]",
+            "Heater energy (alt. profile) [kWh]",
+            "Heater energy (no flexibility) [kWh]",
+            "Grid energy (nominal) [kWh]",
+            "Grid energy (alt. profile) [kWh]",
+            "Grid energy (no flexibility) [kWh]",
+            "PV energy used [kWh]",
+            "PV generation [kWh]",
+            "Non-controllable load [kWh]"
         ]
 
 
@@ -250,7 +250,7 @@ class TablePage(QWidget, Ui_TableWidget):
 
         self.getParams()
 
-        table2 = [sum(self.data.pv_energy), sum(self.data.nc_load_energy)]
+        table2 = [sum(self.data.pv_energy)/1000, sum(self.data.nc_load_energy)/1000] #Wh -> kWh
         for i in range(7,9):
             self.tableWidget_2.setItem(i+1, 1, QTableWidgetItem(str(round(table2[i-7],2))))
             item = self.tableWidget_2.item(i+1, 1)
@@ -456,6 +456,8 @@ class TablePage(QWidget, Ui_TableWidget):
             cr_plus=params[15],
             cr_minus=params[16],
             sgn_Pr=params[17],
-            setwatertemp = params[18]
+            hub_name = params[18],
+            annual_load = params[19],
+            annual_water = params[20]
         )
 

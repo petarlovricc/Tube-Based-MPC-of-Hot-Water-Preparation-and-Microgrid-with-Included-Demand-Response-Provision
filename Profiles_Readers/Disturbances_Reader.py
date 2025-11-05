@@ -6,9 +6,9 @@ from MILP_GUI.utils import resource_path
 
 class CSV_disturbances_reader:
     def __init__(self, day, month, watertemp, hub_name):
-        self.pathElectricity = resource_path(f"Profiles_Readers/{hub_name}/noncontrollable_load_annual_profile.csv")
-        self.pathWater = resource_path("Profiles_Readers/{hub_name}/profil_topla_voda_4_osobe_2024_15min_float.csv")
-        self.pathEnvtemp = resource_path("Profiles_Readers/{hub_name}/environment_temperature_annual_profile.csv")
+        self.pathElectricity = resource_path(f"Profiles_Readers/{hub_name}/noncontrollable_load_annual_profile_{hub_name}.csv")
+        self.pathWater = resource_path(f"Profiles_Readers/{hub_name}/water_demand_annual_profile_{hub_name}.csv")
+        self.pathEnvtemp = resource_path(f"Profiles_Readers/{hub_name}/environment_temperature_annual_profile.csv")
         self.day = day
         self.month = month
         self.watertemp = watertemp
@@ -30,10 +30,12 @@ class CSV_disturbances_reader:
 
 
         electricity_energy = df["Electricity demand (kWh)"].values[indeks: indeks+96]*1000
+        total_annual_consumption = df["Electricity demand (kWh)"].sum() # !!!!!!!!! u kWh !!!!!!!!!
         df["Electricity demand (kWh)"] = df["Electricity demand (kWh)"]*4000 #kWh -> W
         
         
-        return df["Electricity demand (kWh)"].values[indeks: indeks+96],electricity_energy, sum(df["Electricity demand (kWh)"].values[indeks: indeks+96])
+        return (df["Electricity demand (kWh)"].values[indeks: indeks+96],electricity_energy,
+                 sum(electricity_energy), total_annual_consumption)
 
     def csvreaderWater(self):
         df = pd.read_csv(self.pathWater, sep=";")
@@ -43,11 +45,11 @@ class CSV_disturbances_reader:
 
         indeks = df[df["timestamp"] == target_time].index[0]
        
-
-        df["Water demand (L)"] = df["Water demand (L)"]*4 #protok tople vode kg/h = water[i]/0.25h
+        total_annual_consumption = df["Water demand (m3)"].sum() # !!!!!!!!! u m3 !!!!!!!!!!!!
+        df["Water demand (m3)"] = df["Water demand (m3)"]*4 #protok tople vode m3/h = water[i]/0.25h
         
         
-        return df["Water demand (L)"].values[indeks: indeks+96]
+        return df["Water demand (m3)"].values[indeks: indeks+96], total_annual_consumption
     
     
     def setWaterTemparray(self, watertemp):

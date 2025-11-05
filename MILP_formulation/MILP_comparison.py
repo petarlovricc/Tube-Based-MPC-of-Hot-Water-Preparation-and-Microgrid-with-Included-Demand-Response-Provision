@@ -77,7 +77,7 @@ class MILP_comparison:
                                 lb = noflex_matrix.getLb(self.data,self.matrices),
                                 ub = noflex_matrix.getUb(self.data,self.matrices),
                                 heater = self.heater)
-                self.result1 = noflex_results.result_processing(self.data, self.matrices,result1_sol.x)
+                self.result1 = noflex_results.result_processing(self.data, self.matrices,result1_sol)
         except:
             raise MemoryError("RAM used up! -- test")
             
@@ -97,8 +97,6 @@ class MILP_comparison:
                                 lb = noflex_matrix.getLb(self.data,self.matrices),
                                 ub = noflex_matrix.getUb(self.data,self.matrices),
                                 heater = self.heater)
-                
-
                 
                 self.result2 = noflex_results.result_processing(self.data, self.matrices,result1_sol)
                 

@@ -22,7 +22,7 @@ class PVreader:
         #dobivanje 96 uzoraka te pretvorba W -> Wh
         PV_prod_power = PV_prod[starting_index:ending_index]*self.PV_power*self.numberofPV 
         PV_prod_energy = PV_prod_power* 15/60
-        return PV_prod_power,PV_prod_energy, sum(PV_prod_energy)/1000
+        return PV_prod_power,PV_prod_energy, sum(PV_prod_energy)
         
     def datetonum(self):
         months = {

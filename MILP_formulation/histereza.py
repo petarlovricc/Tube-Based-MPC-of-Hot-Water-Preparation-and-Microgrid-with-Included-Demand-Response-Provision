@@ -136,10 +136,10 @@ def getTable_flow(data,hist):
     resultlist = np.zeros((6,1))
     resultlist[0][0] = -1
     resultlist[1][0] = -1
-    resultlist[2][0] = sum(hist.delte*data.P_heater)*0.25
+    resultlist[2][0] = sum(hist.delte*data.P_heater)*0.25/1000
     resultlist[3][0] = -1
     resultlist[4][0] = -1
-    resultlist[5][0] = sum(hist.grid_energy)
+    resultlist[5][0] = sum(hist.grid_energy)/1000
     return resultlist
 
 

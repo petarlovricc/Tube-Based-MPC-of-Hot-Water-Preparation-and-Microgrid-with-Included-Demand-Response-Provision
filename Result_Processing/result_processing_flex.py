@@ -15,6 +15,8 @@ print("Python koji se koristi:", sys.executable)
 
 
 def result_processing(data, model, matrices, matrices_alt, solution):
+    if(solution.status == "HighsModelStatus.kInfeasible"):
+        return
     res = Structure()
     res.case = "flex"
     
@@ -275,10 +277,10 @@ def getTable(data,res):
             resultlist[4][i] = intraday_plus[i]
             resultlist2[4][i] = intraday_minus[i]
 
-            resultlist[5][i] = res.Pr_plus
+            resultlist[5][i] = res.Pr_plus/1000 # W -> kW
             
             if res.Pr_minus != 0:
-                resultlist2[5][i] = -res.Pr_minus
+                resultlist2[5][i] = -res.Pr_minus/1000 # W -> kW
 
             resultlist[6][i] = Jai_plus[i]
             resultlist2[6][i] = Jai_minus[i]
@@ -301,21 +303,23 @@ def getTable_flow(data, res):
     resultlist = np.zeros((7,data.n_a))
     resultlist2 = np.zeros((7,data.n_a))
     for i in range(data.n_a):
-        resultlist[0][i] = sum(res.delte*data.P_heater)*0.25
-        resultlist[1][i] = sum(res.delte*data.P_heater)*0.25 - getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25 + sum(res.delte_profili_plus[i]*data.P_heater)*0.25
+        resultlist[0][i] = sum(res.delte*data.P_heater)*0.25/1000
+        resultlist[1][i] = (sum(res.delte*data.P_heater)*0.25 -
+                             getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25 + sum(res.delte_profili_plus[i]*data.P_heater)*0.25)/1000
         resultlist[2][i] = -1
-        resultlist[3][i] = sum(res.grid_energy_nom)
-        resultlist[4][i] = sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_plus[i])
+        resultlist[3][i] = sum(res.grid_energy_nom)/1000
+        resultlist[4][i] = (sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_plus[i]))/1000
         resultlist[5][i] = -1
-        resultlist[6][i] = sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_plus[i])
+        resultlist[6][i] = (sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_plus[i]))/1000
 
-        resultlist2[0][i] = sum(res.delte*data.P_heater)*0.25
-        resultlist2[1][i] = sum(res.delte*data.P_heater)*0.25 - getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25 + sum(res.delte_profili_minus[i]*data.P_heater)*0.25
+        resultlist2[0][i] = sum(res.delte*data.P_heater)*0.25/1000
+        resultlist2[1][i] = (sum(res.delte*data.P_heater)*0.25 - getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25
+                              + sum(res.delte_profili_minus[i]*data.P_heater)*0.25)/1000
         resultlist2[2][i] = -1
-        resultlist2[3][i] = sum(res.grid_energy_nom)
-        resultlist2[4][i] = sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_minus[i])
+        resultlist2[3][i] = sum(res.grid_energy_nom)/1000
+        resultlist2[4][i] = (sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_minus[i]))/1000
         resultlist2[5][i] = -1
-        resultlist2[6][i] = sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_minus[i])
+        resultlist2[6][i] = (sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_minus[i]))/1000
        
 
     return resultlist, resultlist2

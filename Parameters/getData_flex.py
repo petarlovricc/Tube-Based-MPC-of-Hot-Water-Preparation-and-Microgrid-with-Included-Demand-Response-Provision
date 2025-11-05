@@ -10,7 +10,8 @@ from Profiles_Readers.da_prices_reader import CSV_da_reader
 
 
 #funkcija koja sluzi stvaranju strukture
-def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr):
+def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr, hub_name,
+            annual_load, annual_water):
     data = Structure()
     ######################################################
     #PARAMETRI SUSTAVA
@@ -33,11 +34,12 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     # print(f"cr: {cr}")
     # print(f"sgn_Pr: {sgn_Pr}")
     # print("--------------------------------------------------\n")
-
+    data.annual_water = annual_water #vec je u m3 u profilu u csv
+    data.annual_load = annual_load*1000 # prilagodi MWh u kWh kao sto je u profilima
     data.Pr_scen = sgn_Pr
-
+    data.hub_name = hub_name
     PV_reader = PVreader(day=day, month=month, PV_power=PV_power, numberofPV=numberofPV) #klasa koja postavlja dan 
-    disturbance_reader = CSV_disturbances_reader(day=day, month=month, watertemp = 40)
+    disturbance_reader = CSV_disturbances_reader(day=day, month=month, watertemp = 40, hub_name= hub_name)
     da_prices_reader = CSV_da_reader(day=day, month = month)
     data.day = day
     data.month = month
@@ -68,18 +70,18 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
                     + 2*data.len_eps_abs+ data.len_eps_da +2*data.len_epp_alt+ data.len_epp_nom+2+2+1)
     print(data.len_chi)
 
-    data.P_heater = heater_power #snaga grijača u W
+    data.P_heater = heater_power*1000 #snaga grijača u W
     data.ts = 0.25 #duljina perioda diskretizacije u satima
-    data.E_bat_max = bat_cap #kapacitet baterije u Wh
-    data.P_PC = converter_power #snaga pretvarača snage
-    data.tank_volume = tank_volume/1000 #volumen vode u spremniku(m3)
+    data.E_bat_max = bat_cap*1000 #kapacitet baterije u Wh
+    data.P_PC = converter_power*1000 #snaga pretvarača snage
+    data.tank_volume = tank_volume #volumen vode u spremniku(m3)
     data.tank_radius = (data.tank_volume / (4 * math.pi))**(1/3)  #promjer spremnika vode
     data.tank_area = 10 * math.pi * data.tank_radius**2  #vanjska povrsina spremnika vode
     data.Lambda = 0.0245 #koeficijent toplinske vodljivosti
     data.thickness = 0.05 #debljina spremnika vode u m
     data.R = data.thickness/(data.Lambda*data.tank_area) 
     data.ro_water = 1000 #kg/m3
-    data.c_water = 4200/3600 #Wh(kg^-1)(K-1)
+    data.c_water = 4200/3600 #Wh(kg^-1)(K^-1)
     data.nCh = 0.9 #efikasnost punjenja baterije
     data.nDch = 0.9 #efikasnost pražnjenja baterije
 
@@ -93,8 +95,17 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.pv_power, data.pv_energy, data.pv_energy_sum = PV_reader.csvreader()
     data.env_temp_K, data.env_temp_C = disturbance_reader.environment_Temperature()
     data.set_water_temp_K, data.set_water_temp_C = disturbance_reader.setWaterTemparray(data.watertemp)
-    data.water_demand = disturbance_reader.csvreaderWater() #kg/h
-    data.nc_load_power, data.nc_load_energy, data.sum_nc_load_energy = disturbance_reader.csvreaderElectricity()
+
+
+    data.water_demand_not_scaled_volume_flow, data.total_water_consumption_m3 = disturbance_reader.csvreaderWater() #m3/h
+
+
+
+    data.water_demand = data.water_demand_not_scaled_volume_flow*data.ro_water * (data.annual_water/data.total_water_consumption_m3)
+    data.nc_load_power_not_scaled, data.nc_load_energy_not_scaled, data.sum_nc_load_energy, data.annual_consumption = disturbance_reader.csvreaderElectricity()
+    data.nc_load_power = data.nc_load_power_not_scaled * (data.annual_load/data.annual_consumption)
+    data.nc_load_energy = data.nc_load_energy_not_scaled * (data.annual_load/data.annual_consumption)
+
     data.mul_TQ = data.set_water_temp_K*data.water_demand
 
     #Cijene davanja i preuzimanja te cijena vršne snage

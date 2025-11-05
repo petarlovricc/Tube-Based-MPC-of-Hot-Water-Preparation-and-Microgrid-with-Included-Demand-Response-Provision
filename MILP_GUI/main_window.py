@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(invert_svg(":/icons/smart_HOUSE", size=256))
-        self.setWindowTitle("Household DR")
+        self.setWindowTitle("Optimal Water Heater, Battery, and PV Operation Scheduler")
         self.threadpool = QThreadPool()
         self.paramPage = ParamPage()
         self.loadingPage = LoadingPage(self.paramPage)
@@ -101,7 +101,6 @@ class MainWindow(QMainWindow):
 
     def beginCalculation(self):
             self.loadingPage.label.clear()
-            self.loadingPage.setLabel()
             self.layout.setCurrentIndex(1)
             self.update_flex()
             self.resultPage.result1 = None
@@ -150,7 +149,7 @@ class MainWindow(QMainWindow):
             data = DataGetter.getData(*args)
             model = noflex_matrix.getModel(data)
             matrices = noflex_matrix.get_Matrices(data,model) 
-            self.resultPage.result1 = noflex_results.result_processing(data, matrices,result1.x)
+            self.resultPage.result1 = noflex_results.result_processing(data, matrices,result1)
         elif(self.flex):
             args = self.paramPage.getParams()
             data = DataGetter.getData(*args)
@@ -251,6 +250,8 @@ class MainWindow(QMainWindow):
                                     ub = flex_matrix.getUb(data,matrices, matrices_alt),
                                     data = data,
                                     heater = self.paramPage.heater)
+                if(result.status_string == "HighsModelStatus.kInfeasible"):
+                    raise InfeasibleException("Solution infeasible!")
                 
         except (MemoryError, np.core._exceptions._ArrayMemoryError):
             raise MemoryError("RAM used up!")
@@ -266,6 +267,10 @@ class MainWindow(QMainWindow):
         result1 = comparer.result1 
         result2 = comparer.result2
         return (result1, result2)
+    
+
+class InfeasibleException(Exception):
+    pass
 
 def main():
     app = QApplication(sys.argv)  

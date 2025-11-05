@@ -173,11 +173,11 @@ def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
 
 
 if __name__ == "__main__":
-    heater_power=2500
-    bat_cap=9400
-    converter_power=2500
-    tank_volume=190
-    PV_power=410
+    heater_power=9
+    bat_cap=10
+    converter_power=2.5
+    tank_volume=0.2
+    PV_power=400
     numberofPV=10
     month=6
     day=15
@@ -194,7 +194,13 @@ if __name__ == "__main__":
     sgn_Pr = "positive and negative"
     cid = 0.6
     setwatertemp = 40
-    data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus, cr_plus, cr_minus, sgn_Pr,setwatertemp)
+    hub_name = "Household"
+    annual_load = 3.5
+    annual_water = 950
+
+    data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month,
+                    day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus, cr_plus,
+                      cr_minus, sgn_Pr,hub_name, annual_load, annual_water)
 
     model = flex.getModel(data)
     matrices = flex.get_Matrices_nom(data, model)
