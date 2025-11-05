@@ -479,8 +479,7 @@ class ResultPage(QWidget):
             alfa_minus=params[14],
             cr_plus=params[15],
             cr_minus=params[16],
-            sgn_Pr=params[17],
-            setwatertemp=params[18]
+            sgn_Pr=params[17]
         )
 
     

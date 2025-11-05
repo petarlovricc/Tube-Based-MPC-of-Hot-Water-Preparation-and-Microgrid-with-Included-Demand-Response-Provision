@@ -9,6 +9,7 @@ from PySide6.QtCore import QDateTime, QTime
 from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtSvgWidgets import QSvgWidget
 from MILP_GUI import resources_rc
+from Parameters.getData_flex import getData as DataGetter
 
 
 class ParamPage(QWidget, Ui_ParamWidget):
@@ -24,16 +25,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.scenarij1 = str()
         self.scenarij2 = str()
         self.heater = ""
-        self.lineEdit_9.setText(str(self.horizontalSlider_2.value())) #Water tank capacity (L)
-        self.lineEdit.setText(str(self.horizontalSlider.value())) #Battery capacity (Wh)
-        self.lineEdit_2.setText(str(self.horizontalSlider_3.value())) #Inverter power (W)
-        self.lineEdit_3.setText(str(self.horizontalSlider_4.value())) #Water heater power (W)
-        self.lineEdit_4.setText(str(self.horizontalSlider_5.value())) #Number of solar panels
-        self.lineEdit_12.setText(str(self.horizontalSlider_6.value())) #Solar panel power (Wp)
-        self.lineEdit_7.setText(str(self.horizontalSlider_7.value())) #Water temperature setpoint (°C)
-        self.comboBox.setCurrentText(str(12))  # Q
         self.radioButton.setChecked(True)
-        self.radioButton_6.setChecked(True)
         self.lineEdit_13.setText(str(0.1))  # cr+
         self.lineEdit_14.setText(str(90))  # alfa+
         self.lineEdit_5.setText(str(0.1))  # cr-
@@ -48,27 +40,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.spinBox_2.valueChanged.connect(self.flexibilityParams)
         self.spinBox.valueChanged.connect(self.flexibilityParams)
         self.comboBox.currentTextChanged.connect(self.flexibilityParams)
-        self.horizontalSlider_2.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit_9)
-        )
-        self.horizontalSlider.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit)
-        )
-        self.horizontalSlider_3.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit_2)
-        )
-        self.horizontalSlider_4.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit_3)
-        )
-        self.horizontalSlider_5.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit_4)
-        )
-        self.horizontalSlider_6.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit_12)
-        )
-        self.horizontalSlider_7.valueChanged.connect(
-            lambda value: self.update_slider_value(value, self.lineEdit_7)
-        )
+        
         # RADI LI SE O USPOREDBI ILI POKRETANJU SAMO JEDNOG MODELA
         if self.radioButton_2.isChecked():
             self.comboBox_3.setEnabled(False)
@@ -87,6 +59,11 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.ferLogo = QSvgWidget(":/icons/FER_logo_2.svg")
         self.laresLogo = QSvgWidget(":/icons/LARES_2_transparent_white.svg")
 
+        self.house_coeff = 1
+        self.industry_coeff = 100
+        self.commercial_coeff = 30
+        self.p2x_coeff = 50
+
 
 
     # def checkFlexTime(self):
@@ -98,6 +75,11 @@ class ParamPage(QWidget, Ui_ParamWidget):
                    
                    
 
+    def _get_annual_consumption(self):
+         data = DataGetter(self.getParams())
+         
+
+         
     def loop_through_widgets(self, font):
         for widget in self.findChildren(QWidget):
             widget.setFont(font)
@@ -118,7 +100,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
         font2.setBold(True)
         self.groupBox.setFont(font2)
         self.groupBox_2.setFont(font2)
-        self.groupBox_3.setFont(font2)
+        
 
    
 
@@ -190,12 +172,12 @@ class ParamPage(QWidget, Ui_ParamWidget):
     def getParams(self):
         params = []
         try:
-            params.append(self.horizontalSlider_4.value())  # heater power
-            params.append(self.horizontalSlider.value())  # Ebatmax
-            params.append(self.horizontalSlider_3.value())  # converter power
-            params.append(self.horizontalSlider_2.value())  # tank volume
-            params.append(self.horizontalSlider_6.value())  # PV power
-            params.append(self.horizontalSlider_5.value())  # numberofPV
+            params.append(float(self.lineEdit_3.text()))  # heater power
+            params.append(float(self.lineEdit.text()))  # Ebatmax
+            params.append(float(self.lineEdit_2.text()))  # converter power
+            params.append(float(self.lineEdit_9.text()))  # tank volume
+            params.append(float(self.lineEdit_12.text()))  # PV power
+            params.append(float(self.lineEdit_4.text()))  # numberofPV
             params.append(self.dateEdit.date().month())  # month
             params.append(self.dateEdit.date().day())  # day
             params.append(int(self.comboBox.currentText()))  # Q
@@ -225,7 +207,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
 
             
             params.append(self.comboBox_4.currentText())
-            params.append(self.horizontalSlider_7.value()) 
+           
             
         except ValueError:
             raise TypeError("Only integers and floats are allowed!")

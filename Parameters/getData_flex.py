@@ -10,7 +10,7 @@ from Profiles_Readers.da_prices_reader import CSV_da_reader
 
 
 #funkcija koja sluzi stvaranju strukture
-def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr, setwatertemp):
+def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr):
     data = Structure()
     ######################################################
     #PARAMETRI SUSTAVA
@@ -37,11 +37,11 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.Pr_scen = sgn_Pr
 
     PV_reader = PVreader(day=day, month=month, PV_power=PV_power, numberofPV=numberofPV) #klasa koja postavlja dan 
-    disturbance_reader = CSV_disturbances_reader(day=day, month=month, watertemp = setwatertemp)
+    disturbance_reader = CSV_disturbances_reader(day=day, month=month, watertemp = 40)
     da_prices_reader = CSV_da_reader(day=day, month = month)
     data.day = day
     data.month = month
-    data.watertemp = setwatertemp
+    data.watertemp = 40
     #Podatci o dimen_zijama matrica
     data.sgn_Pr = sgn_Pr
     data.cr_minus = cr_minus/1000

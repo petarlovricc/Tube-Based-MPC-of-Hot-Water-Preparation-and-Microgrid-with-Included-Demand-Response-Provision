@@ -5,10 +5,10 @@ import pandas as pd
 from MILP_GUI.utils import resource_path
 
 class CSV_disturbances_reader:
-    def __init__(self, day, month, watertemp):
-        self.pathElectricity = resource_path("Profiles_Readers/profil_el_ne_upravljivo_BEZ_bojlera_PLUS_2024_15min.csv")
-        self.pathWater = resource_path("Profiles_Readers/profil_topla_voda_4_osobe_2024_15min_float.csv")
-        self.pathEnvtemp = resource_path("Profiles_Readers/profil_temperatura_prostorije_bojler_2024_15min.csv")
+    def __init__(self, day, month, watertemp, hub_name):
+        self.pathElectricity = resource_path(f"Profiles_Readers/{hub_name}/noncontrollable_load_annual_profile.csv")
+        self.pathWater = resource_path("Profiles_Readers/{hub_name}/profil_topla_voda_4_osobe_2024_15min_float.csv")
+        self.pathEnvtemp = resource_path("Profiles_Readers/{hub_name}/environment_temperature_annual_profile.csv")
         self.day = day
         self.month = month
         self.watertemp = watertemp

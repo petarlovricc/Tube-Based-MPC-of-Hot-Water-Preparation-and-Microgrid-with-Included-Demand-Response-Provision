@@ -17,8 +17,7 @@ class LoadingPage(QWidget, Ui_LoadingScreen):
         super().__init__()
         self.setupUi(self)
         self.paramPage = paramPage
-        self.setLabel()
-
+       
         # === Spacer prije glavnog teksta (gura ga prema dolje) ===
         topSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.verticalLayout.insertItem(0, topSpacer)
@@ -39,15 +38,7 @@ class LoadingPage(QWidget, Ui_LoadingScreen):
         self.ramTimer.start(2000)
 
         
-    def setLabel(self):
-        if self.paramPage.radioButton_6.isChecked():
-            self.label.setText(f"Solver: {self.paramPage.radioButton_6.text()}")
-        elif check_cplex_full_version() and self.paramPage.radioButton_5.isChecked():
-            self.label.setText(f"Solver: {self.paramPage.radioButton_5.text()}")
-        else:
-            self.paramPage.radioButton_6.setChecked(True)
-            self.paramPage.radioButton_5.setChecked(False)
-            self.label.setText(f"Solver: {self.paramPage.radioButton_6.text()}")
+    
 
     def loop_through_widgets(self, font):
         for widget in self.findChildren(QWidget):

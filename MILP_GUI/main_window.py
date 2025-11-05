@@ -217,19 +217,8 @@ class MainWindow(QMainWindow):
                 if(not "\nSolving problem..." in currtext):
                     self.loadingPage.label.setText(currtext + "\nSolving problem...")
                 print("POKRECEM OPTIMIZACIJU")
-                if(check_cplex_full_version() and self.paramPage.radioButton_5.isChecked()):
-                    
-                    result = noflex_solve.solve_cplex(data,
-                                    f = noflex_matrix.getF(data),
-                                    Aeq = noflex_matrix.getAeq(data,matrices,model),
-                                    beq = noflex_matrix.getbeq(data,matrices,model),
-                                    Aineq = noflex_matrix.getAineq(data,matrices),
-                                    bineq = noflex_matrix.getbineq(data,matrices),
-                                    lb = noflex_matrix.getLb(data,matrices),
-                                    ub = noflex_matrix.getUb(data,matrices),
-                                    heater = self.paramPage.heater)
-                else:
-                    result = noflex_solve._solve_highs(data,
+                
+                result = noflex_solve._solve_highs(data,
                                     f = noflex_matrix.getF(data),
                                     Aeq = noflex_matrix.getAeq(data,matrices,model),
                                     beq = noflex_matrix.getbeq(data,matrices,model),
@@ -251,20 +240,8 @@ class MainWindow(QMainWindow):
                 currtext = self.loadingPage.label.text()
                 if(not "\nSolving problem..." in currtext):
                     self.loadingPage.label.setText(currtext + "\nSolving problem...")
-                if(check_cplex_full_version() and self.paramPage.radioButton_5.isChecked()):
-                    result = flex_solve._solve_cplex(
-                                    f = flex_matrix.getF(data),
-                                    Aeq= flex_matrix.getAeq(data,model,matrices, matrices_alt),
-                                    beq = flex_matrix.getbeq(data,matrices),
-                                    Aineq = flex_matrix.getAineq(data,matrices, model, matrices_alt),
-                                    bineq = flex_matrix.getbineq(data,matrices, matrices_alt, model),
-                                    lb = flex_matrix.getLb(data,matrices, matrices_alt),
-                                    ub = flex_matrix.getUb(data,matrices, matrices_alt),
-                                    data = data,
-                                    heater = self.paramPage.heater)
-                else:
-
-                    result = flex_solve._solve_highs(
+                    
+                result = flex_solve._solve_highs(
                                     f = flex_matrix.getF(data),
                                     Aeq= flex_matrix.getAeq(data,model,matrices, matrices_alt),
                                     beq = flex_matrix.getbeq(data,matrices),

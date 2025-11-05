@@ -46,19 +46,7 @@ class MILP_comparison:
                 matrices = flex_matrix.get_Matrices_nom(data, model)
                 matrices_alt = flex_matrix.getMatrices_alt(data, model)
                 print("POKRECEM OPTIMIZACIJU")
-                if(check_cplex_full_version() and self.paramPage.radioButton_5.isChecked()):
-                    result1_sol = flex_solve._solve_cplex(
-                                    f = flex_matrix.getF(data),
-                                    Aeq= flex_matrix.getAeq(data,model,matrices, matrices_alt),
-                                    beq = flex_matrix.getbeq(data,matrices),
-                                    Aineq = flex_matrix.getAineq(data,matrices, model, matrices_alt),
-                                    bineq = flex_matrix.getbineq(data,matrices, matrices_alt, model),
-                                    lb = flex_matrix.getLb(data,matrices, matrices_alt),
-                                    ub = flex_matrix.getUb(data,matrices, matrices_alt),
-                                    data = data,
-                                    heater = self.heater)
-                else:
-                    result1_sol = flex_solve._solve_highs(
+                result1_sol = flex_solve._solve_highs(
                                     f = flex_matrix.getF(data),
                                     Aeq= flex_matrix.getAeq(data,model,matrices, matrices_alt),
                                     beq = flex_matrix.getbeq(data,matrices),
@@ -80,18 +68,7 @@ class MILP_comparison:
                 currtext = self.loadingPage.label.text()
                 if(not "\nSolving problem..." in currtext):
                     self.loadingPage.label.setText(currtext + "\nSolving problem...")
-                if(check_cplex_full_version() and self.paramPage.radioButton_5.isChecked()):
-                    result1_sol = noflex_solve.solve_cplex(self.data,
-                                f = noflex_matrix.getF(self.data),
-                                Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
-                                beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
-                                Aineq = noflex_matrix.getAineq(self.data,self.matrices),
-                                bineq = noflex_matrix.getbineq(self.data,self.matrices),
-                                lb = noflex_matrix.getLb(self.data,self.matrices),
-                                ub = noflex_matrix.getUb(self.data,self.matrices),
-                                heater = self.heater)
-                else:
-                    result1_sol = noflex_solve._solve_highs(self.data,
+                result1_sol = noflex_solve._solve_highs(self.data,
                                 f = noflex_matrix.getF(self.data),
                                 Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
                                 beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
@@ -111,18 +88,7 @@ class MILP_comparison:
                 self.model = noflex_matrix.getModel(self.data)
                 self.matrices = noflex_matrix.get_Matrices(self.data,self.model)
             
-                if(check_cplex_full_version() and self.paramPage.radioButton_5.isChecked()):
-                    result1_sol = noflex_solve.solve_cplex(self.data,
-                                f = noflex_matrix.getF(self.data),
-                                Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
-                                beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
-                                Aineq = noflex_matrix.getAineq(self.data,self.matrices),
-                                bineq = noflex_matrix.getbineq(self.data,self.matrices),
-                                lb = noflex_matrix.getLb(self.data,self.matrices),
-                                ub = noflex_matrix.getUb(self.data,self.matrices),
-                                heater = self.heater)
-                else:
-                    result1_sol = noflex_solve._solve_highs(self.data,
+                result1_sol = noflex_solve._solve_highs(self.data,
                                 f = noflex_matrix.getF(self.data),
                                 Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
                                 beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
@@ -146,18 +112,7 @@ class MILP_comparison:
                 self.model = noflex_matrix.getModel(self.data)
                 self.matrices = noflex_matrix.get_Matrices(self.data,self.model)
 
-                if(check_cplex_full_version() and self.paramPage.radioButton_5.isChecked()):
-                    result2_sol = noflex_solve.solve_cplex(self.data,
-                                f = noflex_matrix.getF(self.data),
-                                Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
-                                beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
-                                Aineq = noflex_matrix.getAineq(self.data,self.matrices),
-                                bineq = noflex_matrix.getbineq(self.data,self.matrices),
-                                lb = noflex_matrix.getLb(self.data,self.matrices),
-                                ub = noflex_matrix.getUb(self.data,self.matrices),
-                                heater = self.heater)
-                else:
-                    result2_sol = noflex_solve._solve_highs(self.data,
+                result2_sol = noflex_solve._solve_highs(self.data,
                                 f = noflex_matrix.getF(self.data),
                                 Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
                                 beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
