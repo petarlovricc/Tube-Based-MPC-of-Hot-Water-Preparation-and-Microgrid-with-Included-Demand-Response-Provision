@@ -262,11 +262,17 @@ class TablePage(QWidget, Ui_TableWidget):
                 if(self.paramPage.comboBox_4.currentText() == "positive and negative"):
                     for i in range(self.result1.table_plus.shape[0]):
                         if(self.result1.table_plus[i][0] != -1):
-                            self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],2))))
+                            if(i == 5): #Pr na 3 decimale
+                                self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],3))))
+                            else:
+                                self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],2))))        
                         else:
                             self.tableWidget.setItem(i+1, 1, QTableWidgetItem("-"))
                         if(self.result1.table_minus[i][0] != -1):
-                            self.tableWidget.setItem(i+1, 2, QTableWidgetItem(str(round(self.result1.table_minus[i][alt_scen],2))))
+                            if(i == 5): #Pr na 3 decimale
+                                self.tableWidget.setItem(i+1, 2, QTableWidgetItem(str(round(self.result1.table_minus[i][alt_scen],3))))
+                            else:
+                                self.tableWidget.setItem(i+1, 2, QTableWidgetItem(str(round(self.result1.table_minus[i][alt_scen],2))))    
                         else:
                             src_item = self.tableWidget.item(i+1, 1)
                             text = src_item.text() if src_item else "-"
@@ -279,7 +285,11 @@ class TablePage(QWidget, Ui_TableWidget):
                 elif(self.paramPage.comboBox_4.currentText() == "positive"):
                         for i in range(self.result1.table_plus.shape[0]):
                             if(self.result1.table_plus[i][0] != -1):
-                                self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],2))))
+                                if(i == 5): #Pr na 3 decimale
+                                     self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],3))))
+                                else:
+                                    self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],2))))    
+                                #self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_plus[i][alt_scen],3))))
                             else:
                                 self.tableWidget.setItem(i+1, 1, QTableWidgetItem("-"))
                             item = self.tableWidget.item(i+1, 1)
@@ -288,7 +298,10 @@ class TablePage(QWidget, Ui_TableWidget):
                 elif(self.paramPage.comboBox_4.currentText() == "negative"):
                         for i in range(self.result1.table_minus.shape[0]):
                             if(self.result1.table_minus[i][0] != -1):
-                                self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_minus[i][alt_scen],2))))
+                                if(i == 5): #Pr na 3 decimale
+                                    self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_minus[i][alt_scen],3))))
+                                else:
+                                    self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_minus[i][alt_scen],2))))    
                             else:
                                 self.tableWidget.setItem(i+1, 1, QTableWidgetItem("-"))
                             item = self.tableWidget.item(i+1, 1)

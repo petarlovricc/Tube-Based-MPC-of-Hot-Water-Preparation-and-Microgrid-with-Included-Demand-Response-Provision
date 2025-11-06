@@ -25,7 +25,7 @@ class Ui_ParamWidget(object):
     def setupUi(self, ParamWidget):
         if not ParamWidget.objectName():
             ParamWidget.setObjectName(u"ParamWidget")
-        ParamWidget.resize(2212, 1188)
+        ParamWidget.resize(2197, 1181)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -233,7 +233,7 @@ class Ui_ParamWidget(object):
         sizePolicy.setHeightForWidth(self.dateEdit.sizePolicy().hasHeightForWidth())
         self.dateEdit.setSizePolicy(sizePolicy)
         self.dateEdit.setMinimumSize(QSize(0, 30))
-        self.dateEdit.setMaximumSize(QSize(16777215, 70))
+        self.dateEdit.setMaximumSize(QSize(500, 70))
         self.dateEdit.setFont(font)
         self.dateEdit.setDateTime(QDateTime(QDate(2025, 6, 25), QTime(0, 0, 0)))
         self.dateEdit.setDate(QDate(2025, 6, 25))
@@ -840,7 +840,7 @@ class Ui_ParamWidget(object):
         self.comboBox.setItemText(4, QCoreApplication.translate("ParamWidget", u"12", None))
         self.comboBox.setItemText(5, QCoreApplication.translate("ParamWidget", u"24", None))
 
-        self.comboBox.setCurrentText(QCoreApplication.translate("ParamWidget", u"24", None))
+        self.comboBox.setCurrentText(QCoreApplication.translate("ParamWidget", u"2", None))
         self.groupBox.setTitle(QCoreApplication.translate("ParamWidget", u"Compare two models", None))
         self.radioButton.setText(QCoreApplication.translate("ParamWidget", u"Yes", None))
         self.radioButton_2.setText(QCoreApplication.translate("ParamWidget", u"No", None))

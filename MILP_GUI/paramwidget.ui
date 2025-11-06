@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2212</width>
-    <height>1188</height>
+    <width>2197</width>
+    <height>1181</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -327,7 +327,7 @@ QComboBox:hover {
         </property>
         <property name="maximumSize">
          <size>
-          <width>16777215</width>
+          <width>500</width>
           <height>70</height>
          </size>
         </property>
@@ -1456,7 +1456,7 @@ QComboBox:hover {
          <enum>Qt::LayoutDirection::LeftToRight</enum>
         </property>
         <property name="currentText">
-         <string>24</string>
+         <string>2</string>
         </property>
         <item>
          <property name="text">
