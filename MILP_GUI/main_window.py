@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QFont
 from PySide6.QtCore import QTimer
 import numpy as np
+from MILP_GUI.utils import InfeasibleException
 
 from MILP_GUI.param_page import ParamPage
 from MILP_GUI.error_page import ErrorPage

@@ -10,9 +10,12 @@ import Result_Processing.result_processing_noflex as noflex_results
 import Result_Processing.result_processing_flex as flex_results
 import MILP_solve.milp_solve_no_flex as noflex_solve
 import MILP_solve.milp_solve_flex as flex_solve
+import numpy as np
+
 
 from MILP_formulation.histereza import runHistereza
 from MILP_GUI.utils import check_cplex_full_version
+from MILP_GUI.utils import InfeasibleException
 
 class MILP_comparison:
     def __init__(self, paramPage,loadingPage, flex, first_optim, second_optim, heater, *args):
@@ -58,7 +61,9 @@ class MILP_comparison:
                                     heater = self.heater)
                 
                 self.result1 = flex_results.result_processing(data, model, matrices, matrices_alt, result1_sol)
-
+                if(result1_sol.status_string == "HighsModelStatus.kInfeasible"):
+                    raise InfeasibleException("Solution infeasible!")
+                
             elif(self.first_optim == 1):
                 self.model = noflex_matrix.getModel(self.data)
                 self.matrices = noflex_matrix.get_Matrices(self.data,self.model)
@@ -78,7 +83,11 @@ class MILP_comparison:
                                 ub = noflex_matrix.getUb(self.data,self.matrices),
                                 heater = self.heater)
                 self.result1 = noflex_results.result_processing(self.data, self.matrices,result1_sol)
-        except:
+
+                if(result1_sol.status_string == "HighsModelStatus.kInfeasible"):
+                    raise InfeasibleException("Solution infeasible!")
+            
+        except (MemoryError, np.core._exceptions._ArrayMemoryError):
             raise MemoryError("RAM used up! -- test")
             
     def getResult2(self):
@@ -100,6 +109,8 @@ class MILP_comparison:
                 
                 self.result2 = noflex_results.result_processing(self.data, self.matrices,result1_sol)
                 
+                if(result1_sol.status_string == "HighsModelStatus.kInfeasible"):
+                    raise InfeasibleException("Solution infeasible!")
                 
 
             elif(self.second_optim == 1):
@@ -123,7 +134,11 @@ class MILP_comparison:
                 self.result2 = noflex_results.result_processing(self.data, self.matrices,result2_sol)
 
                 self.result2.case = "noflexcpp"
-        except:
+
+                if(result2_sol.status_string == "HighsModelStatus.kInfeasible"):
+                    raise InfeasibleException("Solution infeasible!")
+                
+        except (MemoryError, np.core._exceptions._ArrayMemoryError):
             raise MemoryError("RAM used up!")
 
 

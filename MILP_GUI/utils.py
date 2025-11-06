@@ -77,3 +77,6 @@ def invert_svg(path: str, size: int = 128) -> QIcon:
     image = pixmap.toImage()
     
     return QIcon(path)
+
+class InfeasibleException(Exception):
+    pass

@@ -185,8 +185,8 @@ if __name__ == "__main__":
     Q = 12
     F = 1
     R = 2
-    beginning_flex_ready = 15
-    end_flex_ready = 16
+    beginning_flex_ready = 0
+    end_flex_ready = 23
     alfa_plus = 80
     alfa_minus = 0.811
     cr_plus = 0.7

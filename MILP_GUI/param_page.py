@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QResizeEvent, QFont, QShowEvent
 from PySide6.QtCore import Qt
 from MILP_GUI.ParamWidget import Ui_ParamWidget
-from PySide6.QtCore import QDateTime, QTime
+from PySide6.QtCore import QDateTime, QTime, QDate
 from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtSvgWidgets import QSvgWidget
 from MILP_GUI import resources_rc
@@ -29,9 +29,9 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.hub_name = None
         self.radioButton.setChecked(True)
         self.radioButton_9.setChecked(True)
-        self.lineEdit_13.setText(str(0.1))  # cr+
+        self.lineEdit_13.setText(str(1))  # cr+
         self.lineEdit_14.setText(str(90))  # alfa+
-        self.lineEdit_5.setText(str(0.1))  # cr-
+        self.lineEdit_5.setText(str(1))  # cr-
         self.lineEdit_6.setText(str(80))  # alfa-
         self.radioButton_3.setChecked(True)
         self.comboBox_2.setCurrentIndex(0)
@@ -129,47 +129,64 @@ class ParamPage(QWidget, Ui_ParamWidget):
             self.lineEdit_7.setText("5")    # Annual electricity consumption (MWh)
             self.lineEdit_8.setText("50")     # Annual water consumption (m3)
 
+            self.timeEdit.setTime(QTime(12,0)) #endTime
+            self.comboBox.setCurrentIndex(4) #Q = 12
+            self.dateEdit.setDate(QDate(2024,2,25))
+
         # Industry hub
         elif self.radioButton_7.isChecked():
             self.hub_name = "Industry"
             # System parameters
             self.lineEdit_9.setText("5")       # Water tank capacity (m3)
             self.lineEdit.setText("200")      # Battery capacity (kWh)
-            self.lineEdit_2.setText("400")    # Inverter power (kW)
-            self.lineEdit_3.setText("300")    # Water heater power (kW)
+            self.lineEdit_2.setText("100")    # Inverter power (kW)
+            self.lineEdit_3.setText("50")    # Water heater power (kW)
             self.lineEdit_4.setText("2000")   # Number of solar panels
             self.lineEdit_12.setText("400")   # Solar panel power (Wp)
             # Annual consumptions
             self.lineEdit_7.setText("4000")   # Annual electricity consumption (MWh)
-            self.lineEdit_8.setText("36500")  # Annual water consumption (m3)
+            self.lineEdit_8.setText("3650")  # Annual water consumption (m3)
+            self.timeEdit.setTime(QTime(12,0)) #endTime
+            self.comboBox.setCurrentIndex(4) #Q = 12
+            self.dateEdit.setDate(QDate(2024,2,25))
+
+
 
         # Commercial hub (shopping mall)
         elif self.radioButton_10.isChecked():
             self.hub_name = "Commercial"
             # System parameters
-            self.lineEdit_9.setText("10")      # Water tank capacity (m3)
+            self.lineEdit_9.setText("100")      # Water tank capacity (m3)
             self.lineEdit.setText("500")      # Battery capacity (kWh)
-            self.lineEdit_2.setText("1400")   # Inverter power (kW)
+            self.lineEdit_2.setText("300")   # Inverter power (kW)
             self.lineEdit_3.setText("500")    # Water heater power (kW)
-            self.lineEdit_4.setText("4375")   # Number of solar panels
+            self.lineEdit_4.setText("2000")   # Number of solar panels
             self.lineEdit_12.setText("400")   # Solar panel power (Wp)
             # Annual consumptions
             self.lineEdit_7.setText("8750")   # Annual electricity consumption (MWh)
-            self.lineEdit_8.setText("45625")  # Annual water consumption (m3)
+            self.lineEdit_8.setText("10000")  # Annual water consumption (m3)
+
+            self.timeEdit.setTime(QTime(12,0)) #endTime
+            self.comboBox.setCurrentIndex(4) #Q = 12
+            self.dateEdit.setDate(QDate(2024,2,25))
 
         # Power-2-X hub
         elif self.radioButton_8.isChecked():
             self.hub_name = "Power-2-X"
             # System parameters
             self.lineEdit_9.setText("20")      # Water tank capacity (m3)
-            self.lineEdit.setText("2000")     # Battery capacity (kWh)
-            self.lineEdit_2.setText("6000")   # Inverter power (kW)
-            self.lineEdit_3.setText("500")    # Water heater power (kW)
-            self.lineEdit_4.setText("18000")  # Number of solar panels
+            self.lineEdit.setText("5000")     # Battery capacity (kWh)
+            self.lineEdit_2.setText("2500")   # Inverter power (kW)
+            self.lineEdit_3.setText("100")    # Water heater power (kW)
+            self.lineEdit_4.setText("20000")  # Number of solar panels
             self.lineEdit_12.setText("400")   # Solar panel power (Wp)
             # Annual consumptions
-            self.lineEdit_7.setText("24090")  # Annual electricity consumption (MWh)
-            self.lineEdit_8.setText("8400")   # Annual water consumption (m3)
+            self.lineEdit_7.setText("40000")  # Annual electricity consumption (MWh)
+            self.lineEdit_8.setText("1000")   # Annual water consumption (m3)
+
+            self.timeEdit.setTime(QTime(12,0)) #endTime
+            self.comboBox.setCurrentIndex(4) #Q = 12
+            self.dateEdit.setDate(QDate(2024,2,25))
             
         
 

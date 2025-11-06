@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2197</width>
-    <height>1181</height>
+    <width>1709</width>
+    <height>989</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -867,7 +867,7 @@ QComboBox:hover {
          </font>
         </property>
         <property name="text">
-         <string>Annual water consumption (m3)</string>
+         <string>Annual  tempered water consumption (m3)</string>
         </property>
        </widget>
       </item>
@@ -1048,7 +1048,7 @@ QComboBox:hover {
          </font>
         </property>
         <property name="text">
-         <string>0.7</string>
+         <string>80</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1205,7 +1205,7 @@ QComboBox:hover {
          </font>
         </property>
         <property name="text">
-         <string>0.1</string>
+         <string>1</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1282,7 +1282,7 @@ QComboBox:hover {
          </font>
         </property>
         <property name="text">
-         <string>0.5</string>
+         <string>90</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -1315,7 +1315,7 @@ QComboBox:hover {
          </font>
         </property>
         <property name="text">
-         <string>0.1</string>
+         <string>1</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
