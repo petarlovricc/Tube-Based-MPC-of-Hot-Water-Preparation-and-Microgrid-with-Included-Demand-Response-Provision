@@ -331,6 +331,10 @@ class ResultPage(QWidget):
             self.saveButton.setText("Save"),
             self.saveButton.setDisabled(False)
         ))
+
+   
+
+
             
 
     def plot_comparison_noflex(self):
