@@ -221,7 +221,7 @@ class ResultPage(QWidget):
         elif index in [1,3,4]:
             label = "Energy [kWh]"
         elif index in [5]:
-            label = "Volume [L]"
+            label = "Volume [m3]"
         elif index in [6, 7, 10]:
              label = "Power [kW]"
         elif index in [11]:

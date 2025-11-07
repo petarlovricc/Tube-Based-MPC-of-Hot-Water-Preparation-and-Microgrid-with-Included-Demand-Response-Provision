@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
         if self.solved == False:
             self.resultPage.comboBox.setCurrentIndex(11)
         else:
-            self.resultPage.comboBox.setCurrentIndex(0)
+            self.resultPage.comboBox.setCurrentIndex(10)
         self.layout.setCurrentIndex(2)
         
 
@@ -191,10 +191,11 @@ class MainWindow(QMainWindow):
             if self.solved == False:
                 self.resultPage.comboBox.setCurrentIndex(11)
             else:
-                self.resultPage.comboBox.setCurrentIndex(0)
+                self.resultPage.comboBox.setCurrentIndex(10)
                 
             self.resultPage.setGraph()   
-            QTimer.singleShot(2000, lambda: self.layout.setCurrentIndex(2))
+            #QTimer.singleShot(500, lambda: self.layout.setCurrentIndex(2))
+            self.layout.setCurrentIndex(2)
         except Exception as e:
                 # ovdje ulaze ValueError, ParameterTooSmallError, ...
                 self.errorPage.label.setText(f"{type(e).__name__}:\n {e}")

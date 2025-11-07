@@ -138,17 +138,19 @@ class ParamPage(QWidget, Ui_ParamWidget):
             self.hub_name = "Industry"
             # System parameters
             self.lineEdit_9.setText("5")       # Water tank capacity (m3)
-            self.lineEdit.setText("200")      # Battery capacity (kWh)
-            self.lineEdit_2.setText("100")    # Inverter power (kW)
+            self.lineEdit.setText("500")      # Battery capacity (kWh)
+            self.lineEdit_2.setText("250")    # Inverter power (kW)
             self.lineEdit_3.setText("50")    # Water heater power (kW)
             self.lineEdit_4.setText("2000")   # Number of solar panels
             self.lineEdit_12.setText("400")   # Solar panel power (Wp)
             # Annual consumptions
             self.lineEdit_7.setText("4000")   # Annual electricity consumption (MWh)
-            self.lineEdit_8.setText("3650")  # Annual water consumption (m3)
+            self.lineEdit_8.setText("3000")  # Annual water consumption (m3)
             self.timeEdit.setTime(QTime(12,0)) #endTime
             self.comboBox.setCurrentIndex(4) #Q = 12
             self.dateEdit.setDate(QDate(2024,2,25))
+            self.lineEdit_13.setText(str(0.9))  # cr+
+            self.lineEdit_5.setText(str(0.9))  # cr-
 
 
 
@@ -175,18 +177,21 @@ class ParamPage(QWidget, Ui_ParamWidget):
             self.hub_name = "Power-2-X"
             # System parameters
             self.lineEdit_9.setText("20")      # Water tank capacity (m3)
-            self.lineEdit.setText("5000")     # Battery capacity (kWh)
+            self.lineEdit.setText("8000")     # Battery capacity (kWh)
             self.lineEdit_2.setText("2500")   # Inverter power (kW)
             self.lineEdit_3.setText("100")    # Water heater power (kW)
-            self.lineEdit_4.setText("20000")  # Number of solar panels
+            self.lineEdit_4.setText("27500")  # Number of solar panels
             self.lineEdit_12.setText("400")   # Solar panel power (Wp)
             # Annual consumptions
-            self.lineEdit_7.setText("40000")  # Annual electricity consumption (MWh)
+            self.lineEdit_7.setText("80000")  # Annual electricity consumption (MWh)
             self.lineEdit_8.setText("1000")   # Annual water consumption (m3)
 
             self.timeEdit.setTime(QTime(12,0)) #endTime
             self.comboBox.setCurrentIndex(4) #Q = 12
             self.dateEdit.setDate(QDate(2024,2,25))
+
+            self.lineEdit_13.setText(str(0.3))  # cr+
+            self.lineEdit_5.setText(str(0.3))  # cr-
             
         
 
