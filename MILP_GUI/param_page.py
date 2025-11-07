@@ -40,7 +40,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.timeEdit.setTime(QTime(23, 59))
         self.timeEdit_2.setTime(QTime(0, 0))
         self.label_11.setText("Water tank capacity (m<sup>3</sup>)")
-        self.label_12.setText("Annual water consumption (m<sup>3</sup>)")
+        self.label_12.setText("Annual tempered water consumption (m<sup>3</sup>)")
 
         # UPDATEANJE VRIJEDNOSTI QSLIDERA I QLINEEDITA
         self.flexibilityParams()
@@ -91,7 +91,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
                 self.label_11.setText(f'<span style="font-size:{int(font.pointSize())}pt">Water tank capacity (m<sup>3</sup>)</span>')
 
                 self.label_12.setTextFormat(Qt.RichText)
-                self.label_12.setText(f'<span style="font-size:{int(font.pointSize())}pt">Annual water consumption (m<sup>3</sup>)</span>')
+                self.label_12.setText(f'<span style="font-size:{int(font.pointSize())}pt">Annual tempered water consumption (m<sup>3</sup>)</span>')
             else:      
                  widget.setFont(font)
 

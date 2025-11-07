@@ -62,7 +62,7 @@ class ResultPage(QWidget):
             "Water heater on-off state",
             "Battery charging power",
             "Battery discharging power",
-            "Hot water consumption",
+            "Tempered water consumption",
             "PV generation",
             "Uncontrollable load",
             "Target water temperature",
