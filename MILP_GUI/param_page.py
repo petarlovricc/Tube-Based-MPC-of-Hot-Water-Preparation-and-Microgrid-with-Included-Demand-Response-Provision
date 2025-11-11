@@ -29,9 +29,9 @@ class ParamPage(QWidget, Ui_ParamWidget):
         self.hub_name = None
         self.radioButton.setChecked(True)
         self.radioButton_9.setChecked(True)
-        self.lineEdit_13.setText(str(1))  # cr+
+        self.lineEdit_13.setText(str(0.7))  # cr+
         self.lineEdit_14.setText(str(90))  # alfa+
-        self.lineEdit_5.setText(str(1))  # cr-
+        self.lineEdit_5.setText(str(0.7))  # cr-
         self.lineEdit_6.setText(str(80))  # alfa-
         self.radioButton_3.setChecked(True)
         self.comboBox_2.setCurrentIndex(0)
@@ -149,8 +149,8 @@ class ParamPage(QWidget, Ui_ParamWidget):
             self.timeEdit.setTime(QTime(12,0)) #endTime
             self.comboBox.setCurrentIndex(4) #Q = 12
             self.dateEdit.setDate(QDate(2024,2,25))
-            self.lineEdit_13.setText(str(0.9))  # cr+
-            self.lineEdit_5.setText(str(0.9))  # cr-
+            self.lineEdit_13.setText(str(0.7))  # cr+
+            self.lineEdit_5.setText(str(0.7))  # cr-
 
 
 
@@ -190,8 +190,8 @@ class ParamPage(QWidget, Ui_ParamWidget):
             self.comboBox.setCurrentIndex(4) #Q = 12
             self.dateEdit.setDate(QDate(2024,2,25))
 
-            self.lineEdit_13.setText(str(0.3))  # cr+
-            self.lineEdit_5.setText(str(0.3))  # cr-
+            self.lineEdit_13.setText(str(0.7))  # cr+
+            self.lineEdit_5.setText(str(0.7))  # cr-
             
         
 

@@ -26,6 +26,7 @@ from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtCore import QTimer
 from MILP_GUI.utils import resource_path
 import os
+import matplotlib
 
 
 matplotlib.use("QtAgg")
@@ -155,6 +156,10 @@ class ResultPage(QWidget):
     def changeGraphFont(self):
         pointSize = self.pointSize
 
+        for ax in self.canvas.fig.axes:
+            for label in ax.get_xticklabels():
+                    label.set_ha('center')
+
         ax = self.canvas.axes
         ax.set_xlabel("Time [h]", fontsize=pointSize, fontfamily="serif", labelpad=pointSize*0.5)
         ax.set_ylabel(self.getYlabel(self.comboBox.currentIndex()), fontsize=pointSize, fontfamily="serif", labelpad=pointSize*0.5)
@@ -283,54 +288,170 @@ class ResultPage(QWidget):
         #self.save_ieee_pdf()
 
 
+    # def save_ieee_pdf(self):
+    #     # 1. Spremi staru veličinu
+    #     old_size = self.canvas.fig.get_size_inches()
+
+    #     # 2. Namjesti IEEE dimenzije (npr. 7.16 x 3.5 inča)
+    #     self.canvas.fig.set_size_inches(7.16, 3.5)
+
+    #     for ax in self.canvas.fig.axes:
+    #         ax.set_xlabel(ax.get_xlabel(), fontsize=9)   # labela osi x
+    #         ax.set_ylabel(ax.get_ylabel(), fontsize=9)   # labela osi y
+    #         ax.tick_params(axis="both", labelsize=9)     # oznake osi
+
+    #         leg = ax.get_legend()
+    #         if leg:
+    #             for text in leg.get_texts():
+    #                 text.set_fontsize(9)                 # legenda
+
+    #     # 3. Bazni direktorij → pored exe-a ili .py datoteke
+    #     base_dir = os.path.dirname(sys.argv[0])
+
+    #     # 4. Provjeri / napravi folder "grafovi"
+    #     folder = os.path.join(base_dir, "grafovi")
+    #     os.makedirs(folder, exist_ok=True)
+
+    #     # 5. Ime datoteke (čisti naziv iz ComboBoxa)
+    #     filename = re.sub(r'\s+', '_', self.comboBox.currentText())
+    #     path = os.path.join(folder, f"{filename}.pdf")
+
+    #     # 6. Spremi PDF s 600 DPI
+    #     try:
+    #         self.canvas.fig.savefig(path, dpi=600, bbox_inches='tight')
+    #         print(f"Spremljeno kao {path}")
+    #     except Exception as e:
+    #         print(f"Greška pri spremanju PDF-a: {e}")
+
+    #     # 7. Vrati staru veličinu (za GUI prikaz)
+    #     self.canvas.fig.set_size_inches(old_size)
+    #     self.changeGraphFont()
+    #     self.canvas.fig.tight_layout()
+    #     self.canvas.draw()
+
+    #     # 8. Vizualna potvrda
+    #     self.saveButton.setText("Saved!")
+    #     self.saveButton.setDisabled(True)
+    #     QTimer.singleShot(1000, lambda: (
+    #         self.saveButton.setText("Save"),
+    #         self.saveButton.setDisabled(False)
+    #     ))
+
     def save_ieee_pdf(self):
-        # 1. Spremi staru veličinu
-        old_size = self.canvas.fig.get_size_inches()
 
-        # 2. Namjesti IEEE dimenzije (npr. 7.16 x 3.5 inča)
-        self.canvas.fig.set_size_inches(7.16, 3.5)
+        fig = self.canvas.fig
 
-        for ax in self.canvas.fig.axes:
-            ax.set_xlabel(ax.get_xlabel(), fontsize=9)   # labela osi x
-            ax.set_ylabel(ax.get_ylabel(), fontsize=9)   # labela osi y
-            ax.tick_params(axis="both", labelsize=9)     # oznake osi
+        # 1. Spremi stare postavke
+        old_size = fig.get_size_inches()
+        old_axes_state = []
 
-            leg = ax.get_legend()
-            if leg:
-                for text in leg.get_texts():
-                    text.set_fontsize(9)                 # legenda
+        for ax in fig.axes:
+            xticklabels = ax.get_xticklabels()
+            tick_fs = xticklabels[0].get_size() if xticklabels else 9
 
-        # 3. Bazni direktorij → pored exe-a ili .py datoteke
+            old_axes_state.append({
+                "ax": ax,
+                "xlabel": ax.get_xlabel(),
+                "ylabel": ax.get_ylabel(),
+                "xlabel_fs": ax.xaxis.label.get_size(),
+                "ylabel_fs": ax.yaxis.label.get_size(),
+                "tick_fs": tick_fs,
+                "xticks": ax.get_xticks(),
+                "yticks": ax.get_yticks(),
+                "legend": ax.legend_,   # direktna referenca na legendu
+            })
+            
+
+        # 2. IEEE dimenzije
+        fig.set_size_inches(7.16, 3.5)
+
+        # 3. Priprema osi za PDF (IEEE stil)
+        for ax in fig.axes:
+            ax.set_xlabel(ax.get_xlabel(), fontsize=12)
+            ax.set_ylabel(ax.get_ylabel(), fontsize=12)
+            ax.tick_params(axis="both", labelsize=12)
+
+            # Svaka četvrta tick oznaka na x-osi, ravne oznake
+            ticks = ax.get_xticks()
+            if len(ticks) > 4:
+                ax.set_xticks(ticks[::4])
+            ax.tick_params(axis='x', rotation=0)
+
+            
+
+            # Novi handles/labels za IEEE legendu
+            handles, labels = ax.get_legend_handles_labels()
+
+            if handles and labels:
+                # Zadnji ide prvi, ostali ostaju po redu
+                handles = [handles[-1]] + handles[:-1]
+                labels = [labels[-1]] + labels[:-1]
+
+                ax.legend(
+                    handles,
+                    labels,
+                    loc='upper center',
+                    bbox_to_anchor=(0.5, -0.2),  # ispod grafa, malo bliže
+                    ncol=2,                      # dva stupca
+                    fontsize=12,
+                    frameon=False                # bez okvira
+                )
+
+        # 4. Bazni direktorij → pored exe-a ili .py datoteke
         base_dir = os.path.dirname(sys.argv[0])
 
-        # 4. Provjeri / napravi folder "grafovi"
-        folder = os.path.join(base_dir, "grafovi")
+        # 5. Provjeri / napravi folder "graphs"
+        folder = os.path.join(base_dir, "graphs")
         os.makedirs(folder, exist_ok=True)
 
-        # 5. Ime datoteke (čisti naziv iz ComboBoxa)
+        # 6. Ime datoteke (čisti naziv iz ComboBoxa)
         filename = re.sub(r'\s+', '_', self.comboBox.currentText())
         path = os.path.join(folder, f"{filename}.pdf")
 
-        # 6. Spremi PDF s 600 DPI
+        # 7. Spremi PDF s 600 DPI
         try:
-            self.canvas.fig.savefig(path, dpi=600, bbox_inches='tight')
+            fig.savefig(path, dpi=600, bbox_inches='tight')
             print(f"Spremljeno kao {path}")
         except Exception as e:
             print(f"Greška pri spremanju PDF-a: {e}")
 
-        # 7. Vrati staru veličinu (za GUI prikaz)
-        self.canvas.fig.set_size_inches(old_size)
+        # 8. Vrati stare postavke (veličine, tickove, legende itd.)
+        fig.set_size_inches(old_size)
+
+        for state in old_axes_state:
+            ax = state["ax"]
+
+            ax.set_xlabel(state["xlabel"], fontsize=state["xlabel_fs"])
+            ax.set_ylabel(state["ylabel"], fontsize=state["ylabel_fs"])
+            ax.tick_params(axis="both", labelsize=state["tick_fs"])
+            ax.set_xticks(state["xticks"])
+            ax.set_yticks(state["yticks"])
+
+            # Makni IEEE legendu nakon spremanja
+            if isinstance(ax.legend_, matplotlib.legend.Legend):
+                ax.legend_.remove()
+                ax.legend_ = None
+
+     
+
+            # GUI: tickovi opet pod 45° i centrirani
+            ax.tick_params(axis='x', rotation=45)
+            for label in ax.get_xticklabels():
+                label.set_ha('center')
+
         self.changeGraphFont()
-        self.canvas.fig.tight_layout()
+        fig.tight_layout()
         self.canvas.draw()
 
-        # 8. Vizualna potvrda
+        # 9. Vizualna potvrda
         self.saveButton.setText("Saved!")
         self.saveButton.setDisabled(True)
         QTimer.singleShot(1000, lambda: (
             self.saveButton.setText("Save"),
             self.saveButton.setDisabled(False)
         ))
+
+
 
    
 
