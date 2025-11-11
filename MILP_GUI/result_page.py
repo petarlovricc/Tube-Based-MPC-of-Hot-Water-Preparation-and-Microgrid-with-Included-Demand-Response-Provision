@@ -29,6 +29,7 @@ import os
 import matplotlib
 
 
+
 matplotlib.use("QtAgg")
 
 class MplCanvas(FigureCanvasQTAgg):
@@ -47,7 +48,7 @@ class ResultPage(QWidget):
             self.setStyleSheet(f.read())
 
         self.data = Structure()
-        self.data = Structure()
+       
         self.getParamsRes()
         self.result1 = None
         self.result2 = None
@@ -221,7 +222,7 @@ class ResultPage(QWidget):
 
         
     def getYlabel(self, index):
-        if index in [0, 8, 9]:
+        if index in [0, 9]:
             label = "Temperature [°C]"
         elif index in [1,3,4]:
             label = "Energy [kWh]"
@@ -463,6 +464,10 @@ class ResultPage(QWidget):
                     self.label_graph.setText(self.comboBox.itemText(0))
                     self.plot_noflex_states(self.data, self.result1, "heater")
                     self.plot_noflex_states(self.data, self.result2, "heater")
+                    self.canvas.axes.plot(np.arange(self.data.N+1), np.append(self.data.set_water_temp_C, self.data.set_water_temp_C[-1]),
+                            linestyle="--", linewidth=1, color="purple",
+                            
+                            label=f"Desired water temperature")
         if self.comboBox.currentIndex() == 1:
                     self.label_graph.setText(self.comboBox.itemText(1))
                     self.plot_noflex_states(self.data, self.result1, "batt")
@@ -490,6 +495,10 @@ class ResultPage(QWidget):
                     self.label_graph.setText(self.comboBox.itemText(0))
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "heater", self.paramPage.comboBox_4.currentText())
                     self.plot_noflex_states(self.data, self.result2, "heater")
+                    self.canvas.axes.plot(np.arange(self.data.N+1), np.append(self.data.set_water_temp_C, self.data.set_water_temp_C[-1]),
+                            linestyle="--", linewidth=1, color="purple",
+                            
+                            label=f"Desired water temperature")
         if self.comboBox.currentIndex() == 1:
                     self.label_graph.setText(self.comboBox.itemText(1))
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "batt", self.paramPage.comboBox_4.currentText())
@@ -545,6 +554,10 @@ class ResultPage(QWidget):
                 if self.comboBox.currentIndex() == 0:
                     self.label_graph.setText(self.comboBox.itemText(0))
                     self.plot_noflex_states(self.data, self.result1, "heater")
+                    self.canvas.axes.plot(np.arange(self.data.N+1), np.append(self.data.set_water_temp_C, self.data.set_water_temp_C[-1]),
+                            linestyle="--", linewidth=1, color="purple",
+                           
+                            label=f"Desired water temperature")
                 if self.comboBox.currentIndex() == 1:
                     self.label_graph.setText(self.comboBox.itemText(1))
                     self.plot_noflex_states(self.data, self.result1, "batt")
@@ -565,8 +578,12 @@ class ResultPage(QWidget):
     def plot_alternative_profiles(self):
                 if self.comboBox.currentIndex() == 0:
                     self.label_graph.setText(self.comboBox.itemText(0))
-                    
+                    self.canvas.axes.plot(np.arange(self.data.N+1), np.append(self.data.set_water_temp_C, self.data.set_water_temp_C[-1]),
+                            linestyle="--", linewidth=1, color="purple",
+                            
+                            label=f"Desired water temperature")
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "heater", self.paramPage.comboBox_4.currentText())
+                    self.plot_profiles(data, "setTemp")
                 if self.comboBox.currentIndex() == 1:
                     self.label_graph.setText(self.comboBox.itemText(1))
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "batt", self.paramPage.comboBox_4.currentText())
@@ -651,6 +668,7 @@ class ResultPage(QWidget):
             nom = res.tempC_nom
             ymax = max(alt_plus.max(), alt_minus.max(), nom.max())
             self.canvas.axes.set_ylim(0, 1.6 * ymax)
+            
 
         elif var == "batt":
             # SOE je u Wh -> pretvorimo u kWh
@@ -792,6 +810,8 @@ class ResultPage(QWidget):
 
     def plot_noflex_states(self, data, res, var):
         if var == "heater":
+            
+
             graph = res.tempC
             if not self.result1.case == "flex":
                 self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.tempC), 1.6*max(graph)))

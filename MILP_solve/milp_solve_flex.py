@@ -185,8 +185,8 @@ if __name__ == "__main__":
     Q = 12
     F = 1
     R = 2
-    beginning_flex_ready = 0
-    end_flex_ready = 23
+    beginning_flex_ready = 11
+    end_flex_ready = 13
     alfa_plus = 80
     alfa_minus = 0.811
     cr_plus = 0.7
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     heater = "C"
     solution = _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater)
 
-    solution = solution.x
+    solution = solution
 
     
    

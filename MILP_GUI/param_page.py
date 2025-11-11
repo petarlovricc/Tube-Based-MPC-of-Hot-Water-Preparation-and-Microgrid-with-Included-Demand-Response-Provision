@@ -176,7 +176,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
         elif self.radioButton_8.isChecked():
             self.hub_name = "Power-2-X"
             # System parameters
-            self.lineEdit_9.setText("20")      # Water tank capacity (m3)
+            self.lineEdit_9.setText("1")      # Water tank capacity (m3)
             self.lineEdit.setText("8000")     # Battery capacity (kWh)
             self.lineEdit_2.setText("2500")   # Inverter power (kW)
             self.lineEdit_3.setText("100")    # Water heater power (kW)

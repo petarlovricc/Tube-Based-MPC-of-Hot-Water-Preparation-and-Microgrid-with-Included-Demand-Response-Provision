@@ -119,28 +119,34 @@ def _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
 
 if __name__ == "__main__":
     # --- Prvo rješenje (s cpp) ---
-    heater_power=2500
-    bat_cap=9400
-    converter_power=2500
-    tank_volume=190
-    PV_power=410
+    heater_power=2.5
+    bat_cap=10
+    converter_power=2.5
+    tank_volume=0.2
+    PV_power=400
     numberofPV=10
-    buyPriceHigh=0.18
-    buyPriceLow=0.09
     month=6
     day=15
-    cpp=1
+    cpp=11
     Q = 12
     F = 1
     R = 2
-    beginning_flex_ready = 15
-    end_flex_ready = 16
-    alfa = 0.811
-    cr = 0.7
-    sgn_Pr = 1
+    beginning_flex_ready = 11
+    end_flex_ready = 13
+    alfa_plus = 80
+    alfa_minus = 0.811
+    cr_plus = 0.7
+    cr_minus = 0.7
+    sgn_Pr = "positive and negative"
     cid = 0.6
-    data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa, cr, sgn_Pr)
-    heater = "C"
+    setwatertemp = 40
+    hub_name = "Household"
+    annual_load = 5
+    annual_water = 50
+
+    data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month,
+                    day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus, cr_plus,
+                      cr_minus, sgn_Pr,hub_name, annual_load, annual_water)
     model = noflex.getModel(data)
     matrices = noflex.get_Matrices(data, model)
     lb = noflex.getLb(data, matrices)
@@ -150,7 +156,7 @@ if __name__ == "__main__":
     Aeq = noflex.getAeq(data, matrices, model)
     beq = noflex.getbeq(data, matrices, model)
     f = noflex.getF(data)
-    solution = solve_cplex(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater)
-    res = result_processing(data, matrices, solution.x)
+    solution = _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, "C")
+    res = result_processing(data, matrices, solution)
 
    

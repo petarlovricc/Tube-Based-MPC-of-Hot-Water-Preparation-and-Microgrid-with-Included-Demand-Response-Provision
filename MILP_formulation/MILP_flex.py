@@ -1028,6 +1028,12 @@ def getF(data):
             data.alfa_plus*data.alfa_minus]
     return f.reshape(-1,1)
 
+def getPsiTmix_nom(data):
+    return np.tile([data.set_water_temp_K[0], 0], data.N).reshape(-1,1)
+
+def getPsiTmix_alt(data):
+    return np.tile([data.set_water_temp_K[0], 0], 2*data.n_a*data.n_z*(data.N_F+data.N_R+1)).reshape(-1,1)
+
 def getAineq(data,matrices, model, matrices_alt):
     Theta_a = getTheta_a(data, matrices_alt, model)
     Theta_n = getTheta_n(data, matrices)
@@ -1038,6 +1044,8 @@ def getAineq(data,matrices, model, matrices_alt):
         Theta_n,
         -Theta_n,
         -Theta_n,
+        -Theta_n, #Thot>=Tmix nominalni
+        -Theta_a, #Thot>=Tmix alternativni
         getTheta_PC_n(data),
         getTheta_PC_a(data),
         getTheta_sell(data),
@@ -1065,6 +1073,8 @@ def getbineq(data,matrices, matrices_alt, model):
         matrices.X_max_n - getPsix_nom(data,matrices),
         getPsix_nom(data,matrices) - matrices.X_min_l_n,
         getPsix_nom(data,matrices) - matrices.X_min_u_n,
+        getPsix_nom(data,matrices) - getPsiTmix_nom(data), #ogranicenje Thot>=Tmix nominalni
+        get_Psi_x_alt_two_reservations(data,model) - getPsiTmix_alt(data), #ogranicenje Thot>=Tmix
         getPsiPPC_nom(data),
         getPsiPPC_alt(data),
         getPsiSell(data),

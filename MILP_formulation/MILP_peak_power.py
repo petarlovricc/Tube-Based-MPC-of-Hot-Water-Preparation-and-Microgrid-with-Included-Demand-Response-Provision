@@ -216,7 +216,8 @@ def getPsiPV(data):
     return psiPV.reshape(-1, 1)
 
 
-
+def getPsiTmix(data):
+    return np.tile([data.set_water_temp_K[0], 0], data.N).reshape(-1,1)
 
 def getAineq(data,matrices):
     Aineq = np.vstack((
@@ -224,6 +225,7 @@ def getAineq(data,matrices):
         getThetax(data,matrices),
         -getThetax(data,matrices),
         -getThetax(data,matrices),
+        -getThetax(data,matrices), #ogranicenje Thot>=Tmix
         getThetaPPC(data),
         getThetasell(data),
         getThetabuy(data),
@@ -238,6 +240,7 @@ def getbineq(data,matrices):
         matrices.X_max - getPsix(data,matrices),
         getPsix(data,matrices) - matrices.X_min_1,
         getPsix(data,matrices) - matrices.X_min_2,
+        getPsix(data,matrices) - getPsiTmix(data), #ogranicenje Thot>=Tmix
         getPsiPPC(data),
         getPsiSell(data),
         getPsiBuy(data),

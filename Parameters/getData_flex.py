@@ -160,9 +160,9 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
 
     #Gornje i donje granice protoka i temperature
     data.Qmax = data.water_demand.max() #maksimalni protok vode u danu
+    print(f"Qmax: {data.Qmax}")
 
-
-    data.Tmax = data.boiling_temp
+    data.Tmax = 80+273.15
 
     return data
 
