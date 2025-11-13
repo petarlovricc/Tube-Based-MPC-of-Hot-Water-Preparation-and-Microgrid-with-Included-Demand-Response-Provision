@@ -777,11 +777,12 @@ class ResultPage(QWidget):
             ymax = max(alt_plus.max(), alt_minus.max(), nom.max())
 
         # Wx -> kWx; x = {"", h}
-        alt_plus = alt_plus / 1000
-        alt_minus = alt_minus / 1000
-        nom = nom / 1000
-        ymax = ymax / 1000
-        ymin = ymin / 1000
+        if var != "delte":
+            alt_plus = alt_plus / 1000
+            alt_minus = alt_minus / 1000
+            nom = nom / 1000
+            ymax = ymax / 1000
+            ymin = ymin / 1000
 
         # Postavi osi nakon skaliranja
         if var == "grid":
@@ -824,11 +825,11 @@ class ResultPage(QWidget):
             if not self.result1.case == "flex":
                 self.canvas.axes.set_ylim(0, 1.6*max(graph))
         if(res.case == "noflexcpp"):
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "magenta", label = "Without DR and peak power")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "magenta", label = "No DR and peak power")
         elif (res.case == "hist"):
             self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "brown", label = "Hysteresis control")
         else:
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "blue", label = "Without DR")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "blue", label = "No DR")
                  
 
     def plot_input_output_noflex(self, data, res, var):
@@ -853,14 +854,14 @@ class ResultPage(QWidget):
                                                 1.6*max(self.result1.Edch_alt_minus)/1000.0,
                                                 1.6*max(graph)))
         elif var == "delte":
-            graph = res.delte / 1000.0
+            graph = res.delte 
             if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(0, max(1.7*max(self.result1.delte)/1000.0,
+                self.canvas.axes.set_ylim(0, max(1.7*max(self.result1.delte),
                                                 1.7*max(graph)))
             else:
-                self.canvas.axes.set_ylim(0, max(1.7*max(self.result1.delte)/1000.0,
-                                                1.7*max(self.result1.delte_alt_plus)/1000.0,
-                                                1.7*max(self.result1.delte_alt_minus)/1000.0,
+                self.canvas.axes.set_ylim(0, max(1.7*max(self.result1.delte),
+                                                1.7*max(self.result1.delte_alt_plus),
+                                                1.7*max(self.result1.delte_alt_minus),
                                                 1.7*max(graph)))
         elif var == "epvused":
             graph = res.PPV_used / 1000.0
@@ -895,11 +896,11 @@ class ResultPage(QWidget):
             if(var == "epvused"):
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.6, color="magenta",
-                                    where="post", label="Without DR and PP)")
+                                    where="post", label="No DR and PP)")
             else:
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.6, color="magenta",
-                                    where="post", label="Without DR and peak power")
+                                    where="post", label="No DR and peak power")
         elif (res.case == "hist" and var != "epvused"):
             self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                 linestyle="--", linewidth=1.6, color="brown",
@@ -912,11 +913,11 @@ class ResultPage(QWidget):
             if(var == "epvused"):
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.6, color="blue",
-                                    where="post", label="Without DR")
+                                    where="post", label="No DR")
             else:
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.6, color="blue",
-                                    where="post", label="Without DR")
+                                    where="post", label="No DR")
 
                  
 

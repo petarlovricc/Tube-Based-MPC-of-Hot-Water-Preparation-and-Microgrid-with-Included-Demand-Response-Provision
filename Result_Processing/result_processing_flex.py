@@ -15,7 +15,7 @@ print("Python koji se koristi:", sys.executable)
 
 
 def result_processing(data, model, matrices, matrices_alt, solution):
-    if(solution.status == "HighsModelStatus.kInfeasible"):
+    if(solution.status_string == "HighsModelStatus.kInfeasible"):
         return
     res = Structure()
     res.case = "flex"
@@ -211,7 +211,7 @@ def result_processing(data, model, matrices, matrices_alt, solution):
     res.JDR = getJDR(data, res)
     
     ####################################
-    res.table_plus, res.table_minus, res.worst_ind_plus, res.worst_ind_minus = getTable(data, res)
+    res.table_nom, res.table_plus, res.table_minus, res.worst_ind_plus, res.worst_ind_minus = getTable(data, res)
 
     if (res.maxJai_plus >= res.maxJai_minus):
         res.worst_ind = res.worst_ind_plus
@@ -219,110 +219,92 @@ def result_processing(data, model, matrices, matrices_alt, solution):
         res.worst_ind = res.worst_ind_minus
 
 
-    res.table2_plus, res.table2_minus = getTable_flow(data,res)
+    res.table2_nom, res.table2_plus, res.table2_minus = getTable_flow(data,res)
 
     return res
 
-def getTable(data,res):
-    resultlist = np.zeros((11,data.n_a))
-    resultlist2 = np.zeros((11,data.n_a))
-    
-    if(res is None):
-        for i in range(data.n_a):
-            resultlist[0][i] = -1
-            resultlist[1][i] = -1
-            resultlist[2][i] = -1
-            resultlist[3][i] = -1
-            resultlist[4][i] = -1
-            resultlist[5][i] = -1
-            resultlist[6][i] = -1
-            resultlist[7][i] = -1
-            resultlist[8][i] = -1
-            resultlist[9][i] = -1
-            resultlist[10][i] = -1
-            
+def getTable(data, res):
+    ROWS = 6
+    resultlist  = np.zeros((ROWS, data.n_a))  # Nominal
+    resultlist2 = np.zeros((ROWS, data.n_a))  # Positive DR
+    resultlist3 = np.zeros((ROWS, data.n_a))  # Negative DR
 
-            resultlist2[0][i] = -1
-            resultlist2[1][i] = -1
-            resultlist2[2][i] = -1
-            resultlist2[3][i] = -1
-            resultlist2[4][i] = -1
-            resultlist2[5][i] = -1
-            resultlist2[6][i] = -1
-            resultlist2[7][i] = -1
-            resultlist2[8][i] = -1
-            resultlist2[9][i] = -1
-            resultlist2[10][i] = -1
+    if res is None:
+        for i in range(data.n_a):
+            for r in range(ROWS):
+                resultlist[r][i]  = -1
+                resultlist2[r][i] = -1
+                resultlist3[r][i] = -1
+
+        maxJai_plus = None
+        maxJai_minus = None
+
     else:
-        maxJai_plus, Jai_plus = calculateJai_plus(data, res)
+        maxJai_plus, Jai_plus   = calculateJai_plus(data, res)
         maxJai_minus, Jai_minus = calculateJai_minus(data, res)
-        Jn = get_Jn(data, res)
-        intraday_plus = get_intraday_plus(data,res)
-        intraday_minus = get_intraday_minus(data,res)
+
+        intraday_plus  = get_intraday_plus(data, res)
+        intraday_minus = get_intraday_minus(data, res)
+        Jn              = get_Jn(data, res)
 
         for i in range(data.n_a):
-            resultlist[0][i] = sum(res.da)
-            resultlist2[0][i] = -1
 
+            # 0) Reserved power [kW]
+            resultlist[0][i]  = -1                      # nominal
+            resultlist2[0][i] =  res.Pr_plus  / 1000    # positive DR
+            resultlist3[0][i] =  res.Pr_minus / 1000    # negative DR
 
-            resultlist[1][i] = -1
+            # 1) Day-ahead cost
+            resultlist[1][i]  = sum(res.da)
             resultlist2[1][i] = -1
+            resultlist3[1][i] = -1
 
-            resultlist[2][i] = res.epp_nom * data.cpp
-            resultlist2[2][i] = -1
+            # 2) Peak power cost
+            resultlist[2][i]  = res.epp_nom          * data.cpp
+            resultlist2[2][i] = res.epp_alt_plus[i]  * data.cpp
+            resultlist3[2][i] = res.epp_alt_minus[i] * data.cpp
 
-            resultlist[3][i] = res.epp_alt_plus[i] * data.cpp
-            resultlist2[3][i] = res.epp_alt_minus[i] * data.cpp
+            # 3) Intraday cost
+            resultlist[3][i]  = -1
+            resultlist2[3][i] = intraday_plus[i]
+            resultlist3[3][i] = intraday_minus[i]
 
-            resultlist[4][i] = intraday_plus[i]
-            resultlist2[4][i] = intraday_minus[i]
+            # 4) Energy cost
+            resultlist[4][i]  = Jn
+            resultlist2[4][i] = -1
+            resultlist3[4][i] = -1
 
-            resultlist[5][i] = res.Pr_plus/1000 # W -> kW
-            
-            if res.Pr_minus != 0:
-                resultlist2[5][i] = -res.Pr_minus/1000 # W -> kW
+            # 5) Operational cost (updated)
+            resultlist[5][i]  = get_J_no_act(data, res, "nominal",i)
+            resultlist2[5][i] = get_J_no_act(data, res, "positive", i)
+            resultlist3[5][i] = get_J_no_act(data, res, "negative", i)
 
-            resultlist[6][i] = Jai_plus[i]
-            resultlist2[6][i] = Jai_minus[i]
+    return resultlist, resultlist2, resultlist3, maxJai_plus, maxJai_minus
 
-            resultlist[7][i] = Jn
-            resultlist2[7][i] = -1
-
-            resultlist[8][i] = -1
-            resultlist2[8][i] = -1
-
-            resultlist[9][i] = res.JDR
-            resultlist2[9][i] = -1
-
-            resultlist[10][i] = get_J_no_act(data,res)
-            resultlist2[10][i] = -1
-
-    return resultlist, resultlist2,  maxJai_plus, maxJai_minus
 
 def getTable_flow(data, res):
-    resultlist = np.zeros((7,data.n_a))
-    resultlist2 = np.zeros((7,data.n_a))
+    ROWS = 3
+    resultlist = np.zeros((ROWS,data.n_a))
+    resultlist2 = np.zeros((ROWS,data.n_a))
+    resultlist3 = np.zeros((ROWS,data.n_a))
+
     for i in range(data.n_a):
         resultlist[0][i] = sum(res.delte*data.P_heater)*0.25/1000
-        resultlist[1][i] = (sum(res.delte*data.P_heater)*0.25 -
+        resultlist[1][i] = sum(res.grid_energy_nom)/1000
+        resultlist[2][i] = sum(res.EPV_nom)/1000
+
+        resultlist2[0][i] = (sum(res.delte*data.P_heater)*0.25 -
                              getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25 + sum(res.delte_profili_plus[i]*data.P_heater)*0.25)/1000
-        resultlist[2][i] = -1
-        resultlist[3][i] = sum(res.grid_energy_nom)/1000
-        resultlist[4][i] = (sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_plus[i]))/1000
-        resultlist[5][i] = -1
-        resultlist[6][i] = (sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_plus[i]))/1000
+        resultlist2[1][i] = (sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_plus[i]))/1000
+        resultlist2[2][i] = (sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_plus[i]))/1000
 
-        resultlist2[0][i] = sum(res.delte*data.P_heater)*0.25/1000
-        resultlist2[1][i] = (sum(res.delte*data.P_heater)*0.25 - getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25
+
+        resultlist3[0][i] = (sum(res.delte*data.P_heater)*0.25 - getNomSumAltInd(res,res.delte, i)*data.P_heater*0.25
                               + sum(res.delte_profili_minus[i]*data.P_heater)*0.25)/1000
-        resultlist2[2][i] = -1
-        resultlist2[3][i] = sum(res.grid_energy_nom)/1000
-        resultlist2[4][i] = (sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_minus[i]))/1000
-        resultlist2[5][i] = -1
-        resultlist2[6][i] = (sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_minus[i]))/1000
+        resultlist3[1][i] = (sum(res.grid_energy_nom) - getNomSumAltInd(res,res.grid_energy_nom, i) + sum(res.grid_energy_alt_minus[i]))/1000
+        resultlist3[2][i] = (sum(res.EPV_nom) - getNomSumAltInd(res,res.EPV_nom, i) + sum(res.EPV_profili_minus[i]))/1000
        
-
-    return resultlist, resultlist2
+    return resultlist, resultlist2, resultlist3
 
 def getNomSumAltInd(res,value, alt_scen):
     suma = 0
@@ -368,8 +350,17 @@ def get_Jn(data,res):
     Jn =  data.cpp*res.epp_nom + sum(res.da)
     return Jn
 
-def get_J_no_act(data,res):
-    Jn =  data.cpp*res.epp_nom + sum(res.da) - data.cr_plus*abs(res.Pr_plus) - data.cr_minus*abs(res.Pr_minus)
-    return Jn
+def get_J_no_act(data,res, profile, ind):
+    Jn = 0
+
+    if(profile == "nominal"):
+        Jn =  data.cpp*res.epp_nom + sum(res.da) - data.cr_plus*abs(res.Pr_plus) - data.cr_minus*abs(res.Pr_minus)
+    elif(profile == "positive"):
+        Jn =  (data.cpp*res.epp_alt_plus[ind] + sum(res.da) 
+               - data.cr_plus*abs(res.Pr_plus) - data.cr_minus*abs(res.Pr_minus) + get_intraday_plus(data, res)[ind])
+    elif(profile == "negative"):
+        Jn =  (data.cpp*res.epp_alt_minus[ind] + sum(res.da) 
+               - data.cr_minus*abs(res.Pr_minus) - data.cr_plus*abs(res.Pr_plus) + get_intraday_minus(data, res)[ind])
+    return Jn 
 
    

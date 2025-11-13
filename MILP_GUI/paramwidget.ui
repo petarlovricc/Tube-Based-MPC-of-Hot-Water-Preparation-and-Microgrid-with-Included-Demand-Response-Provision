@@ -1683,7 +1683,7 @@ QComboBox:hover {
         </property>
         <item>
          <property name="text">
-          <string>Without DR</string>
+          <string>No DR</string>
          </property>
         </item>
         <item>

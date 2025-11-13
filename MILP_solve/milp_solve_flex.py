@@ -173,30 +173,42 @@ def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
 
 
 if __name__ == "__main__":
-    heater_power=9
-    bat_cap=10
-    converter_power=2.5
-    tank_volume=0.2
-    PV_power=400
-    numberofPV=10
-    month=6
-    day=15
-    cpp=11
-    Q = 12
-    F = 1
-    R = 2
-    beginning_flex_ready = 11
-    end_flex_ready = 13
-    alfa_plus = 80
-    alfa_minus = 0.811
-    cr_plus = 0.7
-    cr_minus = 0.7
-    sgn_Pr = "positive and negative"
-    cid = 0.6
-    setwatertemp = 40
-    hub_name = "Household"
-    annual_load = 3.5
-    annual_water = 950
+    heater_power = 50                 # Water heater power (kW)
+    bat_cap = 500                     # Battery capacity (kWh)
+    converter_power = 250             # Inverter power (kW)
+    tank_volume = 5                   # Water tank capacity (m^3)
+    PV_power = 400                    # Solar panel power (Wp)
+    numberofPV = 2000                 # Number of PV panels
+
+    # Date
+    month = 2                         # from screenshot: 25.2.
+    day = 25
+
+    
+    Q = 12                            # Period between activations
+    F = 1                             # Activation duration
+    R = 1                             # Recovery duration
+
+    beginning_flex_ready = 0          # 0:00
+    end_flex_ready = 12               # 12:00
+
+    alfa_plus = 90                    # Acceptance probability +
+    alfa_minus = 80                   # Acceptance probability -
+
+    cr_plus = 0.7                     # Incentive + (€/kW)
+    cr_minus = 0.7                    # Incentive - (€/kW)
+
+    sgn_Pr = "positive and negative"  # Direction of flexibility service
+
+    
+
+    
+
+    hub_name = "Industry"             # Renewable energy hub
+
+    annual_load = 4000                # Annual electricity consumption (MWh)
+    annual_water = 3000               # Annual tempered water consumption (m^3)
+
 
     data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month,
                     day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus, cr_plus,
@@ -215,7 +227,7 @@ if __name__ == "__main__":
     heater = "C"
     solution = _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater)
 
-    solution = solution
+    
 
     
    

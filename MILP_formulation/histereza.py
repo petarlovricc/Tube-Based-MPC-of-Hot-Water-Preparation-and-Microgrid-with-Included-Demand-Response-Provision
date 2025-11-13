@@ -118,28 +118,22 @@ def histereza(data, res):
 
 
 def getTable(data,hist):
-    resultlist = np.zeros((10,1))
-    resultlist[0][0] = sum(hist.epsiloni)
-    resultlist[1][0] = max(hist.grid_power)*data.cpp
-    resultlist[2][0] = -1
+    resultlist = np.zeros((6,1))
+    resultlist[0][0] = -1
+    resultlist[1][0] = sum(hist.epsiloni)
+    resultlist[2][0] = max(hist.grid_power)*data.cpp
     resultlist[3][0] = -1
-    resultlist[4][0] = -1
-    resultlist[5][0] = -1
-    resultlist[6][0] = -1
-    resultlist[7][0] = -1
-    resultlist[8][0] = hist.Jn
-    resultlist[9][0] = -1
+    resultlist[4][0] = hist.Jn
+    resultlist[5][0] = hist.Jn
     return resultlist
 
 
 def getTable_flow(data,hist):
-    resultlist = np.zeros((6,1))
-    resultlist[0][0] = -1
-    resultlist[1][0] = -1
-    resultlist[2][0] = sum(hist.delte*data.P_heater)*0.25/1000
-    resultlist[3][0] = -1
-    resultlist[4][0] = -1
-    resultlist[5][0] = sum(hist.grid_energy)/1000
+    resultlist = np.zeros((3,1))
+   
+    resultlist[0][0] = sum(hist.delte*data.P_heater)*0.25/1000
+    resultlist[1][0] = sum(hist.grid_energy)/1000
+    resultlist[2][0] = -1
     return resultlist
 
 

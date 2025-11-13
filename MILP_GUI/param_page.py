@@ -179,7 +179,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
             self.lineEdit_9.setText("1")      # Water tank capacity (m3)
             self.lineEdit.setText("8000")     # Battery capacity (kWh)
             self.lineEdit_2.setText("2500")   # Inverter power (kW)
-            self.lineEdit_3.setText("100")    # Water heater power (kW)
+            self.lineEdit_3.setText("20")    # Water heater power (kW)
             self.lineEdit_4.setText("27500")  # Number of solar panels
             self.lineEdit_12.setText("400")   # Solar panel power (Wp)
             # Annual consumptions
@@ -188,7 +188,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
 
             self.timeEdit.setTime(QTime(12,0)) #endTime
             self.comboBox.setCurrentIndex(4) #Q = 12
-            self.dateEdit.setDate(QDate(2024,2,25))
+            self.dateEdit.setDate(QDate(2024,5,12))
 
             self.lineEdit_13.setText(str(0.7))  # cr+
             self.lineEdit_5.setText(str(0.7))  # cr-

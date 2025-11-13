@@ -848,7 +848,7 @@ class Ui_ParamWidget(object):
         self.comboBox_2.setItemText(1, QCoreApplication.translate("ParamWidget", u"Without DR", None))
 
         self.comboBox_2.setPlaceholderText(QCoreApplication.translate("ParamWidget", u"Choose model", None))
-        self.comboBox_3.setItemText(0, QCoreApplication.translate("ParamWidget", u"Without DR", None))
+        self.comboBox_3.setItemText(0, QCoreApplication.translate("ParamWidget", u"No DR", None))
         self.comboBox_3.setItemText(1, QCoreApplication.translate("ParamWidget", u"Hysteresis control", None))
         self.comboBox_3.setItemText(2, QCoreApplication.translate("ParamWidget", u"No DR and no peak power penalty", None))
 

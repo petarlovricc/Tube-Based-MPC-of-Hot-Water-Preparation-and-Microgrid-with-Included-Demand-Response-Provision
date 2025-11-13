@@ -38,31 +38,40 @@ def result_processing(data,matrices, solution):
 
     return res
 
-def getTable(data,res):
+def getTable(data, res):
+    # Energy cost / ukupni trošak za No DR
     Jn = get_Jn(data, res)
-    resultlist = np.zeros((11,1))
-    resultlist[0][0] = sum(res.eps)
-    resultlist[1][0] = res.eps_peak * data.cpp
-    resultlist[2][0] = -1
-    resultlist[3][0] = -1
-    resultlist[4][0] = -1
-    resultlist[5][0] = -1
-    resultlist[6][0] = -1
-    resultlist[7][0] = -1
-    resultlist[8][0] = Jn
-    resultlist[9][0] = -1
-    resultlist[10][0] = -1
+
+    # 6 parametara × 1 stupac (No DR)
+    resultlist = np.zeros((6, 1))
+
+    # 0) Reserved power P_res [kW]  -> nema rezerve u No DR
+    resultlist[0, 0] = -1
+
+    # 1) Day-ahead cost J_DA [€]
+    resultlist[1, 0] = sum(res.eps)
+
+    # 2) Peak power cost J_PP [€]
+    resultlist[2, 0] = res.eps_peak * data.cpp
+
+    # 3) Intra-day cost J_ID [€] -> u No DR nema intraday trgovanja
+    resultlist[3, 0] = -1
+
+    # 4) Energy cost [€]
+    resultlist[4, 0] = Jn
+
+    # 5) Operational cost [€]  -> prema slici isti kao energy cost
+    resultlist[5, 0] = Jn
+
     return resultlist
 
+
 def getTable_flow(data,res):
-    resultlist = np.zeros((7,1))
-    resultlist[0][0] = -1
-    resultlist[1][0] = -1
-    resultlist[2][0] = sum(res.delte*data.P_heater)*0.25/1000
-    resultlist[3][0] = -1
-    resultlist[4][0] = -1
-    resultlist[5][0] = sum(res.grid_energy)/1000
-    resultlist[6][0] = sum(res.EPV_used)/1000
+    resultlist = np.zeros((3,1))
+
+    resultlist[0][0] = sum(res.delte*data.P_heater)*0.25/1000
+    resultlist[1][0] = sum(res.grid_energy)/1000
+    resultlist[2][0] = sum(res.EPV_used)/1000
     return resultlist
 
 
