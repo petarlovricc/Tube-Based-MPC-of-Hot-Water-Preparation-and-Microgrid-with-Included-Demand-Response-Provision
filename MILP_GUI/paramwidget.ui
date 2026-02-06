@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2095</width>
-    <height>976</height>
+    <width>2101</width>
+    <height>988</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -300,9 +300,6 @@ QComboBox:hover {
         <property name="text">
          <string>Date</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-        </property>
         <property name="margin">
          <number>10</number>
         </property>
@@ -407,7 +404,7 @@ QComboBox:hover {
          </size>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -528,9 +525,6 @@ QComboBox:hover {
         <property name="text">
          <string>System parameters</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
-        </property>
        </widget>
       </item>
       <item row="4" column="0">
@@ -612,7 +606,7 @@ QComboBox:hover {
          <string>2.5</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="readOnly">
          <bool>false</bool>
@@ -705,7 +699,7 @@ QComboBox:hover {
          <string>10</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="readOnly">
          <bool>false</bool>
@@ -741,7 +735,7 @@ QComboBox:hover {
          <string>10</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="readOnly">
          <bool>false</bool>
@@ -777,7 +771,7 @@ QComboBox:hover {
          <string>2.5</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="readOnly">
          <bool>false</bool>
@@ -813,7 +807,7 @@ QComboBox:hover {
          <string>400</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="readOnly">
          <bool>false</bool>
@@ -853,7 +847,7 @@ QComboBox:hover {
          </size>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -889,7 +883,7 @@ QComboBox:hover {
          <string>0.2</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="readOnly">
          <bool>false</bool>
@@ -962,21 +956,21 @@ QComboBox:hover {
          </font>
         </property>
         <property name="currentText">
-         <string>positive</string>
+         <string>Positive</string>
         </property>
         <item>
          <property name="text">
-          <string>positive</string>
+          <string>Positive</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>negative</string>
+          <string>Negative</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>positive and negative</string>
+          <string>Positive and negative</string>
          </property>
         </item>
        </widget>
@@ -997,9 +991,6 @@ QComboBox:hover {
         </property>
         <property name="text">
          <string>Period between activations (Q)</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -1051,7 +1042,7 @@ QComboBox:hover {
          <string>80</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -1108,9 +1099,6 @@ QComboBox:hover {
         <property name="text">
          <string>Flexibility parameters</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
-        </property>
        </widget>
       </item>
       <item row="4" column="0">
@@ -1129,9 +1117,6 @@ QComboBox:hover {
         </property>
         <property name="text">
          <string>Activation duration (F) &amp; Recovery duration (R)</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -1208,7 +1193,7 @@ QComboBox:hover {
          <string>1</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -1285,7 +1270,7 @@ QComboBox:hover {
          <string>90</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -1318,7 +1303,7 @@ QComboBox:hover {
          <string>1</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -1453,7 +1438,7 @@ QComboBox:hover {
          </font>
         </property>
         <property name="layoutDirection">
-         <enum>Qt::LayoutDirection::LeftToRight</enum>
+         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="currentText">
          <string>2</string>

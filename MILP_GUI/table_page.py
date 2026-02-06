@@ -131,14 +131,15 @@ class TablePage(QWidget, Ui_TableWidget):
                                     self.tableWidget.setColumnCount(2)
                                     self.tableWidget.setItem(0, 1, QTableWidgetItem(self.paramPage.comboBox_2.currentText()))
                                     if (self.paramPage.comboBox_2.currentText() == "With DR"):
-                                        if (self.paramPage.comboBox_4.currentText() == "positive and negative"):
+                                        if (self.paramPage.comboBox_4.currentText() == "Positive and negative"):
                                             self.tableWidget.setColumnCount(4)
                                             self.tableWidget.setItem(0, 1, QTableWidgetItem("EDR Nominal"))
                                             self.tableWidget.setItem(0, 2, QTableWidgetItem("Positive EDR"))
                                             self.tableWidget.setItem(0, 3, QTableWidgetItem("Negative EDR"))
                                         else:
-                                            self.tableWidget.setColumnCount(2)
-                                            self.tableWidget.setItem(0, 1, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR"))        
+                                            self.tableWidget.setColumnCount(3)
+                                            self.tableWidget.setItem(0, 1, QTableWidgetItem("EDR Nominal"))
+                                            self.tableWidget.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR "))        
                                     else:       
                                         self.tableWidget.setColumnCount(2)
                                         self.tableWidget.setItem(0, 1, QTableWidgetItem(self.paramPage.comboBox_2.currentText()))
@@ -147,7 +148,7 @@ class TablePage(QWidget, Ui_TableWidget):
                 if(self.paramPage.radioButton.isChecked()):
                                     self.tableWidget.setRowCount(1 + len(self.texts_en))
                                     if (self.paramPage.comboBox_2.currentText() == "With DR"):
-                                        if (self.paramPage.comboBox_4.currentText() == "positive and negative"):
+                                        if (self.paramPage.comboBox_4.currentText() == "Positive and negative"):
                                             self.tableWidget.setColumnCount(5)
                                             self.tableWidget.setItem(0, 1, QTableWidgetItem("EDR Nominal"))
                                             self.tableWidget.setItem(0, 2, QTableWidgetItem("Positive EDR"))
@@ -156,7 +157,7 @@ class TablePage(QWidget, Ui_TableWidget):
                                         else:
                                             self.tableWidget.setColumnCount(4)
                                             self.tableWidget.setItem(0, 1, QTableWidgetItem("EDR Nominal"))
-                                            self.tableWidget.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR"))
+                                            self.tableWidget.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR "))
                                             self.tableWidget.setItem(0, 3, QTableWidgetItem(self.paramPage.comboBox_3.currentText()))           
                                     else:       
                                         self.tableWidget.setColumnCount(3)
@@ -167,15 +168,15 @@ class TablePage(QWidget, Ui_TableWidget):
                 if(self.paramPage.radioButton_2.isChecked()):
                                     self.tableWidget_2.setRowCount(1+len(self.texts_en_table2))
                                     if (self.paramPage.comboBox_2.currentText() == "With DR"):
-                                        if (self.paramPage.comboBox_4.currentText() == "positive and negative"):
-                                            self.tableWidget.setColumnCount(4)
-                                            self.tableWidget.setItem(0, 1, QTableWidgetItem("EDR Nominal"))
-                                            self.tableWidget.setItem(0, 2, QTableWidgetItem("Positive EDR"))
-                                            self.tableWidget.setItem(0, 3, QTableWidgetItem("Negative EDR"))
+                                        if (self.paramPage.comboBox_4.currentText() == "Positive and negative"):
+                                            self.tableWidget_2.setColumnCount(4)
+                                            self.tableWidget_2.setItem(0, 1, QTableWidgetItem("EDR Nominal"))
+                                            self.tableWidget_2.setItem(0, 2, QTableWidgetItem("Positive EDR"))
+                                            self.tableWidget_2.setItem(0, 3, QTableWidgetItem("Negative EDR"))
                                         else:
                                             self.tableWidget_2.setColumnCount(3)
                                             self.tableWidget_2.setItem(0, 1, QTableWidgetItem("EDR Nominal")) 
-                                            self.tableWidget_2.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR"))          
+                                            self.tableWidget_2.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR "))          
                                     else:       
                                         self.tableWidget_2.setColumnCount(2)
                                         self.tableWidget_2.setItem(0, 1, QTableWidgetItem(self.paramPage.comboBox_2.currentText()))
@@ -184,16 +185,16 @@ class TablePage(QWidget, Ui_TableWidget):
                 if(self.paramPage.radioButton.isChecked()):
                                     self.tableWidget_2.setRowCount(1+len(self.texts_en_table2))
                                     if (self.paramPage.comboBox_2.currentText() == "With DR"):
-                                        if (self.paramPage.comboBox_4.currentText() == "positive and negative"):
+                                        if (self.paramPage.comboBox_4.currentText() == "Positive and negative"):
                                             self.tableWidget_2.setColumnCount(5)
-                                            self.tableWidget_2.setItem(0,1, QTableWidgetItem("Nominal EDR"))
+                                            self.tableWidget_2.setItem(0,1, QTableWidgetItem("EDR Nominal"))
                                             self.tableWidget_2.setItem(0, 2, QTableWidgetItem("Positive EDR"))
                                             self.tableWidget_2.setItem(0, 3, QTableWidgetItem("Negative EDR"))
                                             self.tableWidget_2.setItem(0, 4, QTableWidgetItem(self.paramPage.comboBox_3.currentText()))
                                         else:
                                             self.tableWidget_2.setColumnCount(4)
-                                            self.tableWidget_2.setItem(0,1, QTableWidgetItem("Nominal EDR"))
-                                            self.tableWidget_2.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR"))
+                                            self.tableWidget_2.setItem(0,1, QTableWidgetItem("EDR Nominal"))
+                                            self.tableWidget_2.setItem(0, 2, QTableWidgetItem(f"{self.paramPage.comboBox_4.currentText()} EDR "))
                                             self.tableWidget_2.setItem(0, 3, QTableWidgetItem(self.paramPage.comboBox_3.currentText()))           
                                     else:       
                                         self.tableWidget_2.setColumnCount(3)
@@ -257,7 +258,7 @@ class TablePage(QWidget, Ui_TableWidget):
         if(self.result1):
             if(self.flex):
                 #Tablica costova
-                if(self.paramPage.comboBox_4.currentText() == "positive and negative"):
+                if(self.paramPage.comboBox_4.currentText() == "Positive and negative"):
                     for i in range(self.result1.table_plus.shape[0]):
                         if(self.result1.table_nom[i][0] != -1):
                             self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_nom[i][alt_scen],2))))        
@@ -286,7 +287,7 @@ class TablePage(QWidget, Ui_TableWidget):
                         item.setTextAlignment(Qt.AlignCenter)
 
 
-                elif(self.paramPage.comboBox_4.currentText() == "positive"):
+                elif(self.paramPage.comboBox_4.currentText() == "Positive"):
                         for i in range(self.result1.table_plus.shape[0]):
                             if(self.result1.table_nom[i][0] != -1):
                                 self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_nom[i][alt_scen],2))))        
@@ -300,13 +301,13 @@ class TablePage(QWidget, Ui_TableWidget):
                             else:
                                 self.tableWidget.setItem(i+1, 2, QTableWidgetItem("-"))
                         
-                        item = self.tableWidget.item(i+1, 1)
-                        item.setTextAlignment(Qt.AlignCenter)
-                        item = self.tableWidget.item(i+1, 2)
-                        item.setTextAlignment(Qt.AlignCenter)
+                            item = self.tableWidget.item(i+1, 1)
+                            item.setTextAlignment(Qt.AlignCenter)
+                            item = self.tableWidget.item(i+1, 2)
+                            item.setTextAlignment(Qt.AlignCenter)
 
 
-                elif(self.paramPage.comboBox_4.currentText() == "negative"):
+                elif(self.paramPage.comboBox_4.currentText() == "Negative"):
                         for i in range(self.result1.table_plus.shape[0]):
                             if(self.result1.table_nom[i][0] != -1):
                                 self.tableWidget.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table_nom[i][alt_scen],2))))        
@@ -329,7 +330,7 @@ class TablePage(QWidget, Ui_TableWidget):
                  pass
 
                 #Tablica energija
-                if(self.paramPage.comboBox_4.currentText() == "positive and negative"):
+                if(self.paramPage.comboBox_4.currentText() == "Positive and negative"):
                     for i in range(self.result1.table2_plus.shape[0]):
                         if(self.result1.table2_nom[i][0] != -1):
                             self.tableWidget_2.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table2_nom[i][alt_scen],2))))
@@ -352,7 +353,7 @@ class TablePage(QWidget, Ui_TableWidget):
                         item = self.tableWidget_2.item(i+1, 3)
                         item.setTextAlignment(Qt.AlignCenter)
                 
-                elif(self.paramPage.comboBox_4.currentText() == "positive"):
+                elif(self.paramPage.comboBox_4.currentText() == "Positive"):
                      for i in range(self.result1.table2_plus.shape[0]):
                         if(self.result1.table2_nom[i][0] != -1):
                             self.tableWidget_2.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table2_nom[i][alt_scen],2))))
@@ -367,7 +368,7 @@ class TablePage(QWidget, Ui_TableWidget):
                         item = self.tableWidget_2.item(i+1, 2)
                         item.setTextAlignment(Qt.AlignCenter)
 
-                elif(self.paramPage.comboBox_4.currentText() == "negative"):
+                elif(self.paramPage.comboBox_4.currentText() == "Negative"):
                      for i in range(self.result1.table2_minus.shape[0]):
                         if(self.result1.table2_nom[i][0] != -1):
                             self.tableWidget_2.setItem(i+1, 1, QTableWidgetItem(str(round(self.result1.table2_nom[i][alt_scen],2))))
@@ -422,13 +423,13 @@ class TablePage(QWidget, Ui_TableWidget):
                     item = self.tableWidget.item(i+1, 4)
                     item.setTextAlignment(Qt.AlignCenter)
 
-            elif self.tableWidget.columnCount() == 3:
+            elif self.tableWidget.columnCount() == 4:
                  for i in range(self.result2.table.shape[0]):
                     if(self.result2.table[i][0] != -1):
-                        self.tableWidget.setItem(i+1, 2, QTableWidgetItem(str(round(self.result2.table[i][0],2))))
+                        self.tableWidget.setItem(i+1, 3, QTableWidgetItem(str(round(self.result2.table[i][0],2))))
                     else:
-                        self.tableWidget.setItem(i+1, 2, QTableWidgetItem("-"))
-                    item = self.tableWidget.item(i+1, 2)
+                        self.tableWidget.setItem(i+1, 3, QTableWidgetItem("-"))
+                    item = self.tableWidget.item(i+1, 3)
                     item.setTextAlignment(Qt.AlignCenter)
             else:
                  pass
@@ -446,13 +447,13 @@ class TablePage(QWidget, Ui_TableWidget):
                     item = self.tableWidget_2.item(i+1, 4)
                     item.setTextAlignment(Qt.AlignCenter)
 
-            elif self.tableWidget_2.columnCount() == 3:
+            elif self.tableWidget_2.columnCount() == 4:
                  for i in range(self.result2.table2.shape[0]):
                     if(self.result2.table2[i][0] != -1):
-                        self.tableWidget_2.setItem(i+1, 2, QTableWidgetItem(str(round(self.result2.table2[i][0],2))))
+                        self.tableWidget_2.setItem(i+1, 3, QTableWidgetItem(str(round(self.result2.table2[i][0],2))))
                     else:
-                        self.tableWidget_2.setItem(i+1, 2, QTableWidgetItem("-"))
-                    item = self.tableWidget_2.item(i+1, 2)
+                        self.tableWidget_2.setItem(i+1, 3, QTableWidgetItem("-"))
+                    item = self.tableWidget_2.item(i+1, 3)
                     item.setTextAlignment(Qt.AlignCenter)
             else:
                  pass

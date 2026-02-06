@@ -583,7 +583,7 @@ class ResultPage(QWidget):
                             
                             label=f"Desired water temperature")
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "heater", self.paramPage.comboBox_4.currentText())
-                    self.plot_profiles(data, "setTemp")
+                    self.plot_profiles(self.data, "setTemp")
                 if self.comboBox.currentIndex() == 1:
                     self.label_graph.setText(self.comboBox.itemText(1))
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "batt", self.paramPage.comboBox_4.currentText())
