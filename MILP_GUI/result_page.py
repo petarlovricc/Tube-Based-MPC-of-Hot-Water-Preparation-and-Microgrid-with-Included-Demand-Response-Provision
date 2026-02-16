@@ -93,8 +93,10 @@ class ResultPage(QWidget):
         self.retButton = QPushButton("Back to parameters")
         self.infoButton = QPushButton("Optimization results")
         self.resultDate = QDateEdit()
+        self.new_optimization_Button = QPushButton("Remove results")
         self.saveButton = QPushButton("Save")
         self.resultDate.setDisplayFormat("d.M.")
+        self.resultDate.setWrapping(True)
         self.hlayout.addWidget(self.resultDate)
         
         self.labelLayout = QGridLayout()
@@ -109,6 +111,7 @@ class ResultPage(QWidget):
         self.toolbarlayout.addWidget(self.label_graph)
         self.toolbarlayout.addStretch()
         self.toolbarlayout.addWidget(self.saveButton)
+        self.toolbarlayout.addWidget(self.new_optimization_Button)
         
         
         self.canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -119,12 +122,14 @@ class ResultPage(QWidget):
         self.setLayout(self.reslayout) 
         #signali i slotovi
         self.comboBox.currentIndexChanged.connect(self.setGraph)
+        self.comboBox.currentIndexChanged.connect(self.hide_comboBox_and_date)
         self.alt_combo.currentIndexChanged.connect(self.setGraph)
         self.comboBox.currentIndexChanged.connect(self.changeGraphFont)
         self.alt_combo.currentIndexChanged.connect(self.changeGraphFont)
         self.update_alt_combo()
         self.resultDate.dateChanged.connect(self.changePlot)
         self.saveButton.pressed.connect(self.save_ieee_pdf)
+        self.new_optimization_Button.pressed.connect(self.clear_results)
         
        
 
@@ -136,6 +141,27 @@ class ResultPage(QWidget):
     def changePlot(self):
         self.paramPage.dateEdit.setDate(self.resultDate.date())
         self.setGraph()
+
+    def clear_results(self):
+        self.result1 = None
+        self.result2 = None
+        self.hide_comboBox_and_date()
+        self.setGraph()
+
+    def hide_comboBox_and_date(self):
+        if self.result1 is not None:
+            self.resultDate.hide()
+            self.infoButton.show()
+        else: 
+            self.resultDate.show() 
+            self.infoButton.hide()   
+            self.alt_combo.hide()        
+        if self.result1 is not None and self.result1.case == "noflex":
+            self.alt_combo.hide()
+        elif self.result1 is None:
+            self.alt_combo.hide()
+        else:
+            self.alt_combo.show()
         
          
 
@@ -162,7 +188,7 @@ class ResultPage(QWidget):
                     label.set_ha('center')
 
         ax = self.canvas.axes
-        ax.set_xlabel("Time [h]", fontsize=pointSize, fontfamily="serif", labelpad=pointSize*0.5)
+        ax.set_xlabel(r"Time [h]", fontsize=pointSize, fontfamily="serif", labelpad=pointSize*0.5)
         ax.set_ylabel(self.getYlabel(self.comboBox.currentIndex()), fontsize=pointSize, fontfamily="serif", labelpad=pointSize*0.5)
 
         ax.tick_params(axis='both', which='major', labelsize=pointSize)
@@ -194,6 +220,7 @@ class ResultPage(QWidget):
                 self.pointSize = new_pt
                 self.changeGraphFont()
                 self.canvas.fig.tight_layout()
+                self.hide_comboBox_and_date()
 
                  
                
@@ -223,17 +250,23 @@ class ResultPage(QWidget):
         
     def getYlabel(self, index):
         if index in [0, 9]:
-            label = "Temperature [°C]"
-        elif index in [1,3,4]:
-            label = "Energy [kWh]"
+            label = r"Temperature [$^\circ$C]"
+            
+        elif index in [1, 3, 4]:
+            label = r"Energy [kWh]"
+            
         elif index in [5]:
-            label = "Volume [m3]"
+            label = r"Volume [$m^3/h$]"
+            
         elif index in [6, 7, 10]:
-             label = "Power [kW]"
+            label = r"Power [kW]"
+            
         elif index in [11]:
-             label = "Price [€/kW]"
+            label = r"Price [$€/kW$]"
+            
         else:
             label = ""
+            
         return label
 
 
@@ -667,7 +700,7 @@ class ResultPage(QWidget):
             alt_minus = res.tempC_alt_minus
             nom = res.tempC_nom
             ymax = max(alt_plus.max(), alt_minus.max(), nom.max())
-            self.canvas.axes.set_ylim(0, 1.6 * ymax)
+            self.canvas.axes.set_ylim(min(data.set_water_temp_C)-10, 1.3 * ymax)
             
 
         elif var == "batt":
@@ -676,7 +709,7 @@ class ResultPage(QWidget):
             alt_minus = res.SOE_alt_minus.ravel() / 1000
             nom = res.SOE_nom / 1000
             ymax = max(alt_plus.max(), alt_minus.max(), nom.max())
-            self.canvas.axes.set_ylim(0, 1.6 * ymax)
+            self.canvas.axes.set_ylim(0, 1.3 * ymax)
 
         # Nominalno stanje
         self.canvas.axes.plot(np.arange(data.N + 1), nom,
@@ -786,12 +819,12 @@ class ResultPage(QWidget):
 
         # Postavi osi nakon skaliranja
         if var == "grid":
-            self.canvas.axes.set_ylim(min(-1.0, -1.6 * abs(ymin)),
-                                    max(1.0, 1.6 * ymax))
+            self.canvas.axes.set_ylim(min(-1.0, -1.3 * abs(ymin)),
+                                    max(1.0, 1.5 * ymax))
         elif var == "delte":
             self.canvas.axes.set_ylim(0, 1.7 * ymax)
         else:
-            self.canvas.axes.set_ylim(0, 1.6 * ymax)
+            self.canvas.axes.set_ylim(0, 1.3 * ymax)
 
         # Nominalna vrijednost (dashed)
         self.canvas.axes.step(np.arange(data.N+1), np.append(nom, nom[-1]),
@@ -815,44 +848,44 @@ class ResultPage(QWidget):
 
             graph = res.tempC
             if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.tempC), 1.6*max(graph)))
+                self.canvas.axes.set_ylim(min(data.set_water_temp_C)-10, max(1.3*max(self.result1.tempC), 1.3*max(graph)))
             else:
-                 self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.tempC_nom),max(1.6*max(self.result1.tempC_alt_plus),1.6*max(self.result1.tempC_alt_minus), 1.6*max(graph))))
+                 self.canvas.axes.set_ylim(min(data.set_water_temp_C)-10, max(1.3*max(self.result1.tempC_nom),max(1.3*max(self.result1.tempC_alt_plus),1.3*max(self.result1.tempC_alt_minus), 1.3*max(graph))))
         elif var == "batt":
             graph = res.SOE
             #Wx -> kWx; x = {"", h}
             graph = graph/1000
             if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(0, 1.6*max(graph))
+                self.canvas.axes.set_ylim(0, 1.3*max(graph))
         if(res.case == "noflexcpp"):
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "magenta", label = "No DR and peak power")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "magenta", label = "No DR and peak power")
         elif (res.case == "hist"):
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "brown", label = "Hysteresis control")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "brown", label = "Hysteresis control")
         else:
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.6, color = "blue", label = "No DR")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "blue", label = "No DR")
                  
 
     def plot_input_output_noflex(self, data, res, var):
         if var == "Ech":
             graph = res.Ech / 1000.0
             if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.Ech)/1000.0,
-                                                1.6*max(graph)))
+                self.canvas.axes.set_ylim(0, max(1.3*max(self.result1.Ech)/1000.0,
+                                                1.3*max(graph)))
             else:
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.Ech_nom)/1000.0,
-                                                1.6*max(self.result1.Ech_alt_plus)/1000.0,
-                                                1.6*max(self.result1.Ech_alt_minus)/1000.0,
-                                                1.6*max(graph)))
+                self.canvas.axes.set_ylim(0, max(1.3*max(self.result1.Ech_nom)/1000.0,
+                                                1.3*max(self.result1.Ech_alt_plus)/1000.0,
+                                                1.3*max(self.result1.Ech_alt_minus)/1000.0,
+                                                1.3*max(graph)))
         elif var == "Edch":
             graph = res.Edch / 1000.0
             if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.Edch)/1000.0,
-                                                1.6*max(graph)))
+                self.canvas.axes.set_ylim(0, max(1.3*max(self.result1.Edch)/1000.0,
+                                                1.3*max(graph)))
             else:
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.Edch_nom)/1000.0,
-                                                1.6*max(self.result1.Edch_alt_plus)/1000.0,
-                                                1.6*max(self.result1.Edch_alt_minus)/1000.0,
-                                                1.6*max(graph)))
+                self.canvas.axes.set_ylim(0, max(1.3*max(self.result1.Edch_nom)/1000.0,
+                                                1.3*max(self.result1.Edch_alt_plus)/1000.0,
+                                                1.3*max(self.result1.Edch_alt_minus)/1000.0,
+                                                1.3*max(graph)))
         elif var == "delte":
             graph = res.delte 
             if not self.result1.case == "flex":
@@ -865,58 +898,52 @@ class ResultPage(QWidget):
                                                 1.7*max(graph)))
         elif var == "epvused":
             graph = res.PPV_used / 1000.0
-            if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.PPV_used)/1000.0,
-                                                1.6*max(graph)))
-            else:
-                self.canvas.axes.set_ylim(0, max(1.6*max(self.result1.PPV_nom)/1000.0,
-                                                1.6*max(self.result1.PPV_alt_plus)/1000.0,
-                                                1.6*max(self.result1.PPV_alt_minus)/1000.0,
-                                                1.6*max(graph)))
+            self.canvas.axes.set_ylim(0, 1.2*max(data.pv_power / 1000.0))
+           
         elif var == "grid":
             graph = res.grid_power / 1000.0
             if not self.result1.case == "flex":
-                self.canvas.axes.set_ylim(min(-1.0, -1.6*abs(graph.min())),
-                                        max(1.0, 1.6*max(graph)))
+                self.canvas.axes.set_ylim(min(-1.0, -1.3*abs(graph.min())),
+                                        max(1.0, 1.5*max(graph)))
             else:
                 self.canvas.axes.set_ylim(
                     min(-1.0,
-                        -1.6*abs(self.result1.grid_power_nom.min()/1000.0),
-                        -1.6*abs(self.result1.grid_power_alt_plus.min()/1000.0),
-                        -1.6*abs(self.result1.grid_power_alt_minus.min()/1000.0),
-                        -1.6*abs(graph.min())),
+                        -1.3*abs(self.result1.grid_power_nom.min()/1000.0),
+                        -1.3*abs(self.result1.grid_power_alt_plus.min()/1000.0),
+                        -1.3*abs(self.result1.grid_power_alt_minus.min()/1000.0),
+                        -1.3*abs(graph.min())),
                     max(1.0,
-                        1.6*max(graph),
-                        1.6*self.result1.grid_power_nom.max()/1000.0,
-                        1.6*self.result1.grid_power_alt_plus.max()/1000.0,
-                        1.6*self.result1.grid_power_alt_minus.max()/1000.0)
+                        1.3*max(graph),
+                        1.3*self.result1.grid_power_nom.max()/1000.0,
+                        1.3*self.result1.grid_power_alt_plus.max()/1000.0,
+                        1.3*self.result1.grid_power_alt_minus.max()/1000.0)
                 )
 
         if (res.case == "noflexcpp"):
             if(var == "epvused"):
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
-                                    linestyle="--", linewidth=1.6, color="magenta",
+                                    linestyle="--", linewidth=1.3, color="magenta",
                                     where="post", label="No DR and PP)")
             else:
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
-                                    linestyle="--", linewidth=1.6, color="magenta",
+                                    linestyle="--", linewidth=1.3, color="magenta",
                                     where="post", label="No DR and peak power")
         elif (res.case == "hist" and var != "epvused"):
             self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
-                                linestyle="--", linewidth=1.6, color="brown",
+                                linestyle="--", linewidth=1.3, color="brown",
                                 where="post", label="Hysteresis control")
         elif (res.case == "hist" and var == "epvused"):
             self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
-                                linestyle="--", linewidth=1.6, color="brown",
+                                linestyle="--", linewidth=1.3, color="brown",
                                 where="post", label="Hysteresis control")
         else:
             if(var == "epvused"):
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
-                                    linestyle="--", linewidth=1.6, color="blue",
+                                    linestyle="--", linewidth=1.3, color="blue",
                                     where="post", label="No DR")
             else:
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
-                                    linestyle="--", linewidth=1.6, color="blue",
+                                    linestyle="--", linewidth=1.3, color="blue",
                                     where="post", label="No DR")
 
                  
@@ -926,7 +953,7 @@ class ResultPage(QWidget):
         if var == "envtemp":
             graph = data.env_temp_C
         elif var == "flow":
-            graph = data.water_demand
+            graph = data.water_demand/data.ro_water  # pretvorba iz kg/s u m3/s
         elif var == "setTemp":
             graph = data.set_water_temp_C
         elif var == "nc_load":

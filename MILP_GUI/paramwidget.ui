@@ -1099,6 +1099,9 @@ QComboBox:hover {
         <property name="text">
          <string>Flexibility parameters</string>
         </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
        </widget>
       </item>
       <item row="4" column="0">
@@ -1624,12 +1627,12 @@ QComboBox:hover {
         </property>
         <item>
          <property name="text">
-          <string>With DR</string>
+          <string>Demand Response</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Without DR</string>
+          <string>No Demand Response</string>
          </property>
         </item>
        </widget>
@@ -1668,17 +1671,17 @@ QComboBox:hover {
         </property>
         <item>
          <property name="text">
-          <string>No DR</string>
+          <string>No Demand Response</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Hysteresis control</string>
+          <string>Hysteresis Control</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>No DR and no peak power penalty</string>
+          <string>No DR &amp; No Peak Pricing</string>
          </property>
         </item>
        </widget>

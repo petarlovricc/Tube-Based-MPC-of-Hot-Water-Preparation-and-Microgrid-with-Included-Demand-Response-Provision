@@ -531,6 +531,7 @@ class Ui_ParamWidget(object):
         self.title4.setSizePolicy(sizePolicy3)
         self.title4.setMaximumSize(QSize(16777215, 70))
         self.title4.setFont(font3)
+        self.title4.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.title4, 0, 0, 2, 3)
 
@@ -839,13 +840,13 @@ class Ui_ParamWidget(object):
         self.groupBox.setTitle(QCoreApplication.translate("ParamWidget", u"Compare two models", None))
         self.radioButton.setText(QCoreApplication.translate("ParamWidget", u"Yes", None))
         self.radioButton_2.setText(QCoreApplication.translate("ParamWidget", u"No", None))
-        self.comboBox_2.setItemText(0, QCoreApplication.translate("ParamWidget", u"With DR", None))
-        self.comboBox_2.setItemText(1, QCoreApplication.translate("ParamWidget", u"Without DR", None))
+        self.comboBox_2.setItemText(0, QCoreApplication.translate("ParamWidget", u"Demand Response", None))
+        self.comboBox_2.setItemText(1, QCoreApplication.translate("ParamWidget", u"No Demand Response", None))
 
         self.comboBox_2.setPlaceholderText(QCoreApplication.translate("ParamWidget", u"Choose model", None))
-        self.comboBox_3.setItemText(0, QCoreApplication.translate("ParamWidget", u"No DR", None))
-        self.comboBox_3.setItemText(1, QCoreApplication.translate("ParamWidget", u"Hysteresis control", None))
-        self.comboBox_3.setItemText(2, QCoreApplication.translate("ParamWidget", u"No DR and no peak power penalty", None))
+        self.comboBox_3.setItemText(0, QCoreApplication.translate("ParamWidget", u"No Demand Response", None))
+        self.comboBox_3.setItemText(1, QCoreApplication.translate("ParamWidget", u"Hysteresis Control", None))
+        self.comboBox_3.setItemText(2, QCoreApplication.translate("ParamWidget", u"No DR & No Peak Pricing", None))
 
         self.comboBox_3.setPlaceholderText(QCoreApplication.translate("ParamWidget", u"Choose model", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("ParamWidget", u"Heater settings", None))
