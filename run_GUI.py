@@ -5,4 +5,4 @@ from MILP_GUI import main_window
 
 
 if __name__ == "__main__":
-    main_window.main() 
+    main_window.main()
