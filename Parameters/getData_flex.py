@@ -11,7 +11,7 @@ from Profiles_Readers.da_prices_reader import CSV_da_reader
 
 #funkcija koja sluzi stvaranju strukture
 def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr, hub_name,
-            annual_load, annual_water):
+            annual_load, annual_water, neg_prices_on_off):
     data = Structure()
     ######################################################
     #PARAMETRI SUSTAVA
@@ -110,7 +110,7 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
 
     #Cijene davanja i preuzimanja te cijena vršne snage
     len_mon = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    cpp = 3.642 #[€/kW]
+    cpp = 4.188 #[€/kW]
     data.cpp = cpp/(1000*len_mon[month-1])  #cijena vrsne snage €/kWh --> €/Wh te na razini jednog dana
 
     renewable_energy_charge_eur_per_kwh = 0.013239/1000
@@ -121,11 +121,23 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     day_ahead_prices = data.da_prices_reader + renewable_energy_charge_eur_per_kwh
     + excise_duty_eur_per_kwh
 
-    data.da_prices = np.where(
+    data.day_ahead_prices = data.da_prices_reader
+
+    if(neg_prices_on_off == True):
+        data.da_prices = np.where(
                 day_ahead_prices >= 0,
                 day_ahead_prices * (1 + commission),
                 day_ahead_prices * (1 - commission),
             )
+    else:
+        data.da_prices = np.clip(np.where(
+                    day_ahead_prices >= 0,
+                    day_ahead_prices * (1 + commission),
+                    day_ahead_prices * (1 - commission),
+                ), a_min=renewable_energy_charge_eur_per_kwh
+        + excise_duty_eur_per_kwh* (1 + commission), a_max=None)
+
+
 
     sell_prices = setConvexPrices(data)
     data.sell_prices = np.where(

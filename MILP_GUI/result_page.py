@@ -66,8 +66,8 @@ class ResultPage(QWidget):
             "Battery discharging power",
             "Tempered water consumption",
             "PV generation",
-            "Uncontrollable load",
-            "Target water temperature",
+            "Non-controllable load",
+            "Desired water temperature",
             "Ambient temperature",
             "Grid power",
             "Day-ahead electricity prices"
@@ -90,13 +90,15 @@ class ResultPage(QWidget):
             }
         """)
         self.buttonLayout = QHBoxLayout()
-        self.retButton = QPushButton("Back to parameters")
+        self.retButton = QPushButton("Back")
         self.infoButton = QPushButton("Optimization results")
         self.resultDate = QDateEdit()
         self.new_optimization_Button = QPushButton("Remove results")
         self.saveButton = QPushButton("Save")
         self.resultDate.setDisplayFormat("d.M.")
         self.resultDate.setWrapping(True)
+
+
         self.hlayout.addWidget(self.resultDate)
         
         self.labelLayout = QGridLayout()
@@ -657,7 +659,8 @@ class ResultPage(QWidget):
             sgn_Pr=params[17],
             hub_name = params[18],
             annual_load= params[19],
-            annual_water=params[20]
+            annual_water=params[20],
+            neg_prices_on_off=params[21]
         )
 
     
@@ -858,11 +861,11 @@ class ResultPage(QWidget):
             if not self.result1.case == "flex":
                 self.canvas.axes.set_ylim(0, 1.3*max(graph))
         if(res.case == "noflexcpp"):
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "magenta", label = "No DR and peak power")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "magenta", label = "No EDR and no peak pricing")
         elif (res.case == "hist"):
             self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "brown", label = "Hysteresis control")
         else:
-            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "blue", label = "No DR")
+            self.canvas.axes.plot(np.arange(data.N + 1), graph , linestyle="--", linewidth=1.3, color = "blue", label = "No EDR")
                  
 
     def plot_input_output_noflex(self, data, res, var):
@@ -923,11 +926,11 @@ class ResultPage(QWidget):
             if(var == "epvused"):
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.3, color="magenta",
-                                    where="post", label="No DR and PP)")
+                                    where="post", label="No EDR and peak pricing)")
             else:
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.3, color="magenta",
-                                    where="post", label="No DR and peak power")
+                                    where="post", label="No EDR and peak pricing")
         elif (res.case == "hist" and var != "epvused"):
             self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                 linestyle="--", linewidth=1.3, color="brown",
@@ -940,11 +943,11 @@ class ResultPage(QWidget):
             if(var == "epvused"):
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.3, color="blue",
-                                    where="post", label="No DR")
+                                    where="post", label="No EDR")
             else:
                 self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                                     linestyle="--", linewidth=1.3, color="blue",
-                                    where="post", label="No DR")
+                                    where="post", label="No EDR")
 
                  
 
@@ -961,7 +964,7 @@ class ResultPage(QWidget):
         elif var == "pv":
             graph = data.pv_power / 1000.0        # W -> kW
         elif var == "daprice":
-            graph = data.da_prices*(10**3)        # W -> kW
+            graph = data.day_ahead_prices*(10**3)        # W -> kW
 
         self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                             linestyle="--", linewidth=1, color="purple",

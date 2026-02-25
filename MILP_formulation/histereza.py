@@ -84,6 +84,9 @@ def histereza(data, res):
             hist.Edch.append(-i)
         else: 
             hist.Edch.append(0)
+
+    hist.Ech = np.array(hist.Ech)
+    hist.Edch = np.array(hist.Edch)
     
     hist.temp = np.array(temperature)
     hist.SOE = np.array(SOC_arr)
@@ -133,7 +136,7 @@ def getTable_flow(data,hist):
    
     resultlist[0][0] = sum(hist.delte*data.P_heater)*0.25/1000
     resultlist[1][0] = sum(hist.grid_energy)/1000
-    resultlist[2][0] = -1
+    resultlist[2][0] = sum(data.pv_energy)/1000
     return resultlist
 
 

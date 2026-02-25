@@ -11,6 +11,7 @@ from Parameters.getData_flex import getData
 import MILP_formulation.MILP_flex as flex
 import time
 
+
 def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     
     '''
@@ -172,6 +173,8 @@ def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
     return sol
 
 
+
+
 if __name__ == "__main__":
     heater_power = 50                 # Water heater power (kW)
     bat_cap = 500                     # Battery capacity (kWh)
@@ -232,4 +235,5 @@ if __name__ == "__main__":
     
    
  
+    
     

@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QDateEdit, QGridLayout,
-    QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QRadioButton, QSizePolicy, QSpinBox,
-    QTimeEdit, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
+    QGridLayout, QGroupBox, QHBoxLayout, QLabel,
+    QLineEdit, QPushButton, QRadioButton, QSizePolicy,
+    QSpinBox, QTimeEdit, QWidget)
 from MILP_GUI import resources_rc
 
 class Ui_ParamWidget(object):
@@ -129,8 +129,11 @@ class Ui_ParamWidget(object):
 "QRadioButton::hover {\n"
 "color: #51FDBA;\n"
 "}\n"
-"QRadioBut"
-                        "ton{\n"
+"QCheckBox"
+                        "::hover {\n"
+"color: #51FDBA;\n"
+"}\n"
+"QRadioButton{\n"
 "margin: 8px 0px;\n"
 "}\n"
 "\n"
@@ -143,7 +146,9 @@ class Ui_ParamWidget(object):
 "QLabel#title3 {\n"
 "	margin: 8px 16px\n"
 "}\n"
-"\n"
+"QCheckBox#checkBox {\n"
+"	margin: 8px 16px\n"
+"}\n"
 "\n"
 "QSpinBox, QDateEdit, QTimeEdit, QComboBox{\n"
 "    background-color: #002949;\n"
@@ -217,7 +222,7 @@ class Ui_ParamWidget(object):
         sizePolicy.setHeightForWidth(self.label_8.sizePolicy().hasHeightForWidth())
         self.label_8.setSizePolicy(sizePolicy)
         self.label_8.setMinimumSize(QSize(0, 65))
-        self.label_8.setMaximumSize(QSize(16777215, 65))
+        self.label_8.setMaximumSize(QSize(100, 65))
         font = QFont()
         font.setPointSize(12)
         font.setBold(True)
@@ -232,12 +237,29 @@ class Ui_ParamWidget(object):
         sizePolicy.setHeightForWidth(self.dateEdit.sizePolicy().hasHeightForWidth())
         self.dateEdit.setSizePolicy(sizePolicy)
         self.dateEdit.setMinimumSize(QSize(0, 30))
-        self.dateEdit.setMaximumSize(QSize(500, 70))
+        self.dateEdit.setMaximumSize(QSize(200, 70))
         self.dateEdit.setFont(font)
         self.dateEdit.setDateTime(QDateTime(QDate(2025, 6, 25), QTime(0, 0, 0)))
         self.dateEdit.setDate(QDate(2025, 6, 25))
 
         self.horizontalLayout_2.addWidget(self.dateEdit)
+
+        self.label_13 = QLabel(self.widget)
+        self.label_13.setObjectName(u"label_13")
+
+        self.horizontalLayout_2.addWidget(self.label_13)
+
+        self.checkBox = QCheckBox(self.widget)
+        self.checkBox.setObjectName(u"checkBox")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
+        self.checkBox.setSizePolicy(sizePolicy2)
+        self.checkBox.setFont(font)
+        self.checkBox.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+
+        self.horizontalLayout_2.addWidget(self.checkBox)
 
 
         self.gridLayout_7.addWidget(self.widget, 0, 1, 1, 1)
@@ -257,7 +279,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_7.setSizePolicy(sizePolicy)
         self.lineEdit_7.setMinimumSize(QSize(0, 30))
         self.lineEdit_7.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_7.setAlignment(Qt.AlignCenter)
+        self.lineEdit_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.lineEdit_7, 8, 1, 1, 1)
 
@@ -299,11 +321,11 @@ class Ui_ParamWidget(object):
 
         self.label_4 = QLabel(self.widget_3)
         self.label_4.setObjectName(u"label_4")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
-        self.label_4.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
+        self.label_4.setSizePolicy(sizePolicy3)
         font2 = QFont()
         font2.setPointSize(12)
         font2.setBold(False)
@@ -313,23 +335,21 @@ class Ui_ParamWidget(object):
 
         self.title1 = QLabel(self.widget_3)
         self.title1.setObjectName(u"title1")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.title1.sizePolicy().hasHeightForWidth())
-        self.title1.setSizePolicy(sizePolicy3)
+        sizePolicy2.setHeightForWidth(self.title1.sizePolicy().hasHeightForWidth())
+        self.title1.setSizePolicy(sizePolicy2)
         self.title1.setMaximumSize(QSize(16777215, 70))
         font3 = QFont()
         font3.setPointSize(14)
         font3.setBold(True)
         self.title1.setFont(font3)
+        self.title1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.title1, 0, 0, 1, 2)
 
         self.label_2 = QLabel(self.widget_3)
         self.label_2.setObjectName(u"label_2")
-        sizePolicy2.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy3)
         self.label_2.setFont(font2)
 
         self.gridLayout.addWidget(self.label_2, 4, 0, 1, 1)
@@ -342,8 +362,8 @@ class Ui_ParamWidget(object):
 
         self.label_11 = QLabel(self.widget_3)
         self.label_11.setObjectName(u"label_11")
-        sizePolicy2.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
-        self.label_11.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
+        self.label_11.setSizePolicy(sizePolicy3)
         self.label_11.setFont(font2)
 
         self.gridLayout.addWidget(self.label_11, 2, 0, 1, 1)
@@ -355,31 +375,31 @@ class Ui_ParamWidget(object):
         self.lineEdit_2.setMinimumSize(QSize(0, 30))
         self.lineEdit_2.setMaximumSize(QSize(1000, 70))
         self.lineEdit_2.setFont(font1)
-        self.lineEdit_2.setAlignment(Qt.AlignCenter)
+        self.lineEdit_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lineEdit_2.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_2, 4, 1, 1, 1)
 
         self.label_3 = QLabel(self.widget_3)
         self.label_3.setObjectName(u"label_3")
-        sizePolicy2.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy3)
         self.label_3.setFont(font2)
 
         self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
 
         self.label_20 = QLabel(self.widget_3)
         self.label_20.setObjectName(u"label_20")
-        sizePolicy2.setHeightForWidth(self.label_20.sizePolicy().hasHeightForWidth())
-        self.label_20.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.label_20.sizePolicy().hasHeightForWidth())
+        self.label_20.setSizePolicy(sizePolicy3)
         self.label_20.setFont(font2)
 
         self.gridLayout.addWidget(self.label_20, 7, 0, 1, 1)
 
         self.label = QLabel(self.widget_3)
         self.label.setObjectName(u"label")
-        sizePolicy2.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy3)
         self.label.setFont(font2)
 
         self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
@@ -391,7 +411,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_4.setMinimumSize(QSize(0, 30))
         self.lineEdit_4.setMaximumSize(QSize(1000, 70))
         self.lineEdit_4.setFont(font1)
-        self.lineEdit_4.setAlignment(Qt.AlignCenter)
+        self.lineEdit_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lineEdit_4.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_4, 6, 1, 1, 1)
@@ -403,7 +423,7 @@ class Ui_ParamWidget(object):
         self.lineEdit.setMinimumSize(QSize(0, 30))
         self.lineEdit.setMaximumSize(QSize(1000, 70))
         self.lineEdit.setFont(font1)
-        self.lineEdit.setAlignment(Qt.AlignCenter)
+        self.lineEdit.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lineEdit.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit, 3, 1, 1, 1)
@@ -415,7 +435,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_3.setMinimumSize(QSize(0, 30))
         self.lineEdit_3.setMaximumSize(QSize(1000, 70))
         self.lineEdit_3.setFont(font1)
-        self.lineEdit_3.setAlignment(Qt.AlignCenter)
+        self.lineEdit_3.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lineEdit_3.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_3, 5, 1, 1, 1)
@@ -427,7 +447,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_12.setMinimumSize(QSize(0, 30))
         self.lineEdit_12.setMaximumSize(QSize(1000, 70))
         self.lineEdit_12.setFont(font1)
-        self.lineEdit_12.setAlignment(Qt.AlignCenter)
+        self.lineEdit_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lineEdit_12.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_12, 7, 1, 1, 1)
@@ -444,7 +464,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_8.setSizePolicy(sizePolicy)
         self.lineEdit_8.setMinimumSize(QSize(0, 30))
         self.lineEdit_8.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_8.setAlignment(Qt.AlignCenter)
+        self.lineEdit_8.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.lineEdit_8, 9, 1, 1, 1)
 
@@ -456,7 +476,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_9.setMinimumSize(QSize(0, 30))
         self.lineEdit_9.setMaximumSize(QSize(1000, 70))
         self.lineEdit_9.setFont(font1)
-        self.lineEdit_9.setAlignment(Qt.AlignCenter)
+        self.lineEdit_9.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.lineEdit_9.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_9, 2, 1, 1, 1)
@@ -474,67 +494,6 @@ class Ui_ParamWidget(object):
         self.gridLayout_4 = QGridLayout(self.widget_4)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.gridLayout_4.setContentsMargins(20, 20, 20, 20)
-        self.comboBox_4 = QComboBox(self.widget_4)
-        self.comboBox_4.addItem("")
-        self.comboBox_4.addItem("")
-        self.comboBox_4.addItem("")
-        self.comboBox_4.setObjectName(u"comboBox_4")
-        sizePolicy.setHeightForWidth(self.comboBox_4.sizePolicy().hasHeightForWidth())
-        self.comboBox_4.setSizePolicy(sizePolicy)
-        self.comboBox_4.setMinimumSize(QSize(0, 30))
-        self.comboBox_4.setMaximumSize(QSize(1000, 70))
-        self.comboBox_4.setFont(font2)
-
-        self.gridLayout_4.addWidget(self.comboBox_4, 8, 1, 1, 2)
-
-        self.label_19 = QLabel(self.widget_4)
-        self.label_19.setObjectName(u"label_19")
-        sizePolicy.setHeightForWidth(self.label_19.sizePolicy().hasHeightForWidth())
-        self.label_19.setSizePolicy(sizePolicy)
-        self.label_19.setFont(font2)
-
-        self.gridLayout_4.addWidget(self.label_19, 7, 0, 1, 1)
-
-        self.label_5 = QLabel(self.widget_4)
-        self.label_5.setObjectName(u"label_5")
-        sizePolicy.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy)
-        self.label_5.setFont(font2)
-
-        self.gridLayout_4.addWidget(self.label_5, 8, 0, 1, 1)
-
-        self.lineEdit_6 = QLineEdit(self.widget_4)
-        self.lineEdit_6.setObjectName(u"lineEdit_6")
-        sizePolicy.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
-        self.lineEdit_6.setSizePolicy(sizePolicy)
-        self.lineEdit_6.setMinimumSize(QSize(0, 30))
-        self.lineEdit_6.setMaximumSize(QSize(500, 70))
-        self.lineEdit_6.setFont(font1)
-        self.lineEdit_6.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.lineEdit_6, 10, 2, 1, 1)
-
-        self.spinBox_2 = QSpinBox(self.widget_4)
-        self.spinBox_2.setObjectName(u"spinBox_2")
-        sizePolicy.setHeightForWidth(self.spinBox_2.sizePolicy().hasHeightForWidth())
-        self.spinBox_2.setSizePolicy(sizePolicy)
-        self.spinBox_2.setMinimumSize(QSize(0, 30))
-        self.spinBox_2.setMaximumSize(QSize(500, 70))
-        self.spinBox_2.setFont(font1)
-        self.spinBox_2.setValue(1)
-
-        self.gridLayout_4.addWidget(self.spinBox_2, 4, 1, 1, 1)
-
-        self.title4 = QLabel(self.widget_4)
-        self.title4.setObjectName(u"title4")
-        sizePolicy3.setHeightForWidth(self.title4.sizePolicy().hasHeightForWidth())
-        self.title4.setSizePolicy(sizePolicy3)
-        self.title4.setMaximumSize(QSize(16777215, 70))
-        self.title4.setFont(font3)
-        self.title4.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.title4, 0, 0, 2, 3)
-
         self.label_17 = QLabel(self.widget_4)
         self.label_17.setObjectName(u"label_17")
         sizePolicy.setHeightForWidth(self.label_17.sizePolicy().hasHeightForWidth())
@@ -543,78 +502,13 @@ class Ui_ParamWidget(object):
 
         self.gridLayout_4.addWidget(self.label_17, 4, 0, 1, 1)
 
-        self.timeEdit = QTimeEdit(self.widget_4)
-        self.timeEdit.setObjectName(u"timeEdit")
-        sizePolicy.setHeightForWidth(self.timeEdit.sizePolicy().hasHeightForWidth())
-        self.timeEdit.setSizePolicy(sizePolicy)
-        self.timeEdit.setMinimumSize(QSize(0, 30))
-        self.timeEdit.setMaximumSize(QSize(500, 70))
-        self.timeEdit.setFont(font1)
-        self.timeEdit.setDateTime(QDateTime(QDate(2024, 1, 1), QTime(22, 59, 0)))
-        self.timeEdit.setTime(QTime(22, 59, 0))
+        self.label_5 = QLabel(self.widget_4)
+        self.label_5.setObjectName(u"label_5")
+        sizePolicy.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy)
+        self.label_5.setFont(font2)
 
-        self.gridLayout_4.addWidget(self.timeEdit, 2, 2, 1, 1)
-
-        self.lineEdit_13 = QLineEdit(self.widget_4)
-        self.lineEdit_13.setObjectName(u"lineEdit_13")
-        sizePolicy.setHeightForWidth(self.lineEdit_13.sizePolicy().hasHeightForWidth())
-        self.lineEdit_13.setSizePolicy(sizePolicy)
-        self.lineEdit_13.setMinimumSize(QSize(0, 30))
-        self.lineEdit_13.setMaximumSize(QSize(500, 70))
-        self.lineEdit_13.setFont(font1)
-        self.lineEdit_13.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.lineEdit_13, 9, 1, 1, 1)
-
-        self.label_23 = QLabel(self.widget_4)
-        self.label_23.setObjectName(u"label_23")
-        sizePolicy.setHeightForWidth(self.label_23.sizePolicy().hasHeightForWidth())
-        self.label_23.setSizePolicy(sizePolicy)
-        self.label_23.setFont(font2)
-
-        self.gridLayout_4.addWidget(self.label_23, 10, 0, 1, 1)
-
-        self.label_14 = QLabel(self.widget_4)
-        self.label_14.setObjectName(u"label_14")
-        sizePolicy.setHeightForWidth(self.label_14.sizePolicy().hasHeightForWidth())
-        self.label_14.setSizePolicy(sizePolicy)
-        self.label_14.setMaximumSize(QSize(16777215, 16777215))
-        self.label_14.setFont(font2)
-
-        self.gridLayout_4.addWidget(self.label_14, 2, 0, 1, 1)
-
-        self.lineEdit_14 = QLineEdit(self.widget_4)
-        self.lineEdit_14.setObjectName(u"lineEdit_14")
-        sizePolicy.setHeightForWidth(self.lineEdit_14.sizePolicy().hasHeightForWidth())
-        self.lineEdit_14.setSizePolicy(sizePolicy)
-        self.lineEdit_14.setMinimumSize(QSize(0, 30))
-        self.lineEdit_14.setMaximumSize(QSize(500, 70))
-        self.lineEdit_14.setFont(font1)
-        self.lineEdit_14.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.lineEdit_14, 10, 1, 1, 1)
-
-        self.lineEdit_5 = QLineEdit(self.widget_4)
-        self.lineEdit_5.setObjectName(u"lineEdit_5")
-        sizePolicy.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
-        self.lineEdit_5.setSizePolicy(sizePolicy)
-        self.lineEdit_5.setMinimumSize(QSize(0, 30))
-        self.lineEdit_5.setMaximumSize(QSize(500, 70))
-        self.lineEdit_5.setFont(font1)
-        self.lineEdit_5.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.lineEdit_5, 9, 2, 1, 1)
-
-        self.spinBox = QSpinBox(self.widget_4)
-        self.spinBox.setObjectName(u"spinBox")
-        sizePolicy.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
-        self.spinBox.setSizePolicy(sizePolicy)
-        self.spinBox.setMinimumSize(QSize(0, 30))
-        self.spinBox.setMaximumSize(QSize(500, 70))
-        self.spinBox.setFont(font1)
-        self.spinBox.setValue(2)
-
-        self.gridLayout_4.addWidget(self.spinBox, 4, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.label_5, 8, 0, 1, 1)
 
         self.timeEdit_2 = QTimeEdit(self.widget_4)
         self.timeEdit_2.setObjectName(u"timeEdit_2")
@@ -628,6 +522,28 @@ class Ui_ParamWidget(object):
 
         self.gridLayout_4.addWidget(self.timeEdit_2, 2, 1, 1, 1)
 
+        self.lineEdit_6 = QLineEdit(self.widget_4)
+        self.lineEdit_6.setObjectName(u"lineEdit_6")
+        sizePolicy.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
+        self.lineEdit_6.setSizePolicy(sizePolicy)
+        self.lineEdit_6.setMinimumSize(QSize(0, 30))
+        self.lineEdit_6.setMaximumSize(QSize(500, 70))
+        self.lineEdit_6.setFont(font1)
+        self.lineEdit_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.lineEdit_6, 10, 2, 1, 1)
+
+        self.lineEdit_13 = QLineEdit(self.widget_4)
+        self.lineEdit_13.setObjectName(u"lineEdit_13")
+        sizePolicy.setHeightForWidth(self.lineEdit_13.sizePolicy().hasHeightForWidth())
+        self.lineEdit_13.setSizePolicy(sizePolicy)
+        self.lineEdit_13.setMinimumSize(QSize(0, 30))
+        self.lineEdit_13.setMaximumSize(QSize(500, 70))
+        self.lineEdit_13.setFont(font1)
+        self.lineEdit_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.lineEdit_13, 9, 1, 1, 1)
+
         self.label_21 = QLabel(self.widget_4)
         self.label_21.setObjectName(u"label_21")
         sizePolicy.setHeightForWidth(self.label_21.sizePolicy().hasHeightForWidth())
@@ -637,6 +553,80 @@ class Ui_ParamWidget(object):
         self.label_21.setFont(font2)
 
         self.gridLayout_4.addWidget(self.label_21, 9, 0, 1, 1)
+
+        self.label_14 = QLabel(self.widget_4)
+        self.label_14.setObjectName(u"label_14")
+        sizePolicy.setHeightForWidth(self.label_14.sizePolicy().hasHeightForWidth())
+        self.label_14.setSizePolicy(sizePolicy)
+        self.label_14.setMaximumSize(QSize(16777215, 16777215))
+        self.label_14.setFont(font2)
+
+        self.gridLayout_4.addWidget(self.label_14, 2, 0, 1, 1)
+
+        self.comboBox_4 = QComboBox(self.widget_4)
+        self.comboBox_4.addItem("")
+        self.comboBox_4.addItem("")
+        self.comboBox_4.addItem("")
+        self.comboBox_4.setObjectName(u"comboBox_4")
+        sizePolicy.setHeightForWidth(self.comboBox_4.sizePolicy().hasHeightForWidth())
+        self.comboBox_4.setSizePolicy(sizePolicy)
+        self.comboBox_4.setMinimumSize(QSize(0, 30))
+        self.comboBox_4.setMaximumSize(QSize(1000, 70))
+        self.comboBox_4.setFont(font2)
+
+        self.gridLayout_4.addWidget(self.comboBox_4, 8, 1, 1, 2)
+
+        self.lineEdit_14 = QLineEdit(self.widget_4)
+        self.lineEdit_14.setObjectName(u"lineEdit_14")
+        sizePolicy.setHeightForWidth(self.lineEdit_14.sizePolicy().hasHeightForWidth())
+        self.lineEdit_14.setSizePolicy(sizePolicy)
+        self.lineEdit_14.setMinimumSize(QSize(0, 30))
+        self.lineEdit_14.setMaximumSize(QSize(500, 70))
+        self.lineEdit_14.setFont(font1)
+        self.lineEdit_14.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.lineEdit_14, 10, 1, 1, 1)
+
+        self.title4 = QLabel(self.widget_4)
+        self.title4.setObjectName(u"title4")
+        sizePolicy2.setHeightForWidth(self.title4.sizePolicy().hasHeightForWidth())
+        self.title4.setSizePolicy(sizePolicy2)
+        self.title4.setMaximumSize(QSize(16777215, 70))
+        self.title4.setFont(font3)
+        self.title4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.title4, 0, 0, 2, 3)
+
+        self.spinBox = QSpinBox(self.widget_4)
+        self.spinBox.setObjectName(u"spinBox")
+        sizePolicy.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
+        self.spinBox.setSizePolicy(sizePolicy)
+        self.spinBox.setMinimumSize(QSize(0, 30))
+        self.spinBox.setMaximumSize(QSize(500, 70))
+        self.spinBox.setFont(font1)
+        self.spinBox.setValue(2)
+
+        self.gridLayout_4.addWidget(self.spinBox, 4, 2, 1, 1)
+
+        self.label_19 = QLabel(self.widget_4)
+        self.label_19.setObjectName(u"label_19")
+        sizePolicy.setHeightForWidth(self.label_19.sizePolicy().hasHeightForWidth())
+        self.label_19.setSizePolicy(sizePolicy)
+        self.label_19.setFont(font2)
+
+        self.gridLayout_4.addWidget(self.label_19, 7, 0, 1, 1)
+
+        self.timeEdit = QTimeEdit(self.widget_4)
+        self.timeEdit.setObjectName(u"timeEdit")
+        sizePolicy.setHeightForWidth(self.timeEdit.sizePolicy().hasHeightForWidth())
+        self.timeEdit.setSizePolicy(sizePolicy)
+        self.timeEdit.setMinimumSize(QSize(0, 30))
+        self.timeEdit.setMaximumSize(QSize(500, 70))
+        self.timeEdit.setFont(font1)
+        self.timeEdit.setDateTime(QDateTime(QDate(2024, 1, 1), QTime(22, 59, 0)))
+        self.timeEdit.setTime(QTime(22, 59, 0))
+
+        self.gridLayout_4.addWidget(self.timeEdit, 2, 2, 1, 1)
 
         self.comboBox = QComboBox(self.widget_4)
         self.comboBox.addItem("")
@@ -651,9 +641,39 @@ class Ui_ParamWidget(object):
         self.comboBox.setMinimumSize(QSize(0, 30))
         self.comboBox.setMaximumSize(QSize(1000, 70))
         self.comboBox.setFont(font1)
-        self.comboBox.setLayoutDirection(Qt.LeftToRight)
+        self.comboBox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
 
         self.gridLayout_4.addWidget(self.comboBox, 7, 1, 1, 2)
+
+        self.label_23 = QLabel(self.widget_4)
+        self.label_23.setObjectName(u"label_23")
+        sizePolicy.setHeightForWidth(self.label_23.sizePolicy().hasHeightForWidth())
+        self.label_23.setSizePolicy(sizePolicy)
+        self.label_23.setFont(font2)
+
+        self.gridLayout_4.addWidget(self.label_23, 10, 0, 1, 1)
+
+        self.spinBox_2 = QSpinBox(self.widget_4)
+        self.spinBox_2.setObjectName(u"spinBox_2")
+        sizePolicy.setHeightForWidth(self.spinBox_2.sizePolicy().hasHeightForWidth())
+        self.spinBox_2.setSizePolicy(sizePolicy)
+        self.spinBox_2.setMinimumSize(QSize(0, 30))
+        self.spinBox_2.setMaximumSize(QSize(500, 70))
+        self.spinBox_2.setFont(font1)
+        self.spinBox_2.setValue(1)
+
+        self.gridLayout_4.addWidget(self.spinBox_2, 4, 1, 1, 1)
+
+        self.lineEdit_5 = QLineEdit(self.widget_4)
+        self.lineEdit_5.setObjectName(u"lineEdit_5")
+        sizePolicy.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
+        self.lineEdit_5.setSizePolicy(sizePolicy)
+        self.lineEdit_5.setMinimumSize(QSize(0, 30))
+        self.lineEdit_5.setMaximumSize(QSize(500, 70))
+        self.lineEdit_5.setFont(font1)
+        self.lineEdit_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.lineEdit_5, 9, 2, 1, 1)
 
 
         self.gridLayout_7.addWidget(self.widget_4, 1, 1, 1, 1)
@@ -793,6 +813,8 @@ class Ui_ParamWidget(object):
         self.label_9.setText("")
         self.label_8.setText(QCoreApplication.translate("ParamWidget", u"Date", None))
         self.dateEdit.setDisplayFormat(QCoreApplication.translate("ParamWidget", u"d.M.", None))
+        self.label_13.setText("")
+        self.checkBox.setText(QCoreApplication.translate("ParamWidget", u"Allow negative buying prices", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("ParamWidget", u"Renewable energy hub", None))
         self.radioButton_9.setText(QCoreApplication.translate("ParamWidget", u"Household", None))
         self.radioButton_7.setText(QCoreApplication.translate("ParamWidget", u"Industry", None))
@@ -813,22 +835,20 @@ class Ui_ParamWidget(object):
         self.lineEdit_12.setText(QCoreApplication.translate("ParamWidget", u"400", None))
         self.label_10.setText(QCoreApplication.translate("ParamWidget", u"Annual electricity consumption (MWh)", None))
         self.lineEdit_9.setText(QCoreApplication.translate("ParamWidget", u"0.2", None))
+        self.label_17.setText(QCoreApplication.translate("ParamWidget", u"Activation duration (F) & Imbalance duration (R)", None))
+        self.label_5.setText(QCoreApplication.translate("ParamWidget", u"Direction of flexibility service", None))
+        self.lineEdit_6.setText(QCoreApplication.translate("ParamWidget", u"80", None))
+        self.lineEdit_13.setText(QCoreApplication.translate("ParamWidget", u"1", None))
+        self.label_21.setText(QCoreApplication.translate("ParamWidget", u"Flexibility incentive [EUR/kW] (pos. & neg.)", None))
+        self.label_14.setText(QCoreApplication.translate("ParamWidget", u"Flexibility availability start & end", None))
         self.comboBox_4.setItemText(0, QCoreApplication.translate("ParamWidget", u"Positive", None))
         self.comboBox_4.setItemText(1, QCoreApplication.translate("ParamWidget", u"Negative", None))
         self.comboBox_4.setItemText(2, QCoreApplication.translate("ParamWidget", u"Positive and negative", None))
 
         self.comboBox_4.setCurrentText(QCoreApplication.translate("ParamWidget", u"Positive", None))
-        self.label_19.setText(QCoreApplication.translate("ParamWidget", u"Period between activations (Q)", None))
-        self.label_5.setText(QCoreApplication.translate("ParamWidget", u"Direction of flexibility service", None))
-        self.lineEdit_6.setText(QCoreApplication.translate("ParamWidget", u"80", None))
-        self.title4.setText(QCoreApplication.translate("ParamWidget", u"Flexibility parameters", None))
-        self.label_17.setText(QCoreApplication.translate("ParamWidget", u"Activation duration (F) & Recovery duration (R)", None))
-        self.lineEdit_13.setText(QCoreApplication.translate("ParamWidget", u"1", None))
-        self.label_23.setText(QCoreApplication.translate("ParamWidget", u"Flexibility acceptance probability [%] (pos. & neg.)", None))
-        self.label_14.setText(QCoreApplication.translate("ParamWidget", u"Flexibility availability start & end", None))
         self.lineEdit_14.setText(QCoreApplication.translate("ParamWidget", u"90", None))
-        self.lineEdit_5.setText(QCoreApplication.translate("ParamWidget", u"1", None))
-        self.label_21.setText(QCoreApplication.translate("ParamWidget", u"Flexibility incentive [EUR/kW] (pos. & neg.)", None))
+        self.title4.setText(QCoreApplication.translate("ParamWidget", u"Flexibility parameters", None))
+        self.label_19.setText(QCoreApplication.translate("ParamWidget", u"Recovery duration (Q)", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("ParamWidget", u"2", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("ParamWidget", u"4", None))
         self.comboBox.setItemText(2, QCoreApplication.translate("ParamWidget", u"6", None))
@@ -837,6 +857,8 @@ class Ui_ParamWidget(object):
         self.comboBox.setItemText(5, QCoreApplication.translate("ParamWidget", u"24", None))
 
         self.comboBox.setCurrentText(QCoreApplication.translate("ParamWidget", u"2", None))
+        self.label_23.setText(QCoreApplication.translate("ParamWidget", u"Flexibility acceptance probability [%] (pos. & neg.)", None))
+        self.lineEdit_5.setText(QCoreApplication.translate("ParamWidget", u"1", None))
         self.groupBox.setTitle(QCoreApplication.translate("ParamWidget", u"Compare two models", None))
         self.radioButton.setText(QCoreApplication.translate("ParamWidget", u"Yes", None))
         self.radioButton_2.setText(QCoreApplication.translate("ParamWidget", u"No", None))
@@ -852,7 +874,7 @@ class Ui_ParamWidget(object):
         self.groupBox_2.setTitle(QCoreApplication.translate("ParamWidget", u"Heater settings", None))
         self.radioButton_3.setText(QCoreApplication.translate("ParamWidget", u"Continuous", None))
         self.radioButton_4.setText(QCoreApplication.translate("ParamWidget", u"Discrete", None))
-        self.pushButton_2.setText(QCoreApplication.translate("ParamWidget", u"Show optimization graphs", None))
+        self.pushButton_2.setText(QCoreApplication.translate("ParamWidget", u"Energy and price profiles", None))
         self.pushButton.setText(QCoreApplication.translate("ParamWidget", u"Start optimization", None))
     # retranslateUi
 

@@ -302,6 +302,7 @@ class ParamPage(QWidget, Ui_ParamWidget):
             params.append(self.hub_name)
             params.append(float(self.lineEdit_7.text()))
             params.append(float(self.lineEdit_8.text()))
+            params.append(self.checkBox.isChecked())  # neg_prices_on_off
            
             
         except ValueError:

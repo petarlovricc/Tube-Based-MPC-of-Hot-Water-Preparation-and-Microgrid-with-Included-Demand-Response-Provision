@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         """)
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
-        self.flex = self.paramPage.comboBox_2.currentText() == "With DR"
+        self.flex = self.paramPage.comboBox_2.currentText() == "Demand Response"
         self.solved = False
         self.time_to_solve = None
         #Povezivanje slotova i connectiona 
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         
 
     def update_flex(self):
-        self.flex = self.paramPage.comboBox_2.currentText() == "With DR"
+        self.flex = self.paramPage.comboBox_2.currentText() == "Demand Response"
     
 
     def toTable(self):

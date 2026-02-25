@@ -278,7 +278,7 @@ class Ui_TableWidget(object):
     def retranslateUi(self, TableWidget):
         TableWidget.setWindowTitle(QCoreApplication.translate("TableWidget", u"Form", None))
         self.label.setText(QCoreApplication.translate("TableWidget", u"Optimization results", None))
-        self.graphButton.setText(QCoreApplication.translate("TableWidget", u"Back to graphs", None))
+        self.graphButton.setText(QCoreApplication.translate("TableWidget", u"Back", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("TableWidget", u"Cost metrics", None))
         self.graphButton_2.setText(QCoreApplication.translate("TableWidget", u"Return to graphs", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("TableWidget", u"Energy metrics", None))

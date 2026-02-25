@@ -246,7 +246,7 @@ QTableWidget, QTableView {
              </size>
             </property>
             <property name="text">
-             <string>Back to graphs</string>
+             <string>Back</string>
             </property>
            </widget>
           </item>

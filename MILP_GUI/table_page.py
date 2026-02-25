@@ -16,7 +16,7 @@ class TablePage(QWidget, Ui_TableWidget):
         self.paramPage = paramPage
         
         self.texts_en = [
-            "Reserved power P<sub>res</sub> [kW]",
+            "Reserved power P<sub>r</sub> [kW]",
             "Day-ahead cost J<sub>DA</sub> [€]",
             "Peak power cost J<sub>PP</sub> [€]",
             "Intra-day cost J<sub>ID</sub> [€]",
@@ -534,6 +534,7 @@ class TablePage(QWidget, Ui_TableWidget):
             sgn_Pr=params[17],
             hub_name = params[18],
             annual_load = params[19],
-            annual_water = params[20]
+            annual_water = params[20],
+            neg_prices_on_off=params[21]
         )
 
