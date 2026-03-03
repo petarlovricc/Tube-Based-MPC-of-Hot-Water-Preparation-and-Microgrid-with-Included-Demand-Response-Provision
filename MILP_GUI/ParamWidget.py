@@ -273,16 +273,6 @@ class Ui_ParamWidget(object):
         self.widget_3.setStyleSheet(u"")
         self.gridLayout = QGridLayout(self.widget_3)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.lineEdit_7 = QLineEdit(self.widget_3)
-        self.lineEdit_7.setObjectName(u"lineEdit_7")
-        sizePolicy.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
-        self.lineEdit_7.setSizePolicy(sizePolicy)
-        self.lineEdit_7.setMinimumSize(QSize(0, 30))
-        self.lineEdit_7.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout.addWidget(self.lineEdit_7, 8, 1, 1, 1)
-
         self.groupBox_4 = QGroupBox(self.widget_3)
         self.groupBox_4.setObjectName(u"groupBox_4")
         self.groupBox_4.setMinimumSize(QSize(300, 0))
@@ -319,19 +309,75 @@ class Ui_ParamWidget(object):
 
         self.gridLayout.addWidget(self.groupBox_4, 1, 0, 1, 2)
 
-        self.label_4 = QLabel(self.widget_3)
-        self.label_4.setObjectName(u"label_4")
+        self.label_20 = QLabel(self.widget_3)
+        self.label_20.setObjectName(u"label_20")
         sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
-        self.label_4.setSizePolicy(sizePolicy3)
+        sizePolicy3.setHeightForWidth(self.label_20.sizePolicy().hasHeightForWidth())
+        self.label_20.setSizePolicy(sizePolicy3)
         font2 = QFont()
         font2.setPointSize(12)
         font2.setBold(False)
-        self.label_4.setFont(font2)
+        self.label_20.setFont(font2)
 
-        self.gridLayout.addWidget(self.label_4, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_20, 7, 0, 1, 1)
+
+        self.label_10 = QLabel(self.widget_3)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setFont(font1)
+
+        self.gridLayout.addWidget(self.label_10, 8, 0, 1, 1)
+
+        self.lineEdit_4 = QLineEdit(self.widget_3)
+        self.lineEdit_4.setObjectName(u"lineEdit_4")
+        sizePolicy.setHeightForWidth(self.lineEdit_4.sizePolicy().hasHeightForWidth())
+        self.lineEdit_4.setSizePolicy(sizePolicy)
+        self.lineEdit_4.setMinimumSize(QSize(0, 30))
+        self.lineEdit_4.setMaximumSize(QSize(1000, 70))
+        self.lineEdit_4.setFont(font1)
+        self.lineEdit_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_4.setReadOnly(False)
+
+        self.gridLayout.addWidget(self.lineEdit_4, 6, 1, 1, 1)
+
+        self.lineEdit_3 = QLineEdit(self.widget_3)
+        self.lineEdit_3.setObjectName(u"lineEdit_3")
+        sizePolicy.setHeightForWidth(self.lineEdit_3.sizePolicy().hasHeightForWidth())
+        self.lineEdit_3.setSizePolicy(sizePolicy)
+        self.lineEdit_3.setMinimumSize(QSize(0, 30))
+        self.lineEdit_3.setMaximumSize(QSize(1000, 70))
+        self.lineEdit_3.setFont(font1)
+        self.lineEdit_3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_3.setReadOnly(False)
+
+        self.gridLayout.addWidget(self.lineEdit_3, 5, 1, 1, 1)
+
+        self.lineEdit_2 = QLineEdit(self.widget_3)
+        self.lineEdit_2.setObjectName(u"lineEdit_2")
+        sizePolicy.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
+        self.lineEdit_2.setSizePolicy(sizePolicy)
+        self.lineEdit_2.setMinimumSize(QSize(0, 30))
+        self.lineEdit_2.setMaximumSize(QSize(1000, 70))
+        self.lineEdit_2.setFont(font1)
+        self.lineEdit_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_2.setReadOnly(False)
+
+        self.gridLayout.addWidget(self.lineEdit_2, 4, 1, 1, 1)
+
+        self.label_12 = QLabel(self.widget_3)
+        self.label_12.setObjectName(u"label_12")
+        self.label_12.setFont(font1)
+
+        self.gridLayout.addWidget(self.label_12, 9, 0, 1, 1)
+
+        self.label_3 = QLabel(self.widget_3)
+        self.label_3.setObjectName(u"label_3")
+        sizePolicy3.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy3)
+        self.label_3.setFont(font2)
+
+        self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
 
         self.title1 = QLabel(self.widget_3)
         self.title1.setObjectName(u"title1")
@@ -346,100 +392,6 @@ class Ui_ParamWidget(object):
 
         self.gridLayout.addWidget(self.title1, 0, 0, 1, 2)
 
-        self.label_2 = QLabel(self.widget_3)
-        self.label_2.setObjectName(u"label_2")
-        sizePolicy3.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy3)
-        self.label_2.setFont(font2)
-
-        self.gridLayout.addWidget(self.label_2, 4, 0, 1, 1)
-
-        self.label_12 = QLabel(self.widget_3)
-        self.label_12.setObjectName(u"label_12")
-        self.label_12.setFont(font1)
-
-        self.gridLayout.addWidget(self.label_12, 9, 0, 1, 1)
-
-        self.label_11 = QLabel(self.widget_3)
-        self.label_11.setObjectName(u"label_11")
-        sizePolicy3.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
-        self.label_11.setSizePolicy(sizePolicy3)
-        self.label_11.setFont(font2)
-
-        self.gridLayout.addWidget(self.label_11, 2, 0, 1, 1)
-
-        self.lineEdit_2 = QLineEdit(self.widget_3)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
-        sizePolicy.setHeightForWidth(self.lineEdit_2.sizePolicy().hasHeightForWidth())
-        self.lineEdit_2.setSizePolicy(sizePolicy)
-        self.lineEdit_2.setMinimumSize(QSize(0, 30))
-        self.lineEdit_2.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_2.setFont(font1)
-        self.lineEdit_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.lineEdit_2.setReadOnly(False)
-
-        self.gridLayout.addWidget(self.lineEdit_2, 4, 1, 1, 1)
-
-        self.label_3 = QLabel(self.widget_3)
-        self.label_3.setObjectName(u"label_3")
-        sizePolicy3.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy3)
-        self.label_3.setFont(font2)
-
-        self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
-
-        self.label_20 = QLabel(self.widget_3)
-        self.label_20.setObjectName(u"label_20")
-        sizePolicy3.setHeightForWidth(self.label_20.sizePolicy().hasHeightForWidth())
-        self.label_20.setSizePolicy(sizePolicy3)
-        self.label_20.setFont(font2)
-
-        self.gridLayout.addWidget(self.label_20, 7, 0, 1, 1)
-
-        self.label = QLabel(self.widget_3)
-        self.label.setObjectName(u"label")
-        sizePolicy3.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy3)
-        self.label.setFont(font2)
-
-        self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
-
-        self.lineEdit_4 = QLineEdit(self.widget_3)
-        self.lineEdit_4.setObjectName(u"lineEdit_4")
-        sizePolicy.setHeightForWidth(self.lineEdit_4.sizePolicy().hasHeightForWidth())
-        self.lineEdit_4.setSizePolicy(sizePolicy)
-        self.lineEdit_4.setMinimumSize(QSize(0, 30))
-        self.lineEdit_4.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_4.setFont(font1)
-        self.lineEdit_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.lineEdit_4.setReadOnly(False)
-
-        self.gridLayout.addWidget(self.lineEdit_4, 6, 1, 1, 1)
-
-        self.lineEdit = QLineEdit(self.widget_3)
-        self.lineEdit.setObjectName(u"lineEdit")
-        sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
-        self.lineEdit.setSizePolicy(sizePolicy)
-        self.lineEdit.setMinimumSize(QSize(0, 30))
-        self.lineEdit.setMaximumSize(QSize(1000, 70))
-        self.lineEdit.setFont(font1)
-        self.lineEdit.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.lineEdit.setReadOnly(False)
-
-        self.gridLayout.addWidget(self.lineEdit, 3, 1, 1, 1)
-
-        self.lineEdit_3 = QLineEdit(self.widget_3)
-        self.lineEdit_3.setObjectName(u"lineEdit_3")
-        sizePolicy.setHeightForWidth(self.lineEdit_3.sizePolicy().hasHeightForWidth())
-        self.lineEdit_3.setSizePolicy(sizePolicy)
-        self.lineEdit_3.setMinimumSize(QSize(0, 30))
-        self.lineEdit_3.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_3.setFont(font1)
-        self.lineEdit_3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.lineEdit_3.setReadOnly(False)
-
-        self.gridLayout.addWidget(self.lineEdit_3, 5, 1, 1, 1)
-
         self.lineEdit_12 = QLineEdit(self.widget_3)
         self.lineEdit_12.setObjectName(u"lineEdit_12")
         sizePolicy.setHeightForWidth(self.lineEdit_12.sizePolicy().hasHeightForWidth())
@@ -451,22 +403,6 @@ class Ui_ParamWidget(object):
         self.lineEdit_12.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_12, 7, 1, 1, 1)
-
-        self.label_10 = QLabel(self.widget_3)
-        self.label_10.setObjectName(u"label_10")
-        self.label_10.setFont(font1)
-
-        self.gridLayout.addWidget(self.label_10, 8, 0, 1, 1)
-
-        self.lineEdit_8 = QLineEdit(self.widget_3)
-        self.lineEdit_8.setObjectName(u"lineEdit_8")
-        sizePolicy.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
-        self.lineEdit_8.setSizePolicy(sizePolicy)
-        self.lineEdit_8.setMinimumSize(QSize(0, 30))
-        self.lineEdit_8.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_8.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.gridLayout.addWidget(self.lineEdit_8, 9, 1, 1, 1)
 
         self.lineEdit_9 = QLineEdit(self.widget_3)
         self.lineEdit_9.setObjectName(u"lineEdit_9")
@@ -480,6 +416,70 @@ class Ui_ParamWidget(object):
         self.lineEdit_9.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_9, 2, 1, 1, 1)
+
+        self.label_4 = QLabel(self.widget_3)
+        self.label_4.setObjectName(u"label_4")
+        sizePolicy3.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
+        self.label_4.setSizePolicy(sizePolicy3)
+        self.label_4.setFont(font2)
+
+        self.gridLayout.addWidget(self.label_4, 6, 0, 1, 1)
+
+        self.label_2 = QLabel(self.widget_3)
+        self.label_2.setObjectName(u"label_2")
+        sizePolicy3.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy3)
+        self.label_2.setFont(font2)
+
+        self.gridLayout.addWidget(self.label_2, 4, 0, 1, 1)
+
+        self.lineEdit = QLineEdit(self.widget_3)
+        self.lineEdit.setObjectName(u"lineEdit")
+        sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
+        self.lineEdit.setSizePolicy(sizePolicy)
+        self.lineEdit.setMinimumSize(QSize(0, 30))
+        self.lineEdit.setMaximumSize(QSize(1000, 70))
+        self.lineEdit.setFont(font1)
+        self.lineEdit.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit.setReadOnly(False)
+
+        self.gridLayout.addWidget(self.lineEdit, 3, 1, 1, 1)
+
+        self.label_11 = QLabel(self.widget_3)
+        self.label_11.setObjectName(u"label_11")
+        sizePolicy3.setHeightForWidth(self.label_11.sizePolicy().hasHeightForWidth())
+        self.label_11.setSizePolicy(sizePolicy3)
+        self.label_11.setFont(font2)
+
+        self.gridLayout.addWidget(self.label_11, 2, 0, 1, 1)
+
+        self.label = QLabel(self.widget_3)
+        self.label.setObjectName(u"label")
+        sizePolicy3.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy3)
+        self.label.setFont(font2)
+
+        self.gridLayout.addWidget(self.label, 3, 0, 1, 1)
+
+        self.lineEdit_7 = QLineEdit(self.widget_3)
+        self.lineEdit_7.setObjectName(u"lineEdit_7")
+        sizePolicy.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
+        self.lineEdit_7.setSizePolicy(sizePolicy)
+        self.lineEdit_7.setMinimumSize(QSize(0, 30))
+        self.lineEdit_7.setMaximumSize(QSize(1000, 70))
+        self.lineEdit_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout.addWidget(self.lineEdit_7, 8, 1, 1, 1)
+
+        self.lineEdit_8 = QLineEdit(self.widget_3)
+        self.lineEdit_8.setObjectName(u"lineEdit_8")
+        sizePolicy.setHeightForWidth(self.lineEdit_8.sizePolicy().hasHeightForWidth())
+        self.lineEdit_8.setSizePolicy(sizePolicy)
+        self.lineEdit_8.setMinimumSize(QSize(0, 30))
+        self.lineEdit_8.setMaximumSize(QSize(1000, 70))
+        self.lineEdit_8.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayout.addWidget(self.lineEdit_8, 9, 1, 1, 1)
 
 
         self.gridLayout_7.addWidget(self.widget_3, 1, 0, 2, 1)
@@ -820,21 +820,21 @@ class Ui_ParamWidget(object):
         self.radioButton_7.setText(QCoreApplication.translate("ParamWidget", u"Industry", None))
         self.radioButton_10.setText(QCoreApplication.translate("ParamWidget", u"Commercial", None))
         self.radioButton_8.setText(QCoreApplication.translate("ParamWidget", u"Power-2-X", None))
-        self.label_4.setText(QCoreApplication.translate("ParamWidget", u"Number of solar panels", None))
-        self.title1.setText(QCoreApplication.translate("ParamWidget", u"System parameters", None))
-        self.label_2.setText(QCoreApplication.translate("ParamWidget", u"Inverter power (kW)", None))
-        self.label_12.setText(QCoreApplication.translate("ParamWidget", u"Annual  tempered water consumption (m3)", None))
-        self.label_11.setText(QCoreApplication.translate("ParamWidget", u"Water tank capacity (m3)", None))
-        self.lineEdit_2.setText(QCoreApplication.translate("ParamWidget", u"2.5", None))
-        self.label_3.setText(QCoreApplication.translate("ParamWidget", u"Water heater power (kW)", None))
         self.label_20.setText(QCoreApplication.translate("ParamWidget", u"Solar panel power (Wp)", None))
-        self.label.setText(QCoreApplication.translate("ParamWidget", u"Battery capacity (kWh)", None))
-        self.lineEdit_4.setText(QCoreApplication.translate("ParamWidget", u"10", None))
-        self.lineEdit.setText(QCoreApplication.translate("ParamWidget", u"10", None))
-        self.lineEdit_3.setText(QCoreApplication.translate("ParamWidget", u"2.5", None))
-        self.lineEdit_12.setText(QCoreApplication.translate("ParamWidget", u"400", None))
         self.label_10.setText(QCoreApplication.translate("ParamWidget", u"Annual electricity consumption (MWh)", None))
+        self.lineEdit_4.setText(QCoreApplication.translate("ParamWidget", u"10", None))
+        self.lineEdit_3.setText(QCoreApplication.translate("ParamWidget", u"2.5", None))
+        self.lineEdit_2.setText(QCoreApplication.translate("ParamWidget", u"2.5", None))
+        self.label_12.setText(QCoreApplication.translate("ParamWidget", u"Annual  tempered water consumption (m3)", None))
+        self.label_3.setText(QCoreApplication.translate("ParamWidget", u"Water heater power (kW)", None))
+        self.title1.setText(QCoreApplication.translate("ParamWidget", u"System parameters", None))
+        self.lineEdit_12.setText(QCoreApplication.translate("ParamWidget", u"400", None))
         self.lineEdit_9.setText(QCoreApplication.translate("ParamWidget", u"0.2", None))
+        self.label_4.setText(QCoreApplication.translate("ParamWidget", u"Number of solar panels", None))
+        self.label_2.setText(QCoreApplication.translate("ParamWidget", u"Inverter power (kW)", None))
+        self.lineEdit.setText(QCoreApplication.translate("ParamWidget", u"10", None))
+        self.label_11.setText(QCoreApplication.translate("ParamWidget", u"Water tank capacity (m3)", None))
+        self.label.setText(QCoreApplication.translate("ParamWidget", u"Battery capacity (kWh)", None))
         self.label_17.setText(QCoreApplication.translate("ParamWidget", u"Activation duration (F) & Imbalance duration (R)", None))
         self.label_5.setText(QCoreApplication.translate("ParamWidget", u"Direction of flexibility service", None))
         self.lineEdit_6.setText(QCoreApplication.translate("ParamWidget", u"80", None))

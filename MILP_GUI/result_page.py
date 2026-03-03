@@ -58,20 +58,7 @@ class ResultPage(QWidget):
         self.reslayout = QVBoxLayout()
         self.hlayout = QHBoxLayout()
         self.comboBox = QComboBox()
-        self.comboBox.addItems([
-            "Water tank temperature",
-            "Battery state of energy",
-            "Water heater on-off state",
-            "Battery charging power",
-            "Battery discharging power",
-            "Tempered water consumption",
-            "PV generation",
-            "Non-controllable load",
-            "Desired water temperature",
-            "Ambient temperature",
-            "Grid power",
-            "Day-ahead electricity prices"
-        ])
+        
 
         self.hlayout.addWidget(self.comboBox)
         self.hlayout.addWidget(self.alt_combo)
@@ -136,9 +123,36 @@ class ResultPage(QWidget):
        
 
         self.pointSize = self.font().pointSize()
+        self.changeComboBox()
 
   
-
+    def changeComboBox(self):
+        self.comboBox.clear()
+        if self.result1 is not None:
+            self.comboBox.addItems([
+                "Water tank temperature",
+                "Battery state of energy",
+                "Water heater on-off state",
+                "Battery charging power",
+                "Battery discharging power",
+                "Tempered water consumption",
+                "PV generation",
+                "Non-controllable load",
+                "Desired water temperature",
+                "Ambient temperature",
+                "Grid power",
+                "Day-ahead electricity prices"
+            ])
+        else:
+            self.comboBox.addItems([
+                        "Tempered water consumption",
+                        "PV generation",
+                        "Non-controllable load",
+                        "Desired water temperature",
+                        "Ambient temperature",
+                        "Day-ahead electricity prices"
+                    ])
+                
     
     def changePlot(self):
         self.paramPage.dateEdit.setDate(self.resultDate.date())
@@ -148,7 +162,9 @@ class ResultPage(QWidget):
         self.result1 = None
         self.result2 = None
         self.hide_comboBox_and_date()
+        self.changeComboBox()
         self.setGraph()
+
 
     def hide_comboBox_and_date(self):
         if self.result1 is not None:
@@ -223,6 +239,7 @@ class ResultPage(QWidget):
                 self.changeGraphFont()
                 self.canvas.fig.tight_layout()
                 self.hide_comboBox_and_date()
+                self.changeComboBox()
 
                  
                
@@ -250,26 +267,40 @@ class ResultPage(QWidget):
         self.alt_combo.blockSignals(False)
 
         
-    def getYlabel(self, index):
-        if index in [0, 9]:
-            label = r"Temperature [$^\circ$C]"
-            
-        elif index in [1, 3, 4]:
-            label = r"Energy [kWh]"
-            
-        elif index in [5]:
-            label = r"Volume [$m^3/h$]"
-            
-        elif index in [6, 7, 10]:
-            label = r"Power [kW]"
-            
-        elif index in [11]:
-            label = r"Price [$€/kW$]"
-            
-        else:
-            label = ""
-            
-        return label
+    def getYlabel(self, index=None):
+        text = self.comboBox.currentText()
+
+        # Temperature
+        if text in ("Water tank temperature",
+                    "Desired water temperature",
+                    "Ambient temperature"):
+            return r"Temperature [$^\circ$C]"
+
+        # Energy
+        if text in ("Battery state of energy",):
+            return r"Energy [kWh]"
+
+        # Volume
+        if text in ("Tempered water consumption",):
+            return r"Volume [$m^3/h$]"
+
+        # Power
+        if text in ("Battery charging power",
+                    "Battery discharging power",
+                    "PV generation",
+                    "Non-controllable load",
+                    "Grid power"):
+            return r"Power [kW]"
+
+        # Price
+        if text in ("Day-ahead electricity prices",):
+            return r"Price [$€/kWh$]"  # prilagodi ako ti je stvarno €/kW
+
+        # On/off state (diskretno)
+        if text in ("Water heater on-off state",):
+            return r"On/Off [-]"
+
+        return ""
 
 
     def setGraph(self):
@@ -558,31 +589,47 @@ class ResultPage(QWidget):
 
     def plot_profiles_demand_production(self):
                 self.getParamsRes()
-                if self.comboBox.currentIndex() == 5:
-                    self.label_graph.setText(self.comboBox.itemText(5))
-                    self.plot_profiles(self.data, "flow")              
-                if self.comboBox.currentIndex() == 6:
-                    self.label_graph.setText(self.comboBox.itemText(6))
-                    self.plot_profiles(self.data, "pv")
-                    if self.result1 and self.result1.case == "flex":
-                        self.plot_input_output_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "epvused", self.paramPage.comboBox_4.currentText())
-                    if self.result1 and self.result1.case == "noflex":
-                        self.plot_input_output_noflex(self.data,self.result1, "epvused")
-                    if(self.result2):
-                         self.plot_input_output_noflex(self.data,self.result2, "epvused")
-                         
-                if self.comboBox.currentIndex() == 7:
-                    self.label_graph.setText(self.comboBox.itemText(7))
-                    self.plot_profiles(self.data, "nc_load")
-                if self.comboBox.currentIndex() == 8:
-                    self.label_graph.setText(self.comboBox.itemText(8))
-                    self.plot_profiles(self.data, "setTemp")
-                if self.comboBox.currentIndex() == 9:
-                    self.label_graph.setText(self.comboBox.itemText(9))
-                    self.plot_profiles(self.data, "envtemp")
-                if self.comboBox.currentIndex() == 11:
-                    self.label_graph.setText(self.comboBox.itemText(11))
-                    self.plot_profiles(self.data, "daprice")
+                index = self.comboBox.currentIndex()
+                has_res = self.result1 is not None
+
+                if has_res:
+                    index_map = {
+                        5: "flow",
+                        6: "pv",
+                        7: "nc_load",
+                        8: "setTemp",
+                        9: "envtemp",
+                        11: "daprice"
+                    }
+                else:
+                    index_map = {
+                        0: "flow",
+                        1: "pv",
+                        2: "nc_load",
+                        3: "setTemp",
+                        4: "envtemp",
+                        5: "daprice"
+                    }
+
+                if index in index_map:
+                    self.label_graph.setText(self.comboBox.itemText(index))
+                    profile_type = index_map[index]
+                    self.plot_profiles(self.data, profile_type)
+
+                    if profile_type == "pv" and has_res:
+                        if self.result1.case == "flex":
+                            self.plot_input_output_matplotlib(
+                                self.data,
+                                self.result1,
+                                self.alt_combo.currentIndex(),
+                                "epvused",
+                                self.paramPage.comboBox_4.currentText()
+                            )
+                        elif self.result1.case == "noflex":
+                            self.plot_input_output_noflex(self.data, self.result1, "epvused")
+
+                        if self.result2:
+                            self.plot_input_output_noflex(self.data, self.result2, "epvused")
 
                     
     def plot_noflex(self):
