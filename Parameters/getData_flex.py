@@ -68,7 +68,7 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     #duljina optimizacijskog vektora
     data.len_chi = (data.n_x + data.len_U_nom +2*data.len_Ua
                     + 2*data.len_eps_abs+ data.len_eps_da +2*data.len_epp_alt+ data.len_epp_nom+2+2+1)
-    print(data.len_chi)
+   
 
     data.P_heater = heater_power*1000 #snaga grijača u W
     data.ts = 0.25 #duljina perioda diskretizacije u satima
@@ -172,8 +172,7 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
 
     #Gornje i donje granice protoka i temperature
     data.Qmax = data.water_demand.max() #maksimalni protok vode u danu
-    print(f"Qmax: {data.Qmax}")
-
+   
     data.Tmax = 80+273.15
 
     return data

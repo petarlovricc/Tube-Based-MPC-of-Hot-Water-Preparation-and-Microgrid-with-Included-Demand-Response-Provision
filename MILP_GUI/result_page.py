@@ -197,6 +197,25 @@ class ResultPage(QWidget):
         font.setPointSize(font.pointSize()*1.5)
         font.setBold(True)
         self.label_graph.setFont(font)
+
+    def update_legend(self, fontsize=None):
+        ax = self.canvas.axes
+        handles, labels = ax.get_legend_handles_labels()
+
+        # filtriraj prazne i "internal" labele
+        valid = [(h, l) for h, l in zip(handles, labels) if l and not l.startswith("_")]
+
+        # makni staru legendu ako više nema što prikazati
+        if ax.legend_ is not None:
+            ax.legend_.remove()
+            ax.legend_ = None
+
+        if valid:
+            handles, labels = zip(*valid)
+            kwargs = {"frameon": False}
+            if fontsize is not None:
+                kwargs["fontsize"] = fontsize
+            ax.legend(handles, labels, **kwargs)
     
     def changeGraphFont(self):
         pointSize = self.pointSize
@@ -211,8 +230,8 @@ class ResultPage(QWidget):
 
         ax.tick_params(axis='both', which='major', labelsize=pointSize)
 
-        ax.legend(frameon=False, fontsize=pointSize)
-
+        
+        self.update_legend(fontsize=pointSize)
     
     def resizeEvent(self, event: QResizeEvent):
                 super().resizeEvent(event)
@@ -338,7 +357,9 @@ class ResultPage(QWidget):
         # Mreža i legenda
         ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.6)
         ax.set_axisbelow(True)
-        ax.legend(frameon=False, fontsize=9)
+        
+        self.update_legend()
+        
         # Estetsko podešavanje
         for label in (ax.get_yticklabels() + ax.get_xticklabels()):
             label.set_fontsize(9)
@@ -661,11 +682,11 @@ class ResultPage(QWidget):
                 if self.comboBox.currentIndex() == 0:
                     self.label_graph.setText(self.comboBox.itemText(0))
                     self.canvas.axes.plot(np.arange(self.data.N+1), np.append(self.data.set_water_temp_C, self.data.set_water_temp_C[-1]),
-                            linestyle="--", linewidth=1, color="purple",
+                          linestyle="--", linewidth=1, color="purple",
                             
-                            label=f"Desired water temperature")
+                         label=f"Desired water temperature ({self.data.day}.{self.data.month}.)")
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "heater", self.paramPage.comboBox_4.currentText())
-                    self.plot_profiles(self.data, "setTemp")
+                    #self.plot_profiles(self.data, "setTemp")
                 if self.comboBox.currentIndex() == 1:
                     self.label_graph.setText(self.comboBox.itemText(1))
                     self.plot_state_matplotlib(self.data, self.result1, self.alt_combo.currentIndex(), "batt", self.paramPage.comboBox_4.currentText())
@@ -766,15 +787,18 @@ class ResultPage(QWidget):
                             linestyle="--", linewidth=2.5, color="red",
                             label="Nominal profile")
 
-        if (Pr_direction == "positive"):
+        if (Pr_direction == "Positive"):
             alt_minus = None
-        elif (Pr_direction == "negative"):
+        elif (Pr_direction == "Negative"):
             alt_plus = None
 
-        if alt_plus is not None:
-            self.plot_alt_state(data, alt_plus, "positive", res, scen, "orange")
+        if alt_plus is None:
+            self.plot_alt_state(data, alt_minus, "negative", res, scen, "green")
 
-        if alt_minus is not None:
+        elif alt_minus is None:
+            self.plot_alt_state(data, alt_plus, "positive", res, scen, "orange")
+        else:
+            self.plot_alt_state(data, alt_plus, "positive", res, scen, "orange")
             self.plot_alt_state(data, alt_minus, "negative", res, scen, "green")
 
         
@@ -881,15 +905,18 @@ class ResultPage(QWidget):
                             linestyle="--", linewidth=2.5, color="red",
                             where="post", label="Nominal profile")
 
-        if (Pr_direction == "positive"):
+        if (Pr_direction == "Positive"):
             alt_minus = None
-        elif (Pr_direction == "negative"):
+        elif (Pr_direction == "Negative"):
             alt_plus = None
 
-        if alt_plus is not None:
-            self.plot_alt_input_output(data, res, scen, "orange", "positive", nom, alt_plus)
-        if alt_minus is not None:
+        if alt_plus is None:
             self.plot_alt_input_output(data, res, scen, "green", "negative", nom, alt_minus)
+        elif alt_minus is None:
+            self.plot_alt_input_output(data, res, scen, "orange", "positive", nom, alt_plus)
+        else:
+            self.plot_alt_input_output(data, res, scen, "green", "negative", nom, alt_minus)
+            self.plot_alt_input_output(data, res, scen, "orange", "positive", nom, alt_plus)    
 
 
     def plot_noflex_states(self, data, res, var):

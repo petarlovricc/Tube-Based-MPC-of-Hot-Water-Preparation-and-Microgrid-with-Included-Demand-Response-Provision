@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
     data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month,
                     day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus, cr_plus,
-                      cr_minus, sgn_Pr,hub_name, annual_load, annual_water)
+                      cr_minus, sgn_Pr,hub_name, annual_load, annual_water, neg_prices_on_off=True)
 
     model = flex.getModel(data)
     matrices = flex.get_Matrices_nom(data, model)

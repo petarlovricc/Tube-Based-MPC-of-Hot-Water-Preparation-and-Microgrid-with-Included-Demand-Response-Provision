@@ -996,9 +996,9 @@ def getUb(data,matrices, matrices_alt):
 
     Pr_max_plus = np.inf
     Pr_max_minus = np.inf
-    if (data.Pr_scen == "positive"):
+    if (data.Pr_scen == "Positive"):
         Pr_max_minus = 0
-    if (data.Pr_scen == "negative"):
+    if (data.Pr_scen == "Negative"):
         Pr_max_plus = 0
     
 
