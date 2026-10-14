@@ -46,9 +46,9 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.watertemp = 40
     #Podatci o dimen_zijama matrica
     data.sgn_Pr = sgn_Pr
-    data.cr_minus = cr_minus/1000
+    data.cr_minus = cr_minus/1000#*(end_flex_ready - beginning_flex_ready)
     data.alfa_plus = alfa_plus/100
-    data.cr_plus = cr_plus/1000
+    data.cr_plus = cr_plus/1000#*(end_flex_ready - beginning_flex_ready)
     data.alfa_minus = alfa_minus/100
     data.N =  96 #broj 15min intervala u jednom danu
     data.N_F = int(F*4)

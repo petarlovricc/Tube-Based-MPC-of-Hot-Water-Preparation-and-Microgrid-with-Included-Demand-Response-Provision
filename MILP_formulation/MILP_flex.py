@@ -677,8 +677,8 @@ def getTheta_pp_n_eps(data):
 def getTheta_pp_a_plus(data):
     Theta_pp_a = np.hstack((
                         np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_x))),                        
-                        getTheta_pp_a_Ua(data),
                         np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_u*data.N))),
+                        getTheta_pp_a_Ua(data),
                         np.zeros(((data.N_R*data.n_a*data.n_z), (data.n_u*data.n_a*data.n_z*(data.N_F+data.N_R)))),
                         np.zeros(((data.N_R*data.n_a*data.n_z), (2*data.n_a*data.n_z*data.N_R + data.N))),
                         np.zeros(((data.N_R*data.n_a*data.n_z), 1)),

@@ -20,8 +20,8 @@ class TablePage(QWidget, Ui_TableWidget):
             "Day-ahead cost J<sub>DA</sub> [€]",
             "Peak power cost J<sub>PP</sub> [€]",
             "Intra-day cost J<sub>ID</sub> [€]",
-            "Energy cost [€]",
-            "Operational cost [€]"
+            "Energy exchange cost (+) /<br>gain (-) [€]",
+            "Operational cost (+) /<br>gain (-) [€]",
         ]
 
         self.texts_en_table2 = [

@@ -25,7 +25,7 @@ class Ui_ParamWidget(object):
     def setupUi(self, ParamWidget):
         if not ParamWidget.objectName():
             ParamWidget.setObjectName(u"ParamWidget")
-        ParamWidget.resize(2101, 988)
+        ParamWidget.resize(1629, 781)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -257,7 +257,7 @@ class Ui_ParamWidget(object):
         sizePolicy2.setHeightForWidth(self.checkBox.sizePolicy().hasHeightForWidth())
         self.checkBox.setSizePolicy(sizePolicy2)
         self.checkBox.setFont(font)
-        self.checkBox.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
+        self.checkBox.setLayoutDirection(Qt.RightToLeft)
 
         self.horizontalLayout_2.addWidget(self.checkBox)
 
@@ -336,7 +336,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_4.setMinimumSize(QSize(0, 30))
         self.lineEdit_4.setMaximumSize(QSize(1000, 70))
         self.lineEdit_4.setFont(font1)
-        self.lineEdit_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_4.setAlignment(Qt.AlignCenter)
         self.lineEdit_4.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_4, 6, 1, 1, 1)
@@ -348,7 +348,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_3.setMinimumSize(QSize(0, 30))
         self.lineEdit_3.setMaximumSize(QSize(1000, 70))
         self.lineEdit_3.setFont(font1)
-        self.lineEdit_3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_3.setAlignment(Qt.AlignCenter)
         self.lineEdit_3.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_3, 5, 1, 1, 1)
@@ -360,7 +360,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_2.setMinimumSize(QSize(0, 30))
         self.lineEdit_2.setMaximumSize(QSize(1000, 70))
         self.lineEdit_2.setFont(font1)
-        self.lineEdit_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_2.setAlignment(Qt.AlignCenter)
         self.lineEdit_2.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_2, 4, 1, 1, 1)
@@ -388,7 +388,6 @@ class Ui_ParamWidget(object):
         font3.setPointSize(14)
         font3.setBold(True)
         self.title1.setFont(font3)
-        self.title1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout.addWidget(self.title1, 0, 0, 1, 2)
 
@@ -399,7 +398,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_12.setMinimumSize(QSize(0, 30))
         self.lineEdit_12.setMaximumSize(QSize(1000, 70))
         self.lineEdit_12.setFont(font1)
-        self.lineEdit_12.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_12.setAlignment(Qt.AlignCenter)
         self.lineEdit_12.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_12, 7, 1, 1, 1)
@@ -412,7 +411,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_9.setMinimumSize(QSize(0, 30))
         self.lineEdit_9.setMaximumSize(QSize(1000, 70))
         self.lineEdit_9.setFont(font1)
-        self.lineEdit_9.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_9.setAlignment(Qt.AlignCenter)
         self.lineEdit_9.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit_9, 2, 1, 1, 1)
@@ -440,7 +439,7 @@ class Ui_ParamWidget(object):
         self.lineEdit.setMinimumSize(QSize(0, 30))
         self.lineEdit.setMaximumSize(QSize(1000, 70))
         self.lineEdit.setFont(font1)
-        self.lineEdit.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit.setAlignment(Qt.AlignCenter)
         self.lineEdit.setReadOnly(False)
 
         self.gridLayout.addWidget(self.lineEdit, 3, 1, 1, 1)
@@ -467,7 +466,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_7.setSizePolicy(sizePolicy)
         self.lineEdit_7.setMinimumSize(QSize(0, 30))
         self.lineEdit_7.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_7.setAlignment(Qt.AlignCenter)
 
         self.gridLayout.addWidget(self.lineEdit_7, 8, 1, 1, 1)
 
@@ -477,7 +476,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_8.setSizePolicy(sizePolicy)
         self.lineEdit_8.setMinimumSize(QSize(0, 30))
         self.lineEdit_8.setMaximumSize(QSize(1000, 70))
-        self.lineEdit_8.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_8.setAlignment(Qt.AlignCenter)
 
         self.gridLayout.addWidget(self.lineEdit_8, 9, 1, 1, 1)
 
@@ -529,7 +528,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_6.setMinimumSize(QSize(0, 30))
         self.lineEdit_6.setMaximumSize(QSize(500, 70))
         self.lineEdit_6.setFont(font1)
-        self.lineEdit_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_6.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.lineEdit_6, 10, 2, 1, 1)
 
@@ -540,7 +539,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_13.setMinimumSize(QSize(0, 30))
         self.lineEdit_13.setMaximumSize(QSize(500, 70))
         self.lineEdit_13.setFont(font1)
-        self.lineEdit_13.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_13.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.lineEdit_13, 9, 1, 1, 1)
 
@@ -583,7 +582,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_14.setMinimumSize(QSize(0, 30))
         self.lineEdit_14.setMaximumSize(QSize(500, 70))
         self.lineEdit_14.setFont(font1)
-        self.lineEdit_14.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_14.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.lineEdit_14, 10, 1, 1, 1)
 
@@ -593,7 +592,6 @@ class Ui_ParamWidget(object):
         self.title4.setSizePolicy(sizePolicy2)
         self.title4.setMaximumSize(QSize(16777215, 70))
         self.title4.setFont(font3)
-        self.title4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_4.addWidget(self.title4, 0, 0, 2, 3)
 
@@ -641,7 +639,7 @@ class Ui_ParamWidget(object):
         self.comboBox.setMinimumSize(QSize(0, 30))
         self.comboBox.setMaximumSize(QSize(1000, 70))
         self.comboBox.setFont(font1)
-        self.comboBox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.comboBox.setLayoutDirection(Qt.LeftToRight)
 
         self.gridLayout_4.addWidget(self.comboBox, 7, 1, 1, 2)
 
@@ -671,7 +669,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_5.setMinimumSize(QSize(0, 30))
         self.lineEdit_5.setMaximumSize(QSize(500, 70))
         self.lineEdit_5.setFont(font1)
-        self.lineEdit_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_5.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.lineEdit_5, 9, 2, 1, 1)
 
@@ -831,7 +829,7 @@ class Ui_ParamWidget(object):
         self.lineEdit_12.setText(QCoreApplication.translate("ParamWidget", u"400", None))
         self.lineEdit_9.setText(QCoreApplication.translate("ParamWidget", u"0.2", None))
         self.label_4.setText(QCoreApplication.translate("ParamWidget", u"Number of solar panels", None))
-        self.label_2.setText(QCoreApplication.translate("ParamWidget", u"Inverter power (kW)", None))
+        self.label_2.setText(QCoreApplication.translate("ParamWidget", u"Converter power (kW)", None))
         self.lineEdit.setText(QCoreApplication.translate("ParamWidget", u"10", None))
         self.label_11.setText(QCoreApplication.translate("ParamWidget", u"Water tank capacity (m3)", None))
         self.label.setText(QCoreApplication.translate("ParamWidget", u"Battery capacity (kWh)", None))
