@@ -17,14 +17,14 @@ from MILP_GUI.loading_page import LoadingPage
 from MILP_GUI.result_page import ResultPage 
 from Multithreading.worker import Worker
 from MILP_GUI.table_page import TablePage
-import MILP_formulation.MILP_peak_power as noflex_matrix
-import MILP_formulation.MILP_flex as flex_matrix
+import MILP_formulation_accelerated.MILP_peak_power as noflex_matrix
+import MILP_formulation_accelerated.MILP_flex as flex_matrix
 import Parameters.getData_flex as DataGetter
 import Result_Processing.result_processing_noflex as noflex_results
 import Result_Processing.result_processing_flex as flex_results
 import MILP_solve.milp_solve_no_flex as noflex_solve
 import MILP_solve.milp_solve_flex as flex_solve
-from MILP_formulation.MILP_comparison import MILP_comparison
+from MILP_formulation_accelerated.MILP_comparison import MILP_comparison
 from Multithreading.worker_comparison import WorkerComparison
 from MILP_GUI.utils import check_cplex_full_version
 from MILP_GUI.utils import invert_svg
@@ -219,7 +219,7 @@ class MainWindow(QMainWindow):
                     self.loadingPage.label.setText(currtext + "\nSolving problem...")
                 print("POKRECEM OPTIMIZACIJU")
                 
-                result = noflex_solve._solve_highs(data,
+                result = noflex_solve._solve_cplex(data,
                                     f = noflex_matrix.getF(data),
                                     Aeq = noflex_matrix.getAeq(data,matrices,model),
                                     beq = noflex_matrix.getbeq(data,matrices,model),
@@ -242,7 +242,7 @@ class MainWindow(QMainWindow):
                 if(not "\nSolving problem..." in currtext):
                     self.loadingPage.label.setText(currtext + "\nSolving problem...")
                     
-                result = flex_solve._solve_highs(
+                result = flex_solve._solve_cplex(
                                     f = flex_matrix.getF(data),
                                     Aeq= flex_matrix.getAeq(data,model,matrices, matrices_alt),
                                     beq = flex_matrix.getbeq(data,matrices),

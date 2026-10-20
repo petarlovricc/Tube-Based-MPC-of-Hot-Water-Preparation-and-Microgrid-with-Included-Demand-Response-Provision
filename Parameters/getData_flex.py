@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 import cplex
 import matplotlib.pyplot as plt
-from MILP_formulation.extrasprojekt import *
+from MILP_formulation_accelerated.extrasprojekt import *
 import math
 from Profiles_Readers.PV_reader import PVreader
 from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
@@ -54,7 +54,7 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.N_F = int(F*4)
     data.N_R = int(R*4)
     data.N_Q = int(Q*4)
-    data.n_a = int((end_flex_ready - beginning_flex_ready)*4)
+    data.n_a = min(int((end_flex_ready - beginning_flex_ready)*4), data.N_Q)
     data.n_z = data.N // (data.N_Q)
     data.n_x = 2 #[T(k) SOE(k)]
     data.n_u = 4
@@ -90,6 +90,12 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.m_w_tank = data.tank_volume*data.ro_water
     data.cold_water_temp = 7+273.15 #temperatura hladne vode (°C -> K) 
     data.boiling_temp = 100+273.15 # maksimalna željena temperatura vode u grijaču
+
+    #######################################################
+    #Ograničenja za histerzno upravljanje grijačem vode
+    data.hist_donja = 0.5      
+    data.hist_gornja = 1.5
+
 
     #Podatci o proizvodnji i potrošnji
     data.pv_power, data.pv_energy, data.pv_energy_sum = PV_reader.csvreader()
@@ -153,14 +159,15 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     #######################################################
     #SKUPOVI TRENUTAKA ALTERNATIVNIH SCENARIJA
 
-    data.act_len = (data.N_F+data.N_R)
+    
     
     data.a_i = np.arange(data.n_a)
-    data.a_i_z = np.arange(data.act_len)
+    data.a_i_z = np.arange((data.N_F+data.N_R))
    
 
-    data.Ka_min = np.arange(int(beginning_flex_ready*4),int(end_flex_ready*4))
+    data.Ka_min = np.arange(int(beginning_flex_ready*4),int(beginning_flex_ready*4) + data.n_a)
     data.K_i = get_Ki(data)
+    data.K_i.setflags(write = False)
     data.Kzx = get_Kzx(data)
     data.Kzu = get_Kzu(data)
     data.K_fi = get_Kfi(data)
@@ -190,13 +197,13 @@ def setConvexPrices(data):
         
         
 def get_Ki(data):
-        data.K_i = np.zeros((data.n_a,data.n_z*data.act_len))
+        K_i = np.zeros((data.n_a,data.n_z*(data.N_F+data.N_R)))
 
         for i in data.a_i:
-            for k in range(data.n_z*data.act_len):
-                    data.K_i[i,k] = (data.Ka_min[i] + (k//data.act_len)*data.N_Q + k%data.act_len)
+            for k in range(data.n_z*(data.N_F+data.N_R)):
+                    K_i[i,k] = (data.Ka_min[i] + (k//(data.N_F+data.N_R))*data.N_Q + k%(data.N_F+data.N_R))
         
-        return data.K_i%data.N
+        return K_i%data.N
 
 def get_Kpi(data):
     K_pi = np.zeros((data.n_a,data.n_z))
@@ -213,7 +220,7 @@ def get_Kzu(data):
 
     for i in data.a_i:
         for k in range(data.n_z):
-                K_zu[i,k] = data.Ka_min[i] + k*data.N_Q + data.act_len-1
+                K_zu[i,k] = data.Ka_min[i] + k*data.N_Q + (data.N_F+data.N_R)-1
       
     return K_zu%data.N
        
@@ -231,7 +238,7 @@ def get_Kfi(data):
 
     for i in data.a_i:
         for k in range(data.n_z):
-            K_fi[i,k*data.N_F: (k+1)*data.N_F] = K_i[i, k*data.act_len: k*data.act_len + data.N_F]
+            K_fi[i,k*data.N_F: (k+1)*data.N_F] = K_i[i, k*(data.N_F+data.N_R): k*(data.N_F+data.N_R) + data.N_F]
      
     return K_fi%data.N
         
@@ -242,47 +249,9 @@ def get_Kri(data):
 
     for i in data.a_i:
         for k in range(data.n_z):
-            K_ri[i,k*data.N_R: k*data.N_R + data.N_R] = K_i[i, k*data.act_len + data.N_F: k*data.act_len + data.N_F + data.N_R]
+            K_ri[i,k*data.N_R: k*data.N_R + data.N_R] = K_i[i, k*(data.N_F+data.N_R) + data.N_F: k*(data.N_F+data.N_R) + data.N_F + data.N_R]
      
     return K_ri%data.N
 
 
-        
-if __name__ == "__main__":
-    heater_power=2500
-    bat_cap=9400
-    converter_power=2500
-    tank_volume=190
-    PV_power=410
-    numberofPV=10
-    month=7
-    day=4
-    Q =8
-    F = 2
-    R = 5
-    beginning_flex_ready = 11
-    end_flex_ready = 12
-    alfa = 1
-    sgn_Pr = 1
-    cr = 0.7
-    
-    data = getData(
-            heater_power,
-            bat_cap,
-            converter_power,
-            tank_volume,
-            PV_power,
-            numberofPV,
-            month,
-            day,
-            Q,
-            F,
-            R,
-            beginning_flex_ready,
-            end_flex_ready,
-            alfa,
-            cr,
-            sgn_Pr
-        )
-    print(get_Kfi(data))
-    print(get_Kri(data))
+   

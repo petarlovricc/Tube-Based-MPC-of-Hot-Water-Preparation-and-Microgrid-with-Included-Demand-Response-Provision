@@ -1,16 +1,16 @@
-from MILP_formulation.extrasprojekt import *
-from MILP_formulation.MILP_peak_power import getThetax
-from MILP_formulation.MILP_peak_power import getPsix
+from MILP_formulation_accelerated.extrasprojekt import *
+from MILP_formulation_accelerated.MILP_peak_power import getThetax
+from MILP_formulation_accelerated.MILP_peak_power import getPsix
 import pandas as pd
 import numpy as np
 from Parameters.getData_flex import get_Ki
 from Parameters.getData_flex import get_Kzx
 import matplotlib.pyplot as plt
-import MILP_formulation.MILP_flex as flex
+import MILP_formulation_accelerated.MILP_flex as flex
 from Parameters.getData_flex import getData
 from MILP_solve.milp_solve_flex import _solve_cplex
 import sys
-from MILP_formulation.MILP_flex import getF
+from MILP_formulation_accelerated.MILP_flex import getF
 print("Python koji se koristi:", sys.executable)
 
 
@@ -76,7 +76,7 @@ def result_processing(data, model, matrices, matrices_alt, solution):
     res.K_i_x = np.zeros((res.K_i.shape[0],res.K_i.shape[1]+1*data.n_z))
     for i in range(res.K_i.shape[0]):
         for j in range(data.n_z):
-            res.K_i_x[i][j*(data.act_len+1):(j+1)*(data.act_len+1)] = np.append(res.K_i[i][j*data.act_len:(j+1)*data.act_len], int(K_zx[i][j]))
+            res.K_i_x[i][j*((data.N_F+data.N_R)+1):(j+1)*((data.N_F+data.N_R)+1)] = np.append(res.K_i[i][j*(data.N_F+data.N_R):(j+1)*(data.N_F+data.N_R)], int(K_zx[i][j]))
 
 
     theta_alt = flex.getTheta_a(data, matrices_alt, model)

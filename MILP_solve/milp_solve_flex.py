@@ -8,8 +8,25 @@ import sys
 import os
 import highspy
 from Parameters.getData_flex import getData
-import MILP_formulation.MILP_flex as flex
+import MILP_formulation_accelerated.MILP_flex as flex
 import time
+from scipy.sparse import csr_array, vstack as sp_vstack
+
+def sparse_pair(matrix):
+    matrix = csr_array(matrix)
+    pair_list = []
+
+    for i in range(matrix.shape[0]):
+        beg = matrix.indptr[i]
+        end = matrix.indptr[i+1]
+        cols = matrix.indices[beg:end].tolist()
+        values = matrix.data[beg:end].tolist()
+        pair_list.append(cplex.SparsePair(cols, values))
+
+    return pair_list
+
+
+
 
 
 def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
@@ -48,36 +65,18 @@ def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     
    
 
-    # define variables
-    for i in range(f.shape[0]):
-        if lb[i, 0] == -np.inf:
-            lb_temp = -cplex.infinity
-        else:
-            lb_temp = lb[i, 0]
-        if ub[i, 0] == np.inf:
-            ub_temp = cplex.infinity
-        else:
-            ub_temp = ub[i, 0]
-        c.variables.add(obj=[f[i, 0]], ub=[ub_temp], lb=[lb_temp], types=types[i])
-        #print(f"Variable {i}: obj={f[i, 0]}, lb={lb_temp}, ub={ub_temp}")
-        if lb_temp > ub_temp:
-            print(f"Variable {i} has infeasible bounds: lb={lb_temp}, ub={ub_temp}")
-            continue  # or raise an error
+    lb = np.where(np.isneginf(lb.ravel()), -cplex.infinity, lb.ravel()).tolist()
+    ub = np.where(np.isposinf(ub.ravel()), cplex.infinity, ub.ravel()).tolist()
+    obj = f.ravel().tolist()
 
-    # equalities - row by row
-    for i in range(Aeq.shape[0]):
-        cols = Aeq[[i], :].indices.tolist() #column indices
-        vals = Aeq[[i], :].data.tolist() #values
-        pair = cplex.SparsePair(ind=cols, val=vals)
-        c.linear_constraints.add(lin_expr=[pair], senses=['E'], rhs=[beq[i, 0]])
+    if set(types) == {"C"}:
+        c.variables.add(obj = obj, lb = lb, ub = ub)
+    else:
+        c.variables.add(obj = obj, lb = lb, ub = ub, types=types)
 
-    # inequalities - row by row
-    for i in range(Aineq.shape[0]):
-        cols = Aineq[[i], :].indices.tolist() #column indices
-        vals = Aineq[[i], :].data.tolist() #values
-        pair = cplex.SparsePair(ind=cols, val=vals)
-        c.linear_constraints.add(lin_expr=[pair], senses=['L'], rhs=[bineq[i, 0]])
-
+    c.linear_constraints.add(lin_expr = sparse_pair(Aeq), senses = "E"*Aeq.shape[0], rhs = beq.ravel().tolist())
+    c.linear_constraints.add(lin_expr = sparse_pair(Aineq), senses = "L"*Aineq.shape[0], rhs = bineq.ravel().tolist())
+        
     #c.parameters.read.datacheck.set(1)
     #c.parameters.preprocessing.presolve.set(0)
     c.parameters.conflict.display.set(2) 
@@ -123,8 +122,7 @@ def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
     types = (data.n_x * "C" + data.N * f"{heater}CCC" + 2*data.n_a*data.n_z*(data.N_F+data.N_R)*f"{heater}CCC"
              +2*data.n_a*data.n_z*data.N_R*"C" + data.N*"C" + "C" + 2*"C"*(data.n_a) + "CC" + "CCC")
     
-    map_type = {"C":0, "I": 1, "B": 2}
-    integrality = [map_type[t] for t in types]
+    integrality = np.array([0 if t == "C" else 1 for t in types], dtype=int)
 
     lb = lb.flatten()
     ub = ub.flatten()
@@ -137,17 +135,10 @@ def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
 
     highs.changeColsIntegrality(f.shape[0],np.arange(f.shape[0]) , integrality)
 
-    for i in range(Aeq.shape[0]):
-        cols = Aeq[[i], :].indices.tolist()
-        vals = Aeq[[i], :].data.tolist()
-        rhs = beq[i, 0]
-        highs.addRow(rhs, rhs,len(cols), cols, vals)
-
-    for i in range(Aineq.shape[0]):
-        cols = Aineq[[i], :].indices.tolist()
-        vals = Aineq[[i], :].data.tolist()
-        rhs = bineq[i, 0]
-        highs.addRow(-highs.inf, rhs,len(cols), cols, vals)
+    A = sp_vstack((csr_array(Aeq), csr_array(Aineq)), format='csr')
+    lower = np.r_[beq.ravel(), np.full(Aineq.shape[0], -highspy.kHighsInf)]
+    upper = np.r_[beq.ravel(), bineq.ravel()]
+    highs.addRows(A.shape[0], lower, upper, A.nnz, A.indptr[:-1], A.indices, A.data)
     
     
     start_time = time.time()
@@ -193,7 +184,7 @@ if __name__ == "__main__":
     R = 1                             # Recovery duration
 
     beginning_flex_ready = 0          # 0:00
-    end_flex_ready = 12               # 12:00
+    end_flex_ready = 24               # 12:00
 
     alfa_plus = 90                    # Acceptance probability +
     alfa_minus = 80                   # Acceptance probability -

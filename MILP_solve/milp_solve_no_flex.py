@@ -2,78 +2,125 @@ import numpy as np
 from scipy.sparse import csr_matrix
 import cplex
 import matplotlib.pyplot as plt
-from MILP_formulation.extrasprojekt import *
+from MILP_formulation_accelerated.extrasprojekt import *
 import math
 import sys
 import os
-
-from Profiles_Readers.PV_reader import PVreader
-from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
-from Parameters.getData_flex import getData
-import MILP_formulation.MILP_peak_power as noflex
-from Result_Processing.result_processing_noflex import result_processing
 import highspy
+from Parameters.getData_flex import getData
+import MILP_formulation_accelerated.MILP_peak_power as flex
+import time
+from scipy.sparse import csr_array, vstack as sp_vstack
+
+def sparse_pair(matrix):
+    matrix = csr_array(matrix)
+    pair_list = []
+
+    for i in range(matrix.shape[0]):
+        beg = matrix.indptr[i]
+        end = matrix.indptr[i+1]
+        cols = matrix.indices[beg:end].tolist()
+        values = matrix.data[beg:end].tolist()
+        pair_list.append(cplex.SparsePair(cols, values))
+
+    return pair_list
 
 
 
-def solve_cplex(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
-    c = cplex.Cplex()
-    if(heater == "I"):
-        c.parameters.mip.tolerances.mipgap.set(0.07)
-    elif(heater == "C"):
-        c.parameters.mip.tolerances.mipgap.set(0.001)
-        
-    c.objective.set_sense(c.objective.sense.minimize)
-
-    #print(c.parameters._get_info())
-    types = data.n_x * "C" + data.N * f"{heater}CCC" + data.len_eps_da * "C" + data.len_epp_nom * "C"
 
 
-    for i in range(f.shape[0]):
-        c.variables.add(obj=[f.ravel()[i]], ub=[ub.ravel()[i]], lb=[lb.ravel()[i]], types=types[i])
-
-    for i in range(Aeq.shape[0]):
-        cols = Aeq[[i], :].indices.tolist() 
-        vals = Aeq[[i], :].data.tolist()
-        pair = cplex.SparsePair(ind=cols, val=vals)
-        c.linear_constraints.add(lin_expr=[pair], senses=['E'], rhs=[beq.flatten()[i]])
-
-    for i in range(Aineq.shape[0]):
-        cols = Aineq[[i], :].indices.tolist() 
-        vals = Aineq[[i], :].data.tolist() 
-        pair = cplex.SparsePair(ind=cols, val=vals)
-        c.linear_constraints.add(lin_expr=[pair], senses=['L'], rhs=[bineq.flatten()[i]])
-
+def _solve_cplex(f, Aeq, beq, Aineq, bineq, lb, ub,data, heater):
     
-    start_time = c.get_time()
-    c.solve()
-    end_time = c.get_time()
-    time_to_solve = end_time - start_time
-    c.conflict.get
+    '''
+    Solves LP by using CPLEX solver.
+    Argument prob has these objects:
+        f: np.array or np.matrix, cost function,
+           column vector where second dimension is 1 or None
+        lb: np.array or np.matrix, lower bounds,
+            column vector where second dimension is 1 or None
+        ub: np.array or np.matrix, upper bounds,
+            column vector where second dimension is 1 or None
+        Aeq: scipy.sparse.csr_matrix, matrix of linear equalities
+        beq: np.array or np.matrix, vector of linear equalities,
+             column vector where second dimension is 1 or None
+        Aineq: scipy.sparse.csr_matrix, matrix of linear equalities
+        bineq: np.array or np.matrix, vector of linear inequalities,
+               column vector where second dimension is 1 or None
+    Returns Structure containing:
+        status: int
+        status_string: string
+        x: np.array
+    '''
 
+    # define problem
+    c = cplex.Cplex()
+    c.objective.set_sense(c.objective.sense.minimize)
+    # if(heater == "I"):
+    #     c.parameters.mip.tolerances.mipgap.set(0.21)
+    # elif(heater == "C"):
+    #     c.parameters.mip.tolerances.mipgap.set(0.001)
+
+    types = data.n_x*"C" + data.N*f"{heater}CCC" + data.N*"C" + "C"
+    
+   
+
+    lb = np.where(np.isneginf(lb.ravel()), -cplex.infinity, lb.ravel()).tolist()
+    ub = np.where(np.isposinf(ub.ravel()), cplex.infinity, ub.ravel()).tolist()
+    obj = f.ravel().tolist()
+
+    if set(types) == {"C"}:
+        c.variables.add(obj = obj, lb = lb, ub = ub)
+    else:
+        c.variables.add(obj = obj, lb = lb, ub = ub, types=types)
+
+    c.linear_constraints.add(lin_expr = sparse_pair(Aeq), senses = "E"*Aeq.shape[0], rhs = beq.ravel().tolist())
+    c.linear_constraints.add(lin_expr = sparse_pair(Aineq), senses = "L"*Aineq.shape[0], rhs = bineq.ravel().tolist())
+        
+    #c.parameters.read.datacheck.set(1)
+    #c.parameters.preprocessing.presolve.set(0)
+    c.parameters.conflict.display.set(2) 
+    c.set_log_stream(sys.stdout)
+    c.set_error_stream(sys.stderr)
+    c.set_warning_stream(sys.stdout)
+    c.set_results_stream(sys.stdout)
+
+    # Use only dual simplex method
+    #c.parameters.lpmethod.set(c.parameters.lpmethod.values.dual)
+
+    # solve
+    start_time = time.time()
+    c.solve()
+    end_time = time.time()
+
+    print(f"Solving time: {end_time - start_time}")
+    
+    # c.conflict.refine()
+    # conflicts = c.conflict.get()
+    # c.conflict.write("conflict.lp")
+
+    # fill solution Structure
     sol = Structure()
-    sol.time = round(end_time - start_time,3)
     sol.status_string = c.solution.get_status_string()
-    if c.solution.get_status() in (101, 1, 5, 6, 102):
+    sol.time = round(end_time - start_time,3)
+    print(sol.status_string)
+    if c.solution.get_status() in (1, 5, 6, 101, 102):
         sol.status = 1
         sol.x = np.array(c.solution.get_values())
     else:
         sol.status = 0
         sol.x = np.array([])
-    
-    sol.time = time_to_solve
+
     return sol
 
-def _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
+def _solve_highs(f, Aeq, beq, Aineq, bineq, lb, ub, data, heater):
+
     # define problem
     highs = highspy.Highs()
     highs.changeObjectiveSense(highspy.ObjSense.kMinimize)
 
-    types = (data.n_x * "C" + data.N * f"{heater}CCC" + 2*data.n_a*data.n_z*(data.N_F+data.N_R)*f"{heater}CCC"
-             +2*data.n_a*data.n_z*data.N_R*"C" + data.N*"C" + "C" + 2*"C"*(data.n_a) + "CC" + "CC")
-    
-    map_type = {"C":0, "I": 1, "B": 2}
-    integrality = [map_type[t] for t in types]
+    types = data.n_x*"C" + data.N*f"{heater}CCC" + data.N*"C" + "C"
+
+    integrality = np.array([0 if t == "C" else 1 for t in types], dtype=int)
 
     lb = lb.flatten()
     ub = ub.flatten()
@@ -86,21 +133,19 @@ def _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
 
     highs.changeColsIntegrality(f.shape[0],np.arange(f.shape[0]) , integrality)
 
-    for i in range(Aeq.shape[0]):
-        cols = Aeq[[i], :].indices.tolist()
-        vals = Aeq[[i], :].data.tolist()
-        rhs = beq[i, 0]
-        highs.addRow(rhs, rhs,len(cols), cols, vals)
-
-    for i in range(Aineq.shape[0]):
-        cols = Aineq[[i], :].indices.tolist()
-        vals = Aineq[[i], :].data.tolist()
-        rhs = bineq[i, 0]
-        highs.addRow(-highs.inf, rhs,len(cols), cols, vals)
+    A = sp_vstack((csr_array(Aeq), csr_array(Aineq)), format='csr')
+    lower = np.r_[beq.ravel(), np.full(Aineq.shape[0], -highspy.kHighsInf)]
+    upper = np.r_[beq.ravel(), bineq.ravel()]
+    highs.addRows(A.shape[0], lower, upper, A.nnz, A.indptr[:-1], A.indices, A.data)
     
+    
+    start_time = time.time()
     highs.run()
+    end_time = time.time()
+    print(f"Solving time: {end_time - start_time}")
 
     sol = Structure()
+    sol.time = round(end_time - start_time,3)
     status = highs.getModelStatus()
     sol.status_string = str(status)
     print(sol.status_string)
@@ -117,46 +162,7 @@ def _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, heater):
     return sol
 
 
-if __name__ == "__main__":
-    # --- Prvo rješenje (s cpp) ---
-    heater_power=2.5
-    bat_cap=10
-    converter_power=2.5
-    tank_volume=0.2
-    PV_power=400
-    numberofPV=10
-    month=6
-    day=15
-    cpp=11
-    Q = 12
-    F = 1
-    R = 2
-    beginning_flex_ready = 11
-    end_flex_ready = 13
-    alfa_plus = 80
-    alfa_minus = 0.811
-    cr_plus = 0.7
-    cr_minus = 0.7
-    sgn_Pr = "positive and negative"
-    cid = 0.6
-    setwatertemp = 40
-    hub_name = "Household"
-    annual_load = 5
-    annual_water = 50
-
-    data = getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month,
-                    day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus, cr_plus,
-                      cr_minus, sgn_Pr,hub_name, annual_load, annual_water)
-    model = noflex.getModel(data)
-    matrices = noflex.get_Matrices(data, model)
-    lb = noflex.getLb(data, matrices)
-    ub = noflex.getUb(data, matrices)
-    Aineq = noflex.getAineq(data, matrices)
-    bineq = noflex.getbineq(data, matrices)
-    Aeq = noflex.getAeq(data, matrices, model)
-    beq = noflex.getbeq(data, matrices, model)
-    f = noflex.getF(data)
-    solution = _solve_highs(data, f, Aeq, beq, Aineq, bineq, lb, ub, "C")
-    res = result_processing(data, matrices, solution)
-
    
+ 
+    
+    
