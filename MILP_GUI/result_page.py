@@ -1039,6 +1039,11 @@ class ResultPage(QWidget):
             graph = data.pv_power / 1000.0        # W -> kW
         elif var == "daprice":
             graph = data.day_ahead_prices*(10**3)        # W -> kW
+            graph2 = data.cid*(10**3)
+            self.canvas.axes.step(np.arange(data.N+1), np.append(graph2, graph2[-1]),
+                                        linestyle="--", linewidth=1, color="green",
+                                        where="post",
+                                        label=f"Imbalance prices ({data.day}.{data.month}.)")
 
         self.canvas.axes.step(np.arange(data.N+1), np.append(graph, graph[-1]),
                             linestyle="--", linewidth=1, color="purple",

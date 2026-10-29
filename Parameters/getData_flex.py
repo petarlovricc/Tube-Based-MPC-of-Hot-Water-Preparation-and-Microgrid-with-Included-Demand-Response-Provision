@@ -124,8 +124,7 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     commission = 0.08
 
     data.da_prices_reader = da_prices_reader.csvreaderPrices()
-    day_ahead_prices = data.da_prices_reader + renewable_energy_charge_eur_per_kwh
-    + excise_duty_eur_per_kwh
+    day_ahead_prices = data.da_prices_reader + renewable_energy_charge_eur_per_kwh + excise_duty_eur_per_kwh
 
     data.day_ahead_prices = data.da_prices_reader
 
@@ -154,7 +153,8 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     
 
     
-    data.cid = 1.2*max(data.da_prices)
+    data.cid = 1.2*data.da_prices
+    data.cid = np.clip(data.cid, a_min=0, a_max=None)
     
     #######################################################
     #SKUPOVI TRENUTAKA ALTERNATIVNIH SCENARIJA

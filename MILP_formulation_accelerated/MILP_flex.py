@@ -5,6 +5,7 @@ from MILP_formulation.extrasprojekt import *
 import math
 from scipy.sparse import vstack as sp_vstack
 from scipy.sparse import hstack as sp_hstack
+import scipy.sparse as sp
 
 from Parameters.getData_flex import getData
 from Parameters.getData_flex import get_Kpi
@@ -815,6 +816,8 @@ def getTheta_abs_neg_minus(data):
                         ), format='csr')
     return Theta_abs_neg
 
+
+
 def getTheta_abs_poz(data):
     return sp_vstack((getTheta_abs_poz_plus(data), getTheta_abs_poz_minus(data)), format='csr')
 
@@ -916,8 +919,11 @@ def getTheta_max(data):
     return sp_vstack((getTheta_max_plus(data), getTheta_max_minus(data)), format='csr')
 
 def getTheta_max_eps_abs(data): 
-    koef = csr_array(np.tile(1, (data.N_R*data.n_z))*data.cid)
-    return block_diag([koef] * data.n_a, format='csr')
+    c = data.cid[data.K_ri.astype(int).ravel()]
+    block_diag =  sp.kron(eye_array(data.n_a), np.ones((1, data.N_R*data.n_z)), format = "csr")
+
+    return csr_array(block_diag@sp.diags_array(c))
+
 
 def getTheta_max_eps_pp(data): 
     return eye_array(data.n_a)*data.cpp

@@ -316,7 +316,7 @@ def getNomSumAltInd(res,value, alt_scen):
 def calculateJai_plus(data,res):
     Jai = np.zeros(data.n_a)
     for i in range(data.n_a):
-        Jai[i] = data.cpp*res.epp_alt_plus[i]+sum(res.da)+sum(res.eps_abs_plus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z])*data.cid
+        Jai[i] = data.cpp*res.epp_alt_plus[i]+sum(res.da)+res.eps_abs_plus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z]@data.cid[data.K_ri[i].astype(int).ravel()]
 
     maxJai = np.where(Jai == max(Jai))[0][0]
 
@@ -325,7 +325,7 @@ def calculateJai_plus(data,res):
 def calculateJai_minus(data,res):
     Jai = np.zeros(data.n_a)
     for i in range(data.n_a):
-        Jai[i] = data.cpp*res.epp_alt_minus[i]+sum(res.da)+sum(res.eps_abs_minus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z])*data.cid
+        Jai[i] = data.cpp*res.epp_alt_minus[i]+sum(res.da)+res.eps_abs_minus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z]@data.cid[data.K_ri[i].astype(int).ravel()]
 
     maxJai = np.where(Jai == max(Jai))[0][0]
 
@@ -334,13 +334,13 @@ def calculateJai_minus(data,res):
 def get_intraday_minus(data, res):
     id = np.zeros(data.n_a)
     for i in range(data.n_a):
-        id[i] = sum(res.eps_abs_minus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z])*data.cid
+        id[i] = res.eps_abs_minus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z]@data.cid[data.K_ri[i].astype(int).ravel()]
     return id
 
 def get_intraday_plus(data, res):
     id = np.zeros(data.n_a)
     for i in range(data.n_a):
-        id[i] = sum(res.eps_abs_plus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z])*data.cid
+        id[i] = res.eps_abs_plus_alt[i*data.N_R*data.n_z:(i+1)*data.N_R*data.n_z]@data.cid[data.K_ri[i].astype(int).ravel()]
     return id
 
 def getJDR(data, res):
