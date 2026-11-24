@@ -1,9 +1,0 @@
-<RCC>
-  <qresource prefix="icons">
-    <file>FER_logo_2.svg</file>
-    <file>LARES_2_transparent_white.svg</file>
-    <file>smart_HOUSE</file>
-    <file alias="FER_logo_2.svg">FER_logo_2.svg</file>
-    <file alias="LARES_2_transparent_white.svg">LARES_2_transparent_white.svg</file>
-  </qresource>
-</RCC>
