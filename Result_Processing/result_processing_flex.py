@@ -8,7 +8,6 @@ from Parameters.getData_flex import get_Kzx
 import matplotlib.pyplot as plt
 import MILP_formulation_accelerated.MILP_flex as flex
 from Parameters.getData_flex import getData
-from MILP_solve.milp_solve_flex import _solve_cplex
 import sys
 from MILP_formulation_accelerated.MILP_flex import getF
 print("Python koji se koristi:", sys.executable)

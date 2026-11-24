@@ -1,7 +1,3 @@
-from MILP_GUI.param_page import ParamPage
-from MILP_GUI.loading_page import LoadingPage
-from MILP_GUI.result_page import ResultPage 
-from Multithreading.worker import Worker
 import MILP_formulation_accelerated.extrasprojekt
 import MILP_formulation_accelerated.MILP_peak_power as noflex_matrix
 import MILP_formulation_accelerated.MILP_flex as flex_matrix
@@ -14,13 +10,13 @@ import numpy as np
 
 
 from MILP_formulation_accelerated.histereza import runHistereza
-from MILP_GUI.utils import check_cplex_full_version
-from MILP_GUI.utils import InfeasibleException
+
+class InfeasibleException(Exception):
+    pass
+
 
 class MILP_comparison:
-    def __init__(self, paramPage,loadingPage, flex, first_optim, second_optim, heater, *args):
-        self.paramPage = paramPage
-        self.loadingPage = loadingPage
+    def __init__(self, flex, first_optim, second_optim, heater, *args):
         self.first_optim = first_optim
         self.second_optim = second_optim
         self.heater = heater
@@ -39,17 +35,11 @@ class MILP_comparison:
             print(self.first_optim)
             if(self.first_optim == 0):
                 data = self.data
-                currtext = self.loadingPage.label.text()
-                if(not "\nMathematical problem formulated." in currtext):
-                    self.loadingPage.label.setText(currtext + "\nMathematical problem formulated.")
-                currtext = self.loadingPage.label.text()
-                if(not "\nSolving problem..." in currtext):
-                    self.loadingPage.label.setText(currtext + "\nSolving problem...")
                 model = flex_matrix.getModel(data)
                 matrices = flex_matrix.get_Matrices_nom(data, model)
                 matrices_alt = flex_matrix.getMatrices_alt(data, model)
                 print("POKRECEM OPTIMIZACIJU")
-                result1_sol = flex_solve._solve_cplex(data = self.data,
+                result1_sol = flex_solve._solve_highs(data = self.data,
                                     f = flex_matrix.getF(data),
                                     Aeq= flex_matrix.getAeq(data,model,matrices, matrices_alt),
                                     beq = flex_matrix.getbeq(data,matrices),
@@ -66,13 +56,7 @@ class MILP_comparison:
             elif(self.first_optim == 1):
                 self.model = noflex_matrix.getModel(self.data)
                 self.matrices = noflex_matrix.get_Matrices(self.data,self.model)
-                currtext = self.loadingPage.label.text()
-                if(not "\nMathematical problem formulated." in currtext):
-                    self.loadingPage.label.setText(currtext + "\nMathematical problem formulated.")
-                currtext = self.loadingPage.label.text()
-                if(not "\nSolving problem..." in currtext):
-                    self.loadingPage.label.setText(currtext + "\nSolving problem...")
-                result1_sol = noflex_solve._solve_cplex(data = self.data,
+                result1_sol = noflex_solve._solve_highs(data = self.data,
                                 f = noflex_matrix.getF(self.data),
                                 Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
                                 beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
@@ -96,7 +80,7 @@ class MILP_comparison:
                 self.model = noflex_matrix.getModel(self.data)
                 self.matrices = noflex_matrix.get_Matrices(self.data,self.model)
             
-                result1_sol = noflex_solve._solve_cplex(data = self.data,
+                result1_sol = noflex_solve._solve_highs(data = self.data,
                                 f = noflex_matrix.getF(self.data),
                                 Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
                                 beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),
@@ -120,7 +104,7 @@ class MILP_comparison:
                 self.model = noflex_matrix.getModel(self.data)
                 self.matrices = noflex_matrix.get_Matrices(self.data,self.model)
 
-                result2_sol = noflex_solve._solve_cplex(data = self.data,
+                result2_sol = noflex_solve._solve_highs(data = self.data,
                                 f = noflex_matrix.getF(self.data),
                                 Aeq=noflex_matrix.getAeq(self.data,self.matrices,self.model),
                                 beq = noflex_matrix.getbeq(self.data,self.matrices,self.model),

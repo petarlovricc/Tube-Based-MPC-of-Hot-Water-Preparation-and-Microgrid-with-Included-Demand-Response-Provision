@@ -15,6 +15,6 @@ def check_and_install_packages(packages):
             print(f"{package} is already installed.")
 
 # Packages to check and install
-packages_to_install = ['numpy', 'pyside6', 'pyqtgraph', 'scipy', 'matplotlib']
+packages_to_install = ['numpy', 'scipy', 'matplotlib']
 
 #check_and_install_packages(packages_to_install)

@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
-from MILP_GUI.utils import resource_path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class CSV_disturbances_reader:
     def __init__(self, day, month, watertemp, hub_name):
-        self.pathElectricity = resource_path(f"Profiles_Readers/{hub_name}/noncontrollable_load_annual_profile_{hub_name}.csv")
-        self.pathWater = resource_path(f"Profiles_Readers/{hub_name}/water_demand_annual_profile_{hub_name}.csv")
-        self.pathEnvtemp = resource_path(f"Profiles_Readers/{hub_name}/environment_temperature_annual_profile.csv")
+        self.pathElectricity = os.path.join(BASE_DIR, hub_name, f"noncontrollable_load_annual_profile_{hub_name}.csv")
+        self.pathWater = os.path.join(BASE_DIR, hub_name, f"water_demand_annual_profile_{hub_name}.csv")
+        self.pathEnvtemp = os.path.join(BASE_DIR, hub_name, "environment_temperature_annual_profile.csv")
         self.day = day
         self.month = month
         self.watertemp = watertemp
@@ -85,3 +85,27 @@ class CSV_disturbances_reader:
         
         
         return tempKelvin, tempCelsius
+
+    def annual_peak_and_load_factor(self):
+        """
+                Return the annual peak of the non-controllable load and the annual load factor.
+
+                Returns
+                -------
+                tuple
+                    peak_power:
+                        Maximum 15-minute average power over the whole year [W].
+
+                    load_factor:
+                        Annual energy / (peak power * hours in year) [-].
+        """
+
+        df = pd.read_csv(self.pathElectricity, sep=";")
+        energy_kWh = df["Electricity demand (kWh)"].values
+
+        peak_power = energy_kWh.max()*4000
+        hours = len(energy_kWh)*0.25
+
+        load_factor = energy_kWh.sum()/(hours*peak_power/1000)
+
+        return peak_power, load_factor

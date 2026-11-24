@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.sparse import csr_matrix
-import cplex
 import matplotlib.pyplot as plt
 from MILP_formulation.extrasprojekt import *
 import math

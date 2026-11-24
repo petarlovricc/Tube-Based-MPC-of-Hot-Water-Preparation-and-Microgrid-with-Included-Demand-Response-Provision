@@ -2,12 +2,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from MILP_GUI.utils import resource_path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class PVreader:
     def __init__(self, day, month, PV_power, numberofPV):
-        self.path = resource_path("Profiles_Readers/PV.csv")
+        self.path = os.path.join(BASE_DIR, "PV.csv")
         self.month = month
         self.day = day
         self.PV_power = PV_power

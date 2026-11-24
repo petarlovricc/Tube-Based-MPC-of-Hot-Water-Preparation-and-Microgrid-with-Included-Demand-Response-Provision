@@ -1,17 +1,69 @@
 import numpy as np
 from scipy.sparse import csr_matrix
-import cplex
 import matplotlib.pyplot as plt
 from MILP_formulation_accelerated.extrasprojekt import *
 import math
 from Profiles_Readers.PV_reader import PVreader
 from Profiles_Readers.Disturbances_Reader import CSV_disturbances_reader
-from Profiles_Readers.da_prices_reader import CSV_da_reader
+from Profiles_Readers.da_prices_reader import CSVDaReader
+
+
+RENEWABLE_ENERGY_CHARGE_EUR_PER_WH = 0.013239  / 1000
+EXCISE_DUTY_EUR_PER_WH = 0.0005 / 1000
+ENERGY_PRICE_COMMISION = 0.08
+
+# Profiles are for 2024 (leap year), so February has 29 days
+DAYS_IN_MONTH = np.array([31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
+
+TARIFF_MODELS = {
+    "LV red (3)": {"energy": 28.78 / 1e6, "peak": 6.559},
+    "MV white (2)": {"energy": 18.71 / 1e6, "peak": 4.341},
+    "HV white (1)": {"energy": 5.18 / 1e6, "peak": 2.289},
+    "LV household white (8)" : {"energy": 50.28 / 1e6, "peak": 0.0}
+}
+
+LV_MV_LIMIT_W = 300e3  # approximate peak power limit, low / medium voltage
+MV_HV_LIMIT_W = 10e6  # approximate peak power limit, medium / high voltage
+
+
+
+def set_tariff_model(peak_power_W: np.ndarray, hub_name: str):
+    """
+    Choose the network tariff model from the peak of the load profile.
+
+    Returns the tariff model name, network energy charge [EUR/Wh]
+    and peak power price [EUR/kW per month].
+    """
+    peak = np.max(peak_power_W)
+
+    if hub_name == "Household":
+        model = "LV household white (8)"
+    elif peak <= LV_MV_LIMIT_W:
+        model = "LV red (3)"
+    elif peak <= MV_HV_LIMIT_W:
+        model = "MV white (2)"
+    else:
+        model = "HV white (1)"
+
+    return model, TARIFF_MODELS[model]["energy"], TARIFF_MODELS[model]["peak"]
+
+
+def _price_formation(price, which_price, neg_buy_price, network_charge: float):
+    """Marza samo na energiju; mrezna naknada, OIE i trosarina samo na kupnju."""
+    c = ENERGY_PRICE_COMMISION
+    if which_price == "buy":
+        energy = np.where(price >= 0, price * (1 + c), price * (1 - c))
+        if not neg_buy_price:
+            energy = np.maximum(energy, 0.0)
+        return energy + network_charge + RENEWABLE_ENERGY_CHARGE_EUR_PER_WH + EXCISE_DUTY_EUR_PER_WH
+    elif which_price == "sell":
+        return np.where(price >= 0, price * (1 - c), price * (1 + c))
+    raise ValueError("Set the correct price direction: 'buy' or 'sell'!")
 
 
 #funkcija koja sluzi stvaranju strukture
 def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, numberofPV, month, day, Q, F, R, beginning_flex_ready, end_flex_ready, alfa_plus, alfa_minus,  cr_plus, cr_minus, sgn_Pr, hub_name,
-            annual_load, annual_water, neg_prices_on_off):
+            annual_load, annual_water, neg_prices_on_off, year=2024, timezone="Zagreb", country_code="HR", duration=24):
     data = Structure()
     ######################################################
     #PARAMETRI SUSTAVA
@@ -40,7 +92,15 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.hub_name = hub_name
     PV_reader = PVreader(day=day, month=month, PV_power=PV_power, numberofPV=numberofPV) #klasa koja postavlja dan 
     disturbance_reader = CSV_disturbances_reader(day=day, month=month, watertemp = 40, hub_name= hub_name)
-    da_prices_reader = CSV_da_reader(day=day, month = month)
+    da_reader = CSVDaReader(
+        day=day,
+        month=month,
+        year = year,
+        timezone = timezone,
+        country_code = country_code,
+        duration = duration
+
+    )
     data.day = day
     data.month = month
     data.watertemp = 40
@@ -115,44 +175,32 @@ def getData(heater_power, bat_cap, converter_power, tank_volume,PV_power, number
     data.mul_TQ = data.set_water_temp_K*data.water_demand
 
     #Cijene davanja i preuzimanja te cijena vršne snage
-    len_mon = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    cpp = 4.188 #[€/kW]
-    data.cpp = cpp/(1000*len_mon[month-1])  #cijena vrsne snage €/kWh --> €/Wh te na razini jednog dana
+    data.year = year
+    data.timezone = timezone
+    data.country_code = country_code
+    data.duration = duration
+    data.negative_buying_price_allowed = neg_prices_on_off
 
-    renewable_energy_charge_eur_per_kwh = 0.013239/1000
-    excise_duty_eur_per_kwh = 0.0005/1000
-    commission = 0.08
+    annual_peak_not_scaled, data.load_factor = disturbance_reader.annual_peak_and_load_factor()
+    data.annual_peak_power = annual_peak_not_scaled * (data.annual_load/data.annual_consumption)  # W
 
-    data.da_prices_reader = da_prices_reader.csvreaderPrices()
-    day_ahead_prices = data.da_prices_reader + renewable_energy_charge_eur_per_kwh + excise_duty_eur_per_kwh
+    data.day_ahead_prices = da_reader.csvreaderPrices().reshape(-1)/1e6 #EUR/MWh -> EUR/Wh
 
-    data.day_ahead_prices = data.da_prices_reader
+    tariff_model, network_charge, peak_price = set_tariff_model(data.annual_peak_power, data.hub_name)
+    data.da_prices = _price_formation(
+        data.day_ahead_prices,
+        "buy",
+        data.negative_buying_price_allowed,
+        network_charge
+    )
 
-    if(neg_prices_on_off == True):
-        data.da_prices = np.where(
-                day_ahead_prices >= 0,
-                day_ahead_prices * (1 + commission),
-                day_ahead_prices * (1 - commission),
-            )
-    else:
-        data.da_prices = np.clip(np.where(
-                    day_ahead_prices >= 0,
-                    day_ahead_prices * (1 + commission),
-                    day_ahead_prices * (1 - commission),
-                ), a_min=renewable_energy_charge_eur_per_kwh
-        + excise_duty_eur_per_kwh* (1 + commission), a_max=None)
+    data.sell_prices = _price_formation(data.day_ahead_prices, "sell", data.negative_buying_price_allowed,
+                                          network_charge)
 
+    data.tariff_model = tariff_model
+    # Peak power price in EUR/W of peak power per day (monthly price spread over days in month)
+    data.cpp = peak_price / (DAYS_IN_MONTH[month - 1] * 1000)
 
-
-    sell_prices = setConvexPrices(data)
-    data.sell_prices = np.where(
-                sell_prices >= 0,
-                sell_prices * (1 - commission),
-                sell_prices * (1 + commission),
-            )
-    
-
-    
     data.cid = 1.2*data.da_prices
     data.cid = np.clip(data.cid, a_min=0, a_max=None)
     
